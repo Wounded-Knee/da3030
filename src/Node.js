@@ -11,38 +11,69 @@ class Node extends React.Component {
   constructor(props) {
     super(props);
 
-    const {match: { params: { nodeId }, url }, annuitCœptis } = props;
-    this.node = annuitCœptis.find(nodeId);
-    this.state = {data: this.node.data};
-
     this.handleChange = this.handleChange.bind(this);
     this.updateNode = this.updateNode.bind(this);
+    this.state = this.getFreshState();
+  }
+
+  getFreshState() {
+    return { data: this.getNode().data, id: this.getNode()._id };
+  }
+
+  getUrl() {
+    return this.props.match.url;
+  }
+
+  getNode() {
+    const { match: { params: { nodeId } }, annuitCœptis } = this.props;
+    return annuitCœptis.find(nodeId);
   }
 
   handleChange(e) {
-    this.setState({ data: e.target.value });
+    console.log('handleChange');
+    this.setData(e.target.value);
   }
 
   updateNode(e) {
-    this.props.annuitCœptis.update(this.node._id, this.state.data);
+    this.props.annuitCœptis.update(this.getNode()._id, this.state.data);
+  }
+
+  setData(data) {
+    if (this.state.data !== data) {
+      this.setState({ data: data });
+    }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.match.params.nodeId !== this.props.match.params.nodeId) {
+      this.setState({ data: undefined, id: undefined });
+    }
+    return true;
   }
 
   render() {
-    const {match: { params: { nodeId }, url }, annuitCœptis } = this.props;
+    if (this.state.data === undefined) {
+      this.setState(this.getFreshState());
+    }
 
     return (
       <Router>
         <article>
-          <h1>[ { nodeId } ]</h1>
-          <input type="text" onChange={ this.handleChange } onBlur={ this.updateNode } value={ this.state.data } />
+          <h1>[ { this.getNode()._id } ]</h1>
+          <input
+            type="text"
+            onChange={ this.handleChange }
+            onBlur={ this.updateNode }
+            value={ this.state.data }
+          />
 
           <Switch>
             <Route
-              path={`${url}/:nodeId`}
+              path={`${this.getUrl()}/:nodeId`}
               render={
                 props => <Node
                   { ...props }
-                  annuitCœptis={ annuitCœptis }
+                  annuitCœptis={ this.props.annuitCœptis }
                 />
               }
             />
