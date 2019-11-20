@@ -1,3 +1,25 @@
+# DA3030
+
+## Mission
+
+To create a React application, with the following specifications.
+
+	1) Routed
+		Have a routing mechanism of some kind.
+		The user should be able to navigate to various URLs, and these
+		should trigger various sections of code.
+	2) Class-Based
+		Support class-based components
+	3) Stateful re-rendering
+		Have state.
+		Re-render automatically when state changes.
+
+Procedure
+	1) npx create-react-app da3030
+	2) Install react-router
+	3) Make routes reflect state
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
