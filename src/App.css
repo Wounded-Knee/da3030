@@ -12,6 +12,23 @@
   color: white;
 }
 
+.App-header ul {
+  list-style-type: none;
+  padding: 0;
+}
+.App-header ul li {
+  display: inline-block;
+  margin: 0 1em;
+}
+
+.App-header a {
+  color: #fff;
+  text-decoration: none;
+}
+.App-header span {
+  font-size: 0.5em;
+}
+
 .App-link {
   color: #09d3ac;
 }
