@@ -1,7 +1,14 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+  NavLink,
+} from 'react-router-dom';
 import './App.css';
 
+const activeClassName = 'active';
 const HomeComponent = () => {
   return (
     <h1>Home</h1>
@@ -12,15 +19,19 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-        </header>
-        <main>
-          <Router>
+        <Router>
+          <header className="App-header">
+            <ul>
+              <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>
+            </ul>
+          </header>
+          <main>
             <Switch>
               <Route path="/" exact component={ HomeComponent } />
+              <Redirect to="/" />
             </Switch>
-          </Router>
-        </main>
+          </main>
+        </Router>
       </div>
     );
   }
