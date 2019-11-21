@@ -45,6 +45,27 @@ class AnnuitCœptis {
 		if (storageData) this.setTree(JSON.parse(storageData));
 	}
 
+	/**
+	 * Adds a user to the DB
+	 * Returns the user record
+	 **/
+	addUser(username) {
+	}
+
+	filter(callback, startingPoint) {
+		const tree = startingPoint || this.getTree().data;
+
+		return tree.length ? [
+			...tree.filter(callback),
+			...this.filter(
+				callback,
+				tree.reduce(
+					(arr, val) => [ ...arr, ...val.children], []
+				)
+			)
+		] : [];
+	}
+
 	add(text, parentNode) {
 		this.addNode(
 			this.createNode(null, text),

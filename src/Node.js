@@ -1,9 +1,6 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
   NavLink,
 } from 'react-router-dom';
 const activeClassName = 'active';
@@ -54,35 +51,36 @@ class Node extends React.Component {
       this.setState(this.getFreshState());
     }
 
+    var content = null;
+
+    switch (this.props.viewMode) {
+      case 0:
+        content = null;
+      break;
+      default:
+        content = (
+          <article>
+            <h1>[ { this.getNode()._id } ]</h1>
+            <input
+              type="text"
+              onChange={ this.handleChange }
+              onBlur={ this.updateNode }
+              value={ this.state.data }
+            />
+
+            <ul>
+              { this.getChildNodes().map( node => <li key={ node.id } className="node">
+                <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>{ node.data }</NavLink>
+              </li> ) }
+            </ul>
+          </article>
+        );
+      break;
+    }
+
     return (
       <Router>
-        <article>
-          <h1>[ { this.getNode()._id } ]</h1>
-          <input
-            type="text"
-            onChange={ this.handleChange }
-            onBlur={ this.updateNode }
-            value={ this.state.data }
-          />
-
-          <ul>
-            { this.getChildNodes().map( node => <li key={ node.id } className="node">
-              <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>{ node.data }</NavLink>
-            </li> ) }
-          </ul>
-
-          <Switch>
-            <Route
-              path={`${this.getUrl()}/:nodeId`}
-              render={
-                props => <Node
-                  { ...props }
-                  annuitCœptis={ this.props.annuitCœptis }
-                />
-              }
-            />
-          </Switch>
-        </article>
+        { content }
       </Router>
     );
   }
