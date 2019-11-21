@@ -1,5 +1,7 @@
 const tax = require('taxonomy').tax;
 const localStorageName = 'AnnuitCœptis';
+const localStorageSettingsName = 'da3000';
+var settings = {};
 
 class AnnuitCœptis {
 	constructor(config) {
@@ -25,8 +27,7 @@ class AnnuitCœptis {
 					'remove',
 					'insert'
 				].indexOf(methodName) !== -1) {
-					this.config.onChange();
-					this.persist();
+					this.signalChange();
 				}
 				return rv;
 			}
@@ -36,13 +37,22 @@ class AnnuitCœptis {
 		this.load();
 	}
 
+	signalChange() {
+		this.config.onChange();
+		this.persist();
+	}
+
 	persist() {
 		localStorage.setItem(localStorageName, JSON.stringify(this.getTree()));
+		localStorage.setItem(localStorageSettingsName, JSON.stringify(settings));
 	}
 
 	load() {
 		const storageData = localStorage.getItem(localStorageName);
+		const storageSettings = localStorage.getItem(localStorageSettingsName);
+
 		if (storageData) this.setTree(JSON.parse(storageData));
+		if (storageSettings) settings = JSON.parse(storageSettings);
 	}
 
 	/**
@@ -50,6 +60,29 @@ class AnnuitCœptis {
 	 * Returns the user record
 	 **/
 	addUser(username) {
+		const users = this.getUsers();
+		const newUserId = Math.max.apply( Math, users.map( user => parseInt(user.id) || 0 ) ) + 1;
+
+		return this.addNode(
+			this.createNode(null, username, {
+				id: newUserId,
+				type: 'user',
+				name: username,
+			})
+		);
+	}
+
+	setCurrentUser(userId) {
+		settings.userId = userId;
+		this.signalChange();
+	}
+
+	getCurrentUser() {
+		return this.getUsers().find( node => node.id === settings.userId );
+	}
+
+	getUsers() {
+		return this.filter( node => node.type === 'user' );
 	}
 
 	filter(callback, startingPoint) {
@@ -68,7 +101,7 @@ class AnnuitCœptis {
 
 	add(text, parentNode) {
 		this.addNode(
-			this.createNode(null, text),
+			this.createNode(null, text, { type: 'node' }),
 			parentNode || undefined
 		);
 	}

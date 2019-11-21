@@ -46,6 +46,10 @@ class Node extends React.Component {
     return this.getNode().children;
   }
 
+  getChildNodeList() {
+
+  }
+
   render() {
     if (this.state.data === undefined) {
       this.setState(this.getFreshState());
@@ -60,19 +64,13 @@ class Node extends React.Component {
       default:
         content = (
           <article>
-            <h1>[ { this.getNode()._id } ]</h1>
+            <h1 className={ "node_type_" + this.getNode().type }>[ { this.getNode()._id } ]</h1>
             <input
               type="text"
               onChange={ this.handleChange }
               onBlur={ this.updateNode }
               value={ this.state.data }
             />
-
-            <ul>
-              { this.getChildNodes().map( node => <li key={ node.id } className="node">
-                <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>{ node.data }</NavLink>
-              </li> ) }
-            </ul>
           </article>
         );
       break;

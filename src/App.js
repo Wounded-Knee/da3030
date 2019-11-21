@@ -55,8 +55,14 @@ class App extends React.Component {
     this.annuitCœptis.delete(node);
   }
 
+  getNodes() {
+    return this.annuitCœptis.getTree().data.filter(
+      node => node.type === 'node'
+    );
+  }
+
   render() {
-    const nodes = this.annuitCœptis.getTree().data;
+    const nodes = this.getNodes();
     console.log('Rendering '+nodes.length+' nodes');
 
     return (
@@ -71,7 +77,11 @@ class App extends React.Component {
               </li> ) }
               <li><button onClick={ this.addNodePrompt.bind(this) }>+</button></li>
             </ul>
-            <span>Render #{ this.state.renderAgain }</span>
+            <span>
+              { this.annuitCœptis.getCurrentUser().name }
+              &nbsp;
+              render #{ this.state.renderAgain }
+            </span>
           </header>
           <main>
             <Switch>
