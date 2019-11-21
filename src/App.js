@@ -67,7 +67,7 @@ class App extends React.Component {
               <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>
               { nodes.map( node => <li key={ node.id } className="node">
                 <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>{ node.data }</NavLink>
-                <button onClick={ this.deleteNode.bind(this, node) }>x</button>
+                <button onClick={ this.deleteNode.bind(this, node) }>❌</button>
               </li> ) }
               <li><button onClick={ this.addNodePrompt.bind(this) }>+</button></li>
             </ul>

@@ -45,9 +45,10 @@ class AnnuitCœptis {
 		if (storageData) this.setTree(JSON.parse(storageData));
 	}
 
-	add(text) {
+	add(text, parentNode) {
 		this.addNode(
-			this.createNode(null, text)
+			this.createNode(null, text),
+			parentNode || undefined
 		);
 	}
 

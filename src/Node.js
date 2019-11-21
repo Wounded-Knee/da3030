@@ -6,6 +6,7 @@ import {
   Redirect,
   NavLink,
 } from 'react-router-dom';
+const activeClassName = 'active';
 
 class Node extends React.Component {
   constructor(props) {
@@ -44,11 +45,8 @@ class Node extends React.Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
-    if (nextProps.match.params.nodeId !== this.props.match.params.nodeId) {
-      this.setState({ data: undefined, id: undefined });
-    }
-    return true;
+  getChildNodes() {
+    return this.getNode().children;
   }
 
   render() {
@@ -67,6 +65,12 @@ class Node extends React.Component {
             value={ this.state.data }
           />
 
+          <ul>
+            { this.getChildNodes().map( node => <li key={ node.id } className="node">
+              <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>{ node.data }</NavLink>
+            </li> ) }
+          </ul>
+
           <Switch>
             <Route
               path={`${this.getUrl()}/:nodeId`}
@@ -81,6 +85,13 @@ class Node extends React.Component {
         </article>
       </Router>
     );
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.match.params.nodeId !== this.props.match.params.nodeId) {
+      this.setState({ data: undefined, id: undefined });
+    }
+    return true;
   }
 };
 

@@ -21,27 +21,32 @@
   margin: 0 1em;
 }
 .App-header ul li.node button {
-  visibility: hidden;
+  opacity: 0;
   cursor: pointer;
   background: transparent;
   border: 0;
   color: red;
-  font-size: 15px;
+  font-size: 9px;
   margin-top: -13px;
   position: relative;
   top: -7px;
   left: -6px;
 }
 .App-header ul li.node:hover button {
+  opacity: 0.5;
   visibility: visible;
 }
 .App-header ul li.node button:hover {
+  opacity: 1;
   color: #ff0;
 }
 
-.App-header a {
+.App-header ul li a {
   color: #fff;
   text-decoration: none;
+}
+.App-header ul li a.active {
+  font-weight: bold;
 }
 .App-header span {
   font-size: 0.5em;
