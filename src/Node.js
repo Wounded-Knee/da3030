@@ -56,15 +56,17 @@ class Node extends React.Component {
     }
 
     var content = null;
+    const node = this.getNode();
+    const author = this.props.annuitCœptis.getUserById(node.authorId);
 
     switch (this.props.viewMode) {
       case 0:
-        content = null;
       break;
       default:
         content = (
           <article>
-            <h1 className={ "node_type_" + this.getNode().type }>[ { this.getNode()._id } ]</h1>
+            <h1 className={ "node_type_" + node.type }>[ { node._id } ]</h1>
+            <p>By: { author.name }</p>
             <input
               type="text"
               onChange={ this.handleChange }

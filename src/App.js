@@ -1,4 +1,5 @@
 import React from 'react';
+import UserSelector from './UserSelector';
 import {
   BrowserRouter as Router,
   Route,
@@ -63,22 +64,24 @@ class App extends React.Component {
 
   render() {
     const nodes = this.getNodes();
+    const currentUser = this.annuitCœptis.getCurrentUser() || { name: 'Anonymous' };
     console.log('Rendering '+nodes.length+' nodes');
 
     return (
       <div className="App">
         <Router>
           <header className="App-header">
+            <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
               <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>
               { nodes.map( node => <li key={ node.id } className="node">
                 <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>{ node.data }</NavLink>
                 <button onClick={ this.deleteNode.bind(this, node) }>❌</button>
               </li> ) }
-              <li><button onClick={ this.addNodePrompt.bind(this) }>+</button></li>
+              <li><button onClick={ this.addNodePrompt.bind(this) }>💬</button></li>
             </ul>
             <span>
-              { this.annuitCœptis.getCurrentUser().name }
+              { currentUser.name }
               &nbsp;
               render #{ this.state.renderAgain }
             </span>

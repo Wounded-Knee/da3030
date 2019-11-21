@@ -12,6 +12,11 @@
   color: white;
 }
 
+.App-header select {
+  position: absolute;
+  right: 1em;
+}
+
 .App-header ul {
   list-style-type: none;
   padding: 0;
@@ -20,12 +25,14 @@
   display: inline-block;
   margin: 0 1em;
 }
-.App-header ul li.node button {
-  opacity: 0;
+.App-header ul li button {
   cursor: pointer;
   background: transparent;
   border: 0;
-  color: red;
+  font-size: 15px;
+}
+.App-header ul li.node button {
+  opacity: 0;
   font-size: 9px;
   margin-top: -13px;
   position: relative;
@@ -55,4 +62,9 @@
 
 .App-link {
   color: #09d3ac;
+}
+
+article {
+  max-width: 500px;
+  margin: auto;
 }

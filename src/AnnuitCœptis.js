@@ -73,6 +73,8 @@ class AnnuitCœptis {
 	}
 
 	setCurrentUser(userId) {
+		const oldUser = this.getCurrentUser();
+		const freshUser = this.getUserById(userId);
 		settings.userId = userId;
 		this.signalChange();
 	}
@@ -83,6 +85,10 @@ class AnnuitCœptis {
 
 	getUsers() {
 		return this.filter( node => node.type === 'user' );
+	}
+
+	getUserById(userId) {
+		return this.getUsers().find( node => node.id === userId );
 	}
 
 	filter(callback, startingPoint) {
@@ -101,7 +107,15 @@ class AnnuitCœptis {
 
 	add(text, parentNode) {
 		this.addNode(
-			this.createNode(null, text, { type: 'node' }),
+			this.createNode(
+				null,
+				text,
+				{
+					type: 'node',
+					text: text,
+					authorId: settings.userId,
+				}
+			),
 			parentNode || undefined
 		);
 	}
