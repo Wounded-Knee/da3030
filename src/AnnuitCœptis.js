@@ -1,4 +1,5 @@
 const tax = require('taxonomy').tax;
+const localStorageName = 'AnnuitCœptis';
 
 class AnnuitCœptis {
 	constructor(config) {
@@ -14,18 +15,49 @@ class AnnuitCœptis {
 			'find',
 			'remove',
 			'getTree',
+			'setTree',
 		].forEach(
 			methodName => this[methodName] = function() {
-				if (['update'].indexOf(methodName) !== -1) {
+				const rv = tax[methodName].apply(tax, arguments);
+				if ([
+					'update',
+					'addNode',
+					'remove',
+					'insert'
+				].indexOf(methodName) !== -1) {
 					this.config.onChange();
+					this.persist();
 				}
-				return tax[methodName].apply(tax, arguments);
+				return rv;
 			}
+		);
+
+		this.tax = tax;
+		this.load();
+	}
+
+	persist() {
+		localStorage.setItem(localStorageName, JSON.stringify(this.getTree()));
+	}
+
+	load() {
+		const storageData = localStorage.getItem(localStorageName);
+		if (storageData) this.setTree(JSON.parse(storageData));
+	}
+
+	add(text) {
+		this.addNode(
+			this.createNode(null, text)
 		);
 	}
 
+	delete(node) {
+		console.log('Removing ', node);
+		this.remove(node._id);
+	}
+
 	data() {
-		const data = tax.getTree().data;
+		const data = this.getTree().data;
 		console.log(data);
 		return data;
 	}

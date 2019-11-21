@@ -20,6 +20,24 @@
   display: inline-block;
   margin: 0 1em;
 }
+.App-header ul li.node button {
+  visibility: hidden;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  color: red;
+  font-size: 15px;
+  margin-top: -13px;
+  position: relative;
+  top: -7px;
+  left: -6px;
+}
+.App-header ul li.node:hover button {
+  visibility: visible;
+}
+.App-header ul li.node button:hover {
+  color: #ff0;
+}
 
 .App-header a {
   color: #fff;

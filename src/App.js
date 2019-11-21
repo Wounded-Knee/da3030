@@ -21,20 +21,13 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.annuitCœptis = new AnnuitCœptis({
-      onChange: this.triggerRender.bind(this),
-    });
-
-    this.annuitCœptis.addNode(
-      this.annuitCœptis.createNode(null, "Hysteria")
-    );
-    this.annuitCœptis.addNode(
-      this.annuitCœptis.createNode(null, "Love Bites")
-    );
-
     this.state = {
       renderAgain: 0,
     };
+
+    this.annuitCœptis = new AnnuitCœptis({
+      onChange: this.triggerRender.bind(this),
+    });
 
     window.da = {
       ...window.da,
@@ -50,8 +43,21 @@ class App extends React.Component {
     });
   }
 
+  addNodePrompt() {
+    const data = prompt('Node name?','');
+    if (data) {
+      this.annuitCœptis.add(data);
+    }
+  }
+
+  deleteNode(node, e) {
+    e.preventDefault();
+    this.annuitCœptis.delete(node);
+  }
+
   render() {
     const nodes = this.annuitCœptis.getTree().data;
+    console.log('Rendering '+nodes.length+' nodes');
 
     return (
       <div className="App">
@@ -59,9 +65,11 @@ class App extends React.Component {
           <header className="App-header">
             <ul>
               <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>
-              { nodes.map( node => <li key={ node.id }>
+              { nodes.map( node => <li key={ node.id } className="node">
                 <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>{ node.data }</NavLink>
+                <button onClick={ this.deleteNode.bind(this, node) }>x</button>
               </li> ) }
+              <li><button onClick={ this.addNodePrompt.bind(this) }>+</button></li>
             </ul>
             <span>Render #{ this.state.renderAgain }</span>
           </header>
