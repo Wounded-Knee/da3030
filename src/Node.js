@@ -56,24 +56,37 @@ class Node extends React.Component {
     }
 
     var content = null;
+    const { annuitCœptis } = this.props;
     const node = this.getNode();
-    const author = this.props.annuitCœptis.getUserById(node.authorId);
+    const author = annuitCœptis.getUserById(node.authorId);
+    const spectator = annuitCœptis.getCurrentUser();
+    const parentNode = annuitCœptis.getParentNode(node);
 
     switch (this.props.viewMode) {
       case 0:
       break;
       default:
         content = (
-          <article>
-            <h1 className={ "node_type_" + node.type }>[ { node._id } ]</h1>
-            <p>By: { author.name }</p>
-            <input
-              type="text"
-              onChange={ this.handleChange }
-              onBlur={ this.updateNode }
-              value={ this.state.data }
-            />
-          </article>
+          <>
+            { parentNode ? <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } /> : null }
+            <article>
+              { author === spectator ? (
+                <input
+                  type="text"
+                  onChange={ this.handleChange }
+                  onBlur={ this.updateNode }
+                  value={ this.state.data }
+                />
+              ) : (
+                <p>
+                  <span title={ node._id }>
+                    { author.name }:&nbsp;
+                  </span>
+                  { this.state.data }
+                </p>
+              )}
+            </article>
+          </>
         );
       break;
     }

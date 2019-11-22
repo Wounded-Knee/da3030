@@ -105,6 +105,10 @@ class AnnuitCœptis {
 		] : [];
 	}
 
+	getParentNode(childNode) {
+		return this.filter( node => node.children.find( child => child._id === childNode._id ) )[0];
+	}
+
 	add(text, parentNode) {
 		this.addNode(
 			this.createNode(
