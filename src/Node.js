@@ -11,6 +11,7 @@ class Node extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.updateNode = this.updateNode.bind(this);
+    this.promptAddChildNode = this.promptAddChildNode.bind(this);
     this.state = this.getFreshState();
   }
 
@@ -47,7 +48,20 @@ class Node extends React.Component {
   }
 
   getChildNodeList() {
+    return this.getNode().children;
+  }
 
+  addChildNode(text) {
+    const { annuitCœptis } = this.props;
+    const newNode = annuitCœptis.add(
+      text,
+      this.getNode()
+    );
+  }
+
+  promptAddChildNode() {
+    const text = prompt('Say what?', '');
+    if (text) this.addChildNode(text);
   }
 
   render() {
@@ -68,9 +82,9 @@ class Node extends React.Component {
       default:
         content = (
           <>
-            { parentNode ? <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } /> : null }
+            { parentNode ? <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } suppressReply /> : null }
             <article>
-              { author === spectator ? (
+              { author === spectator && false ? (
                 <input
                   type="text"
                   onChange={ this.handleChange }
@@ -78,12 +92,33 @@ class Node extends React.Component {
                   value={ this.state.data }
                 />
               ) : (
-                <p>
-                  <span title={ node._id }>
-                    { author.name }:&nbsp;
-                  </span>
-                  { this.state.data }
-                </p>
+                <>
+                  <p>
+                    <span title={ node._id }>
+                      { author.name }:&nbsp;
+                    </span>
+                    { this.state.data }
+                  </p>
+
+                  { this.props.suppressReply ? null :
+                    <p>
+                      { spectator.name }:&nbsp;
+                      <button onClick={ this.promptAddChildNode }>💬</button>
+                    </p>
+                  }
+
+                  { this.props.suppressReply ? null :
+                    <ul>
+                      {
+                        this.getChildNodeList().map(
+                          (node, index) => <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>
+                            <li key={ index }>{ annuitCœptis.getUserById(node.authorId).name }: { node.data }</li>
+                          </NavLink>
+                        )
+                      }
+                    </ul>
+                  }
+                </>
               )}
             </article>
           </>

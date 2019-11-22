@@ -110,17 +110,15 @@ class AnnuitCœptis {
 	}
 
 	add(text, parentNode) {
-		this.addNode(
-			this.createNode(
-				null,
-				text,
-				{
-					type: 'node',
-					text: text,
-					authorId: settings.userId,
-				}
-			),
-			parentNode || undefined
+		const newNodeData = {
+			"data": text,
+			"type": "node",
+			"text": text,
+			"authorId": settings.userId,
+		};
+		return this.addNode(
+			newNodeData,
+			parentNode || null,
 		);
 	}
 

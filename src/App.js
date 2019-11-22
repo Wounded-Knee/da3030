@@ -33,11 +33,40 @@ class App extends React.Component {
     window.da = {
       ...window.da,
       app: this,
+      annuitCœptis: this.annuitCœptis,
+      initialize: function() {
+        this.annuitCœptis.setTree({ data: [] }); // Erase everything
+
+        const addUser = username => {
+          const newUser = this.annuitCœptis.addUser(username);
+          console.log('Added user: ', newUser);
+          return newUser;
+        }
+
+        const speak = (words, conversation, author) => {
+          const lastWordsSpoken = conversation[conversation.length-1];
+          this.annuitCœptis.setCurrentUser(author.id);
+          conversation.push(
+            this.annuitCœptis.add(words, lastWordsSpoken)
+          );
+        }
+
+        // Setup users
+        const userCharlie = addUser('💀 Charlie');
+        const userBow = addUser('🌈 Magical Rainbow');
+        const userHeyoka = addUser('🙃 ɐʞoʎǝH');
+
+        // Set up conversations
+        const charlie = [], bow = [], heyoka = [];
+
+        // Populate nodes
+        speak("Hi", charlie, userCharlie);
+        speak("Hello, Charlie!", charlie, userBow);
+      }.bind(this),
     };
   }
 
   triggerRender() {
-    console.log('triggerRender');
     this.setState({
       ...this.state,
       renderAgain: this.state.renderAgain + 1,
@@ -65,7 +94,6 @@ class App extends React.Component {
   render() {
     const nodes = this.getNodes();
     const currentUser = this.annuitCœptis.getCurrentUser() || { name: 'Anonymous' };
-    console.log('Rendering '+nodes.length+' nodes');
 
     return (
       <div className="App">
