@@ -3,6 +3,7 @@ import {
   BrowserRouter as Router,
   NavLink,
 } from 'react-router-dom';
+import { Typeahead } from 'react-bootstrap-typeahead';
 const activeClassName = 'active';
 
 class Node extends React.Component {
@@ -16,7 +17,12 @@ class Node extends React.Component {
   }
 
   getFreshState() {
-    return { data: this.getNode().data, id: this.getNode()._id };
+    if (this.typeahead) this.typeahead.clear();
+    return {
+      data: this.getNode().data,
+      id: this.getNode()._id,
+      inputString: '',
+    };
   }
 
   getUrl() {
@@ -52,16 +58,48 @@ class Node extends React.Component {
   }
 
   addChildNode(text) {
+    if (text === undefined) return false;
+    console.log('addChildNode ', text);
     const { annuitCœptis } = this.props;
     const newNode = annuitCœptis.add(
       text,
       this.getNode()
     );
+    return newNode;
   }
 
   promptAddChildNode() {
     const text = prompt('Say what?', '');
     if (text) this.addChildNode(text);
+  }
+
+  submitForm() {
+    const { annuitCœptis, redirect } = this.props;
+    const { inputString } = this.state;
+    const selectedOption = annuitCœptis.filter( node => node.type === 'node' && node.text === inputString );
+    var _id;
+
+    if (!selectedOption.length) {
+      _id = this.addChildNode(inputString)._id;
+    } else {
+      [{ _id }] = selectedOption;
+    }
+    redirect(_id);
+  }
+
+  onChange(selected) {
+    var inputString;
+    switch(typeof selected) {
+      case 'object':
+        if (selected.length) {
+          [ inputString ] = selected;
+        }
+      break;
+      case 'string':
+        inputString = selected;
+      break;
+    }
+    this.setState({inputString: inputString});
   }
 
   render() {
@@ -70,7 +108,7 @@ class Node extends React.Component {
     }
 
     var content = null;
-    const { annuitCœptis } = this.props;
+    const { annuitCœptis, asAncestor } = this.props;
     const node = this.getNode();
     const author = annuitCœptis.getUserById(node.authorId);
     const spectator = annuitCœptis.getCurrentUser();
@@ -82,7 +120,11 @@ class Node extends React.Component {
       default:
         content = (
           <>
-            { parentNode ? <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } suppressReply /> : null }
+            { parentNode ? (
+              <NavLink to={`/node/${parentNode._id}`} exact activeClassName={ activeClassName }>
+                <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
+              </NavLink>
+            ) : null }
             <article>
               { author === spectator && false ? (
                 <input
@@ -100,14 +142,26 @@ class Node extends React.Component {
                     { this.state.data }
                   </p>
 
-                  { this.props.suppressReply ? null :
-                    <p>
-                      { spectator.name }:&nbsp;
-                      <button onClick={ this.promptAddChildNode }>💬</button>
-                    </p>
+                  { this.props.asAncestor || author === spectator ? null :
+                    <Typeahead
+                      id="nope"
+                      multiple={ false }
+                      emptyLabel={ false }
+                      onKeyDown={ e => {
+                        if (e.keyCode === 13) {
+                          console.log('keyDown && submit ', e.keyCode);
+                          this.submitForm();
+                        }
+                      } }
+                      labelKey="text"
+                      ref={(typeahead) => this.typeahead = typeahead}
+                      options={ this.getChildNodeList().map( node => node.text ) }
+                      onInputChange={ this.onChange.bind(this) }
+                      onChange={ this.onChange.bind(this) }
+                    />
                   }
 
-                  { this.props.suppressReply ? null :
+                  { !this.props.asAncestor && author === spectator ?
                     <ul>
                       {
                         this.getChildNodeList().map(
@@ -117,7 +171,7 @@ class Node extends React.Component {
                         )
                       }
                     </ul>
-                  }
+                  : null }
                 </>
               )}
             </article>
@@ -126,11 +180,7 @@ class Node extends React.Component {
       break;
     }
 
-    return (
-      <Router>
-        { content }
-      </Router>
-    );
+    return content;
   }
 
   shouldComponentUpdate(nextProps) {

@@ -66,6 +66,13 @@ class App extends React.Component {
     };
   }
 
+  redirect(id) {
+    this.setState({
+      ...this.state,
+      redirectId: id
+    });
+  }
+
   triggerRender() {
     this.setState({
       ...this.state,
@@ -98,6 +105,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <Router>
+          { this.state.redirectId ? <Redirect to={ `/node/${this.state.redirectId}` } /> : null }
           <header className="App-header">
             <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
@@ -122,6 +130,7 @@ class App extends React.Component {
                 render={
                   props => <Node
                     {...props}
+                    redirect={ this.redirect.bind(this) }
                     annuitCœptis={ this.annuitCœptis }
                   />
                 }
