@@ -1,7 +1,25 @@
+/* Boss Screen
+****************/
+html {
+  opacity: 0.05;
+}
+html:hover {
+  opacity: 0.6;
+}
+
 .App {
   text-align: center;
 }
 
+/* Z-Index
+***************/
+.App-header #money,
+.App-header {
+  z-index: 1;
+}
+
+/* HEADER
+******************/
 .App-header {
   background-color: #282c34;
   display: flex;
@@ -12,46 +30,8 @@
   color: white;
 }
 
-.App-header #money,
-.App-header #moneyMenu {
-  position: absolute;
-}
-
-.App-header #moneyMenu {
-  display: none;
-  left: 0;
-  background: #282c34;
-  color: #fff;
-  height: 300px;
-  width: 200px;
-  z-index: -1;
-  margin-top: 21em;
-  padding-top: 1em;
-}
-.App-header #moneyMenu.open {
-  display: block;
-}
-.App-header #moneyMenu li {
-  cursor: pointer;
-  background: #000;
-  display: block;
-}
-
-.App-header #money {
-  left: 0;
-  top: -19px;
-  transform: rotate(-25deg);
-  background: none;
-  border: 0;
-  font-size: 78px;
-  text-shadow: 2px 3px 9px black
-}
-
-.App-header select {
-  position: absolute;
-  right: 1em;
-}
-
+/* HEADER -> Main Nav
+************************/
 .App-header ul {
   list-style-type: none;
   padding: 0;
@@ -59,6 +39,13 @@
 .App-header ul li {
   display: inline-block;
   margin: 0 1em;
+}
+.App-header ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+.App-header ul li a.active {
+  font-weight: bold;
 }
 .App-header ul li button {
   cursor: pointer;
@@ -82,17 +69,53 @@
   opacity: 1;
   color: #ff0;
 }
-
-.App-header ul li a {
-  color: #fff;
-  text-decoration: none;
-}
-.App-header ul li a.active {
-  font-weight: bold;
-}
 .App-header span {
   font-size: 0.5em;
   margin: -1em 0 1em;
+}
+
+/* HEADER -> Money Menu
+************************/
+.App-header #money,
+.App-header #moneyMenu {
+  position: absolute;
+}
+.App-header #moneyMenu {
+  display: none;
+  left: 0;
+  background: #282c34;
+  color: #fff;
+  height: 300px;
+  width: 200px;
+  margin-top: 21em;
+  padding-top: 1em;
+}
+.App-header #moneyMenu.open {
+  display: block;
+}
+.App-header #moneyMenu li {
+  cursor: pointer;
+  display: block;
+}
+.App-header #moneyMenu li:hover {
+  background: #000;
+}  
+.App-header #money {
+  left: 0;
+  top: 43px;
+  transform: rotate(-25deg);
+  background: none;
+  border: 0;
+  font-size: 78px;
+  text-shadow: 2px 3px 9px black;
+  line-height: 0em;
+}
+
+/* HEADER -> User Selector
+************************/
+.App-header select {
+  position: absolute;
+  right: 1em;
 }
 
 .App-link {
