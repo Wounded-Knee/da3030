@@ -12,6 +12,41 @@
   color: white;
 }
 
+.App-header #money,
+.App-header #moneyMenu {
+  position: absolute;
+}
+
+.App-header #moneyMenu {
+  display: none;
+  left: 0;
+  background: #282c34;
+  color: #fff;
+  height: 300px;
+  width: 200px;
+  z-index: -1;
+  margin-top: 21em;
+  padding-top: 1em;
+}
+.App-header #moneyMenu.open {
+  display: block;
+}
+.App-header #moneyMenu li {
+  cursor: pointer;
+  background: #000;
+  display: block;
+}
+
+.App-header #money {
+  left: 0;
+  top: -19px;
+  transform: rotate(-25deg);
+  background: none;
+  border: 0;
+  font-size: 78px;
+  text-shadow: 2px 3px 9px black
+}
+
 .App-header select {
   position: absolute;
   right: 1em;
@@ -67,4 +102,24 @@
 article {
   max-width: 500px;
   margin: auto;
+}
+
+.speech-bubble {
+  position: relative;
+  background: #bb8da0;
+  border-radius: .4em;
+}
+
+.speech-bubble:after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-left-color: #bb8da0;
+  border-right: 0;
+  margin-top: -10px;
+  margin-right: -10px;
 }

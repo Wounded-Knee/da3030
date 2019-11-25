@@ -113,6 +113,7 @@ class Node extends React.Component {
     const author = annuitCœptis.getUserById(node.authorId);
     const spectator = annuitCœptis.getCurrentUser();
     const parentNode = annuitCœptis.getParentNode(node);
+    const authorMode = spectator === author;
 
     switch (this.props.viewMode) {
       case 0:
@@ -126,29 +127,21 @@ class Node extends React.Component {
               </NavLink>
             ) : null }
             <article>
-              { author === spectator && false ? (
-                <input
-                  type="text"
-                  onChange={ this.handleChange }
-                  onBlur={ this.updateNode }
-                  value={ this.state.data }
-                />
-              ) : (
-                <>
-                  <p>
-                    <span title={ node._id }>
-                      { author.name }:&nbsp;
-                    </span>
-                    { this.state.data }
-                  </p>
+                <p>
+                  <span title={ node._id }>
+                    { author.name }:&nbsp;
+                  </span>
+                  { this.state.data }
+                </p>
 
-                  { this.props.asAncestor || author === spectator ? null :
+                { !asAncestor ?
+                  <>
                     <Typeahead
                       id="nope"
-                      multiple={ false }
+                      multiple={ author === spectator }
                       emptyLabel={ false }
                       onKeyDown={ e => {
-                        if (e.keyCode === 13) {
+                        if ( author !== spectator && e.keyCode === 13 ) {
                           console.log('keyDown && submit ', e.keyCode);
                           this.submitForm();
                         }
@@ -159,21 +152,20 @@ class Node extends React.Component {
                       onInputChange={ this.onChange.bind(this) }
                       onChange={ this.onChange.bind(this) }
                     />
-                  }
 
-                  { !this.props.asAncestor && author === spectator ?
-                    <ul>
-                      {
-                        this.getChildNodeList().map(
-                          (node, index) => <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>
-                            <li key={ index }>{ annuitCœptis.getUserById(node.authorId).name }: { node.data }</li>
-                          </NavLink>
-                        )
-                      }
-                    </ul>
-                  : null }
-                </>
-              )}
+                    { authorMode ?
+                      <ul>
+                        {
+                          this.getChildNodeList().map(
+                            (node, index) => <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>
+                              <li key={ index }>{ annuitCœptis.getUserById(node.authorId).name }: { node.data }</li>
+                            </NavLink>
+                          )
+                        }
+                      </ul>
+                    : null }
+                  </>
+                : null }
             </article>
           </>
         );

@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 import Node from './Node';
 import AnnuitCœptis from './AnnuitCœptis';
+import CheatMenu from './CheatMenu';
 import './App.css';
 
 const activeClassName = 'active';
@@ -107,6 +108,7 @@ class App extends React.Component {
         <Router>
           { this.state.redirectId ? <Redirect to={ `/node/${this.state.redirectId}` } /> : null }
           <header className="App-header">
+            <CheatMenu da={ window.da } annuitCœptis={ this.annuitCœptis } />
             <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
               <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>
