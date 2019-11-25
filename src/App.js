@@ -10,14 +10,10 @@ import {
 import Node from './Node';
 import AnnuitCœptis from './AnnuitCœptis';
 import CheatMenu from './CheatMenu';
+import Home from './Home';
 import './App.css';
 
 const activeClassName = 'active';
-const HomeComponent = () => {
-  return (
-    <h1>Home</h1>
-  );
-};
 
 class App extends React.Component {
   constructor(props) {
@@ -88,19 +84,7 @@ class App extends React.Component {
     }
   }
 
-  deleteNode(node, e) {
-    e.preventDefault();
-    this.annuitCœptis.delete(node);
-  }
-
-  getNodes() {
-    return this.annuitCœptis.getTree().data.filter(
-      node => node.type === 'node'
-    );
-  }
-
   render() {
-    const nodes = this.getNodes();
     const currentUser = this.annuitCœptis.getCurrentUser() || { name: 'Anonymous' };
 
     return (
@@ -112,21 +96,27 @@ class App extends React.Component {
             <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
               <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>
-              { nodes.map( node => <li key={ node.id } className="node">
-                <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>{ node.data }</NavLink>
-                <button onClick={ this.deleteNode.bind(this, node) }>❌</button>
-              </li> ) }
               <li><button onClick={ this.addNodePrompt.bind(this) }>💬</button></li>
             </ul>
             <span>
-              { currentUser.name }
-              &nbsp;
               render #{ this.state.renderAgain }
             </span>
           </header>
           <main>
             <Switch>
-              <Route path="/" exact component={ HomeComponent } />
+
+              <Route
+                path="/"
+                exact
+                render={
+                  props => <Home
+                    {...props}
+                    redirect={ this.redirect.bind(this) }
+                    annuitCœptis={ this.annuitCœptis }
+                  />
+                }
+              />
+
               <Route
                 path="/node/:nodeId"
                 render={
@@ -137,7 +127,9 @@ class App extends React.Component {
                   />
                 }
               />
+
               <Redirect to="/" />
+
             </Switch>
           </main>
         </Router>
