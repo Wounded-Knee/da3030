@@ -1,5 +1,6 @@
 import React from 'react';
 import UserSelector from './UserSelector';
+import Profile from './Profile';
 import {
   BrowserRouter as Router,
   Route,
@@ -90,24 +91,29 @@ class App extends React.Component {
     }
   }
 
+  setDocumentTitle(title) {
+    document.title = title;
+  }
+
   render() {
     const currentUser = this.annuitCœptis.getCurrentUser() || { name: 'Anonymous' };
 
     return (
       <div className="App">
         <Router>
+
           { this.state.redirectId ? <Redirect to={ `/node/${this.state.redirectId}` } /> : null }
+
           <header className="App-header">
             <CheatMenu da={ window.da } redirect={ this.redirect.bind(this) } annuitCœptis={ this.annuitCœptis } />
             <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
               <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>
+              <li><NavLink to="/profile" exact activeClassName={ activeClassName }>{ currentUser.name }</NavLink></li>
               <li><button onClick={ this.addNodePrompt.bind(this) }>💬</button></li>
             </ul>
-            <span>
-              render #{ this.state.renderAgain }
-            </span>
           </header>
+
           <main>
             <Switch>
 
@@ -124,10 +130,22 @@ class App extends React.Component {
               />
 
               <Route
+                path="/profile"
+                exact
+                render={
+                  props => <Profile
+                    {...props}
+                    annuitCœptis={ this.annuitCœptis }
+                  />
+                }
+              />
+
+              <Route
                 path="/node/:nodeId"
                 render={
                   props => <Node
                     {...props}
+                    setDocumentTitle={ this.setDocumentTitle.bind(this) }
                     redirect={ this.redirect.bind(this) }
                     annuitCœptis={ this.annuitCœptis }
                   />
@@ -138,6 +156,12 @@ class App extends React.Component {
 
             </Switch>
           </main>
+
+          <footer>
+            <small>
+              render #{ this.state.renderAgain }
+            </small>
+          </footer>
         </Router>
       </div>
     );

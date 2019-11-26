@@ -22,17 +22,20 @@ class Home extends React.Component {
     };
 
     return (
-      <ul className="home">
-        {
-          nodes.map(
-            node =>
-              <li key={ node.id } className="node">
-                <Link to={`/node/${node._id}`} exact>{ node.data }</Link>
-                <button onClick={ this.deleteNode.bind(this, node) }>❌</button>
-              </li>
-          )
-        }
-      </ul>
+      <>
+        <input type="text" placeholder="Speak" />
+        <ul className="home">
+          {
+            nodes.map(
+              node =>
+                <li key={ node.id } className="node">
+                  <Link to={`/node/${node._id}`} exact>{ node.data }</Link>
+                  <button onClick={ this.deleteNode.bind(this, node) }>❌</button>
+                </li>
+            )
+          }
+        </ul>
+      </>
     );
   }
 };

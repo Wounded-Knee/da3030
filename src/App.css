@@ -13,14 +13,15 @@ html:hover {
 
 /* Z-Index
 ***************/
-.App-header #money,
-.App-header {
+header #money,
+header {
   z-index: 1;
 }
 
-/* HEADER
+/* HEADER / FOOTER
 ******************/
-.App-header {
+header,
+footer {
   background-color: #282c34;
   display: flex;
   flex-direction: column;
@@ -30,38 +31,42 @@ html:hover {
   color: white;
 }
 
+/* HEADER
+******************/
+header {
+}
+
 /* HEADER -> Nav Menu
 ***********************/
-.App-header ul {
+header ul {
   list-style-type: none;
   padding: 0;
 }
-.App-header ul li {
+header ul li {
   display: inline-block;
   margin: 0 1em;
 }
-.App-header ul li a {
+header ul li a {
   color: #fff;
   text-decoration: none;
 }
-.App-header ul li a.active {
+header ul li a.active {
   font-weight: bold;
 }
-.App-header ul li button {
+header ul li button {
   cursor: pointer;
   background: transparent;
   border: 0;
   font-size: 15px;
 }
 
-
 /* HEADER -> Money Menu
 ************************/
-.App-header #money,
-.App-header #moneyMenu {
+header #money,
+header #moneyMenu {
   position: absolute;
 }
-.App-header #money {
+header #money {
   left: 0;
   top: 43px;
   transform: rotate(-25deg);
@@ -71,7 +76,7 @@ html:hover {
   text-shadow: 2px 3px 9px black;
   line-height: 0em;
 }
-.App-header #moneyMenu {
+header #moneyMenu {
   display: none;
   left: 0;
   background: #282c34;
@@ -81,31 +86,31 @@ html:hover {
   margin-top: 20em;
   padding-top: 1em;
 }
-.App-header #moneyMenu.open {
+header #moneyMenu.open {
   display: block;
 }
-.App-header #moneyMenu li {
+header #moneyMenu li {
   cursor: pointer;
   display: block;
 }
-.App-header #moneyMenu li:hover {
+header #moneyMenu li:hover {
   background: #000;
 }
-.App-header #moneyMenu .logo {
+header #moneyMenu .logo {
   font-size: 13em;
 }
-.App-header #moneyMenu .logo .d {
+header #moneyMenu .logo .d {
   color: #336699;
   font-size: 0.3em;
   font-weight: bold;
 }
-.App-header #moneyMenu .logo .three {
+header #moneyMenu .logo .three {
   color: #fff18a;
 }
 
 /* HEADER -> User Selector
 ************************/
-.App-header select {
+header select {
   position: absolute;
   right: 1em;
 }
@@ -252,6 +257,16 @@ article .author.speech-bubble:before {
 
 article .react-tabs {
   clear: both;
+}
+
+/* FOOTER
+******************/
+footer {
+  margin-top: 3em;
+}
+
+footer small {
+  font-size: 0.5em;
 }
 
 /* Clearfix

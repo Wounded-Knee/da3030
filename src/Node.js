@@ -113,10 +113,10 @@ class Node extends React.Component {
   render() {
     if (this.state.data === undefined) {
       this.setState(this.getFreshState());
+      return null;
     }
 
-    var content = null;
-    const { annuitCœptis, asAncestor } = this.props;
+    const { annuitCœptis, asAncestor, setDocumentTitle, noAncestors } = this.props;
     const node = this.getNode();
     const author = annuitCœptis.getUserById(node.authorId);
     const spectator = annuitCœptis.getCurrentUser();
@@ -128,38 +128,35 @@ class Node extends React.Component {
       authorMode ? 'author' : '',
       "author_"+authorClass,
     ].join(' ');
+    if (setDocumentTitle) setDocumentTitle( author.name + ': ' + node.text );
 
-    switch (this.props.viewMode) {
-      case 0:
-      break;
-      default:
-        content = (
-          <>
-            { parentNode ? (
-              <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
-            ) : null }
-            <article>
-              <p className={ classNames }>
-                {
-                  asAncestor
-                    ?
-                      <Link to={`/node/${node._id}`} exact>
-                        { this.state.data }
-                      </Link>
-                    : this.state.data
-                }
-              </p>
+    return (
+      <>
+        { parentNode && !noAncestors ? (
+          <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
+        ) : null }
+        <article>
 
-              { !asAncestor ?
-                <Cloud node={ node } annuitCœptis={ annuitCœptis } authorMode />
-              : null }
-            </article>
-          </>
-        );
-      break;
-    }
+          {/* Speech Bubble */}
+          <p className={ classNames }>
+            {
+              asAncestor
+                ?
+                  <Link to={`/node/${node._id}`} exact>
+                    { this.state.data }
+                  </Link>
+                : this.state.data
+            }
+          </p>
 
-    return content;
+          {/* Cloud */}
+          { !asAncestor ?
+            <Cloud node={ node } annuitCœptis={ annuitCœptis } authorMode />
+          : null }
+
+        </article>
+      </>
+    );
   }
 
   shouldComponentUpdate(nextProps) {
