@@ -4,7 +4,8 @@ const menu = {
 	'Initialize': {
 		summary: 'Wipe all data clean and insert fresh testing data.',
 		execute: (cheatMenu) => {
-			const { initialize } = cheatMenu.props.da;
+			const { da, redirect } = cheatMenu.props;
+			const { initialize } = da;
 			if (window.confirm('Are you sure?')) {
 				initialize();
 				return true;

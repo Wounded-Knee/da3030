@@ -1,9 +1,17 @@
 import React from 'react';
+import Cloud from './Cloud';
 import {
   BrowserRouter as Router,
-  NavLink,
+  Link,
 } from 'react-router-dom';
 import { Typeahead } from 'react-bootstrap-typeahead';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import "react-tabs/style/react-tabs.css";
+const NODE_TYPES = {
+  NODE_TYPE_USER: 'user',
+  NODE_TYPE_RESPONSE_GROUP: 'responseGroup',
+  NODE_TYPE_NODE: 'node',
+};
 const activeClassName = 'active';
 
 class Node extends React.Component {
@@ -49,19 +57,19 @@ class Node extends React.Component {
     }
   }
 
-  getChildNodes() {
+  getChildNodeList() {
     return this.getNode().children;
   }
 
-  getChildNodeList() {
-    return this.getNode().children;
+  getResponseGroups() {
+    //return this.annuitCœptis.
   }
 
   addChildNode(text) {
     if (text === undefined) return false;
     console.log('addChildNode ', text);
     const { annuitCœptis } = this.props;
-    const newNode = annuitCœptis.add(
+    const newNode = annuitCœptis.addNewNode(
       text,
       this.getNode()
     );
@@ -114,6 +122,12 @@ class Node extends React.Component {
     const spectator = annuitCœptis.getCurrentUser();
     const parentNode = annuitCœptis.getParentNode(node);
     const authorMode = spectator === author;
+    const [authorClass] = author.name;
+    const classNames = [
+      "speech-bubble",
+      authorMode ? 'author' : '',
+      "author_"+authorClass,
+    ].join(' ');
 
     switch (this.props.viewMode) {
       case 0:
@@ -122,50 +136,23 @@ class Node extends React.Component {
         content = (
           <>
             { parentNode ? (
-              <NavLink to={`/node/${parentNode._id}`} exact activeClassName={ activeClassName }>
-                <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
-              </NavLink>
+              <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
             ) : null }
             <article>
-                <p>
-                  <span title={ node._id }>
-                    { author.name }:&nbsp;
-                  </span>
-                  { this.state.data }
-                </p>
+              <p className={ classNames }>
+                {
+                  asAncestor
+                    ?
+                      <Link to={`/node/${node._id}`} exact>
+                        { this.state.data }
+                      </Link>
+                    : this.state.data
+                }
+              </p>
 
-                { !asAncestor ?
-                  <>
-                    <Typeahead
-                      id="nope"
-                      multiple={ author === spectator }
-                      emptyLabel={ false }
-                      onKeyDown={ e => {
-                        if ( author !== spectator && e.keyCode === 13 ) {
-                          console.log('keyDown && submit ', e.keyCode);
-                          this.submitForm();
-                        }
-                      } }
-                      labelKey="text"
-                      ref={(typeahead) => this.typeahead = typeahead}
-                      options={ this.getChildNodeList().map( node => node.text ) }
-                      onInputChange={ this.onChange.bind(this) }
-                      onChange={ this.onChange.bind(this) }
-                    />
-
-                    { authorMode ?
-                      <ul>
-                        {
-                          this.getChildNodeList().map(
-                            (node, index) => <NavLink to={`/node/${node._id}`} exact activeClassName={ activeClassName }>
-                              <li key={ index }>{ annuitCœptis.getUserById(node.authorId).name }: { node.data }</li>
-                            </NavLink>
-                          )
-                        }
-                      </ul>
-                    : null }
-                  </>
-                : null }
+              { !asAncestor ?
+                <Cloud node={ node } annuitCœptis={ annuitCœptis } authorMode />
+              : null }
             </article>
           </>
         );
@@ -183,4 +170,7 @@ class Node extends React.Component {
   }
 };
 
-export default Node;
+export {
+  NODE_TYPES,
+  Node as default
+};

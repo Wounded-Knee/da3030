@@ -30,8 +30,8 @@ html:hover {
   color: white;
 }
 
-/* HEADER -> Main Nav
-************************/
+/* HEADER -> Nav Menu
+***********************/
 .App-header ul {
   list-style-type: none;
   padding: 0;
@@ -53,26 +53,7 @@ html:hover {
   border: 0;
   font-size: 15px;
 }
-.App-header ul li.node button {
-  opacity: 0;
-  font-size: 9px;
-  margin-top: -13px;
-  position: relative;
-  top: -7px;
-  left: -6px;
-}
-.App-header ul li.node:hover button {
-  opacity: 0.5;
-  visibility: visible;
-}
-.App-header ul li.node button:hover {
-  opacity: 1;
-  color: #ff0;
-}
-.App-header span {
-  font-size: 0.5em;
-  margin: -1em 0 1em;
-}
+
 
 /* HEADER -> Money Menu
 ************************/
@@ -129,31 +110,154 @@ html:hover {
   right: 1em;
 }
 
+/* HOME
+************/
+main ul.home {
+  list-style-type: none;
+  padding: 0;
+}
+main ul.home li {
+  display: inline-block;
+  margin: 0 1em;
+}
+main ul.home li a {
+  color: #000;
+  text-decoration: none;
+}
+main ul.home li a.active {
+  font-weight: bold;
+}
+main ul.home li button {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  font-size: 15px;
+}
+main ul.home li.node button {
+  opacity: 0;
+  font-size: 9px;
+  margin-top: -13px;
+  position: relative;
+  top: -7px;
+  left: -6px;
+}
+main ul.home li.node:hover button {
+  opacity: 0.5;
+  visibility: visible;
+}
+main ul.home li.node button:hover {
+  opacity: 1;
+  color: #ff0;
+}
+main span {
+  font-size: 0.5em;
+  margin: -1em 0 1em;
+}
+
+
+
+
 .App-link {
   color: #09d3ac;
 }
 
+/* Article
+************/
 article {
   max-width: 500px;
   margin: auto;
 }
 
-.speech-bubble {
+/* Article -> Speech Bubble
+***************************/
+article .speech-bubble {
   position: relative;
-  background: #bb8da0;
+  margin: 1em;
+  padding: 1em;
   border-radius: .4em;
+  clear: both;
 }
 
-.speech-bubble:after {
+article .speech-bubble a {
+  color: #000;
+  text-decoration: none;
+}
+
+article .speech-bubble:after {
   content: '';
   position: absolute;
-  right: 0;
   top: 50%;
   width: 0;
   height: 0;
   border: 10px solid transparent;
-  border-left-color: #bb8da0;
-  border-right: 0;
   margin-top: -10px;
+}
+
+article .speech-bubble:before {
+  position: absolute;
+  font-size: 3em;
+  top: 0;
+}
+
+/* Article -> Temporary Authorship Insignia
+********************************************/
+article .speech-bubble.author_🌈:before {
+  content: '🌈';
+}
+article .speech-bubble.author_🙃:before {
+  content: '🙃';
+}
+article .speech-bubble.author_💀:before {
+  content: '💀';
+}
+
+/* Article -> Speech Bubble: Left
+*********************************/
+article :not(.author).speech-bubble {
+  background: #fffdb8;
+  text-align: left;
+  float: left;
+}
+
+article :not(.author).speech-bubble:after {
+  left: 0;
+  border-right-color: #fffdb8;
+  border-left: 0;
+  margin-left: -10px;
+}
+
+article :not(.author).speech-bubble:before {
+  left: -1.5em;
+}
+
+
+/* Article -> Speech Bubble: Right
+*********************************/
+article .author.speech-bubble {
+  background: #62bcff;
+  text-align: right;
+  float: right;
+}
+
+article .author.speech-bubble:after {
+  right: 0;
+  border-left-color: #62bcff;
+  border-right: 0;
   margin-right: -10px;
+}
+
+article .author.speech-bubble:before {
+  right: -1.5em;
+}
+
+article .react-tabs {
+  clear: both;
+}
+
+/* Clearfix
+************/
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
 }

@@ -41,10 +41,13 @@ class App extends React.Component {
         }
 
         const speak = (words, conversation, author) => {
+          var newWordsSpoken;
           const lastWordsSpoken = conversation[conversation.length-1];
           this.annuitCœptis.setCurrentUser(author.id);
+          newWordsSpoken = this.annuitCœptis.addNewNode(words);
+          if (lastWordsSpoken) newWordsSpoken = this.annuitCœptis.move(newWordsSpoken, lastWordsSpoken);
           conversation.push(
-            this.annuitCœptis.add(words, lastWordsSpoken)
+            newWordsSpoken
           );
         }
 
@@ -59,6 +62,9 @@ class App extends React.Component {
         // Populate nodes
         speak("Hi", charlie, userCharlie);
         speak("Hello, Charlie!", charlie, userBow);
+
+        speak("Crazy Things in Bed Tonight", heyoka, userHeyoka);
+        speak("yeah... I am excited for that, and I'm sorry but I told Charlie that you were rambling during poker game tonight he might have a worse opinion of you now, you better tell him your version of what happend", heyoka, userBow);
       }.bind(this),
     };
   }
@@ -80,7 +86,7 @@ class App extends React.Component {
   addNodePrompt() {
     const data = prompt('Node name?','');
     if (data) {
-      this.annuitCœptis.add(data);
+      this.annuitCœptis.addNewNode(data);
     }
   }
 
@@ -92,7 +98,7 @@ class App extends React.Component {
         <Router>
           { this.state.redirectId ? <Redirect to={ `/node/${this.state.redirectId}` } /> : null }
           <header className="App-header">
-            <CheatMenu da={ window.da } annuitCœptis={ this.annuitCœptis } />
+            <CheatMenu da={ window.da } redirect={ this.redirect.bind(this) } annuitCœptis={ this.annuitCœptis } />
             <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
               <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>

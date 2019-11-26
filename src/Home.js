@@ -1,4 +1,5 @@
 import React from 'react';
+import { NODE_TYPES } from './Node';
 import {
   Link,
 } from 'react-router-dom';
@@ -13,11 +14,15 @@ class Home extends React.Component {
   render() {
     const { annuitCœptis } = this.props;
     const nodes = annuitCœptis.getTree().data.filter(
-      node => node.type === 'node'
+      node => node.type === NODE_TYPES.NODE_TYPE_NODE
     );
+    window.da = {
+      ...window.da,
+      homeNodes: nodes,
+    };
 
     return (
-      <ul>
+      <ul className="home">
         {
           nodes.map(
             node =>
