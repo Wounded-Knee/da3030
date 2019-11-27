@@ -1,5 +1,6 @@
 import React from 'react';
 import Cloud from './Cloud';
+import Exposure from './Exposure';
 import {
   BrowserRouter as Router,
   Link,
@@ -30,6 +31,7 @@ class Node extends React.Component {
       data: this.getNode().data,
       id: this.getNode()._id,
       inputString: '',
+      exposure: this.getNode().exposure,
     };
   }
 
@@ -47,6 +49,13 @@ class Node extends React.Component {
     this.setData(e.target.value);
   }
 
+  /**
+   * For the moment, this only updates the data (aka "text") of the node.
+   * The underlying taxonomy library does not permit update() to
+   * modify any of the other attributes of the node. So, I will have to
+   * hack a workaround into annuitCœptis to accomodate changes to a node's
+   * other attributes such as Exposure Level, etc.
+   **/
   updateNode(e) {
     this.props.annuitCœptis.update(this.getNode()._id, this.state.data);
   }
@@ -110,6 +119,13 @@ class Node extends React.Component {
     this.setState({inputString: inputString});
   }
 
+  onChangeExposure(level) {
+    this.setState({
+      exposure: level,
+    });
+    console.log('Exposure level: ', level);
+  }
+
   render() {
     if (this.state.data === undefined) {
       this.setState(this.getFreshState());
@@ -130,6 +146,11 @@ class Node extends React.Component {
     ].join(' ');
     if (setDocumentTitle) setDocumentTitle( author.name + ': ' + node.text );
 
+    window.da = {
+      ...window.da,
+      node: node,
+    };
+
     return (
       <>
         { parentNode && !noAncestors ? (
@@ -147,6 +168,7 @@ class Node extends React.Component {
                   </Link>
                 : this.state.data
             }
+            <Exposure level={ node.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
           </p>
 
           {/* Cloud */}

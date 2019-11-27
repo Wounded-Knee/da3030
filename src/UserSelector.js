@@ -12,7 +12,7 @@ const UserSelector = ({ annuitCœptis }) => {
 	return (
 		<select onChange={ onChange }>
 			{ users.map( (user, index) => (
-				<option key={ index } value={ user.id } selected={ user.id === currentUser.id }>{ user.name }</option>
+				<option key={ index } value={ user.id } selected={ user.id === currentUser.id }>{ user.name.substring(0,2) }</option>
 			))}
 		</select>
 	);

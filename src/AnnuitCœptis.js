@@ -17,7 +17,10 @@ const taxMethodsCausingChanges = [
 	'addNode',
 	'insert'
 ];
-var settings = {};
+var settings = {
+	userId: undefined,
+	bossMode: false,
+};
 
 class AnnuitCœptis {
 	constructor(config) {
@@ -46,8 +49,8 @@ class AnnuitCœptis {
 	}
 
 	signalChange() {
-		this.config.onChange();
 		this.persist();
+		this.config.onChange();
 	}
 
 	persist() {
@@ -61,6 +64,8 @@ class AnnuitCœptis {
 
 		if (storageData) this.setTree(JSON.parse(storageData));
 		if (storageSettings) settings = JSON.parse(storageSettings);
+
+		document.getElementsByTagName('html')[0].className = settings.bossMode ? 'bossMode' : '';
 	}
 
 	/**
@@ -81,6 +86,11 @@ class AnnuitCœptis {
 		const freshUser = this.getUserById(userId);
 		settings.userId = userId;
 		this.signalChange();
+	}
+
+	toggleBossMode() {
+		settings.bossMode = !settings.bossMode;
+		setTimeout(this.signalChange.bind(this), 500);
 	}
 
 	getCurrentUser() {

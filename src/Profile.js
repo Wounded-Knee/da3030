@@ -16,11 +16,12 @@ class Profile extends React.Component {
 
     return (
       <div id="profile" class="clearfix">
-        <h2>{ user.name }</h2>
-        <h3>Nodes</h3>
+
+        <h2>Your Nodes</h2>
         { userNodes.map( node => (
           <Node match={{ params: { nodeId: node._id }}} annuitCœptis={ annuitCœptis } asAncestor noAncestors />
         ))}
+
       </div>
     );
   }

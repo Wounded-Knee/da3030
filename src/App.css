@@ -1,9 +1,10 @@
 /* Boss Screen
 ****************/
-html {
+html.bossMode {
   opacity: 0.05;
+  filter: grayscale(100%);
 }
-html:hover {
+html.bossMode:hover {
   opacity: 1;
 }
 
