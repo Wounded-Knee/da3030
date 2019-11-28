@@ -56,6 +56,9 @@ class App extends React.Component {
         const userCharlie = addUser('💀 Charlie');
         const userBow = addUser('🌈 Magical Rainbow');
         const userHeyoka = addUser('🙃 ɐʞoʎǝH');
+        const userNorNor = addUser('🦄 Nor Nor');
+        const userBodhi = addUser('💩 Donald Trump');
+        const userInigo = addUser('💸 Money Man');
 
         // Set up conversations
         const charlie = [], bow = [], heyoka = [];
@@ -132,6 +135,16 @@ class App extends React.Component {
               <Route
                 path="/profile"
                 exact
+                render={
+                  props => <Profile
+                    {...props}
+                    annuitCœptis={ this.annuitCœptis }
+                  />
+                }
+              />
+
+              <Route
+                path="/profile/:userId"
                 render={
                   props => <Profile
                     {...props}

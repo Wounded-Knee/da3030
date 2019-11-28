@@ -19,6 +19,15 @@ header {
   z-index: 1;
 }
 
+/* Buttons
+*************/
+button {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+
 /* HEADER / FOOTER
 ******************/
 header,
@@ -47,17 +56,18 @@ header ul li {
   display: inline-block;
   margin: 0 1em;
 }
+header ul li a:hover,
 header ul li a {
-  color: #fff;
+  color: #8b92a0;
   text-decoration: none;
+}
+header ul li a:hover {
+  color: #fff;
 }
 header ul li a.active {
   font-weight: bold;
 }
 header ul li button {
-  cursor: pointer;
-  background: transparent;
-  border: 0;
   font-size: 15px;
 }
 
@@ -102,7 +112,7 @@ header #moneyMenu .logo {
 }
 header #moneyMenu .logo .d {
   color: #336699;
-  font-size: 0.3em;
+  font-size: 0.5em;
   font-weight: bold;
 }
 header #moneyMenu .logo .three {
@@ -118,49 +128,59 @@ header select {
 
 /* HOME
 ************/
-main ul.home {
+main ul {
   list-style-type: none;
   padding: 0;
 }
-main ul.home li {
-  display: inline-block;
+main ul li {
+  clear: both;
   margin: 0 1em;
 }
-main ul.home li a {
+main ul li a {
   color: #000;
   text-decoration: none;
 }
-main ul.home li a.active {
+main ul li a.active {
   font-weight: bold;
-}
-main ul.home li button {
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  font-size: 15px;
-}
-main ul.home li.node button {
-  opacity: 0;
-  font-size: 9px;
-  margin-top: -13px;
-  position: relative;
-  top: -7px;
-  left: -6px;
-}
-main ul.home li.node:hover button {
-  opacity: 0.5;
-  visibility: visible;
-}
-main ul.home li.node button:hover {
-  opacity: 1;
-  color: #ff0;
 }
 main span {
   font-size: 0.5em;
   margin: -1em 0 1em;
 }
 
+/* Node Components
+*******************/
+main button {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  font-size: 15px;
+}
+main .node .controls button {
+  font-size: 9px;
+  margin-top: -13px;
+  position: relative;
+  top: -7px;
+  left: -6px;
+}
 
+/* Node Components -> Visibilities
+************************************/
+main .node .controls .author,
+main .node .controls .exposure,
+main .node .controls button {
+  opacity: 0;
+}
+main .node:hover .controls .author,
+main .node:hover .controls .exposure,
+main .node:hover .controls button {
+  opacity: 0.5;
+}
+main .node .controls .author:hover,
+main .node .controls .exposure:hover,
+main .node .controls button:hover {
+  opacity: 1;
+}
 
 
 .App-link {
@@ -207,6 +227,9 @@ article .speech-bubble:before {
 
 /* Article -> Temporary Authorship Insignia
 ********************************************/
+article .speech-bubble.author_🦄:before {
+  content: '🦄';
+}
 article .speech-bubble.author_🌈:before {
   content: '🌈';
 }
@@ -215,6 +238,12 @@ article .speech-bubble.author_🙃:before {
 }
 article .speech-bubble.author_💀:before {
   content: '💀';
+}
+article .speech-bubble.author_💩:before {
+  content: '💩';
+}
+article .speech-bubble.author_💸:before {
+  content: '💸';
 }
 
 /* Article -> Speech Bubble: Left
@@ -235,7 +264,9 @@ article :not(.author).speech-bubble:after {
 article :not(.author).speech-bubble:before {
   left: -1.5em;
 }
-
+article :not(.author).speech-bubble .controls {
+  float: right;
+}
 
 /* Article -> Speech Bubble: Right
 *********************************/
@@ -254,6 +285,10 @@ article .author.speech-bubble:after {
 
 article .author.speech-bubble:before {
   right: -1.5em;
+}
+
+article .author.speech-bubble .controls {
+  float: left;
 }
 
 article .react-tabs {

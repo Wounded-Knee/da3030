@@ -90,7 +90,8 @@ class AnnuitCœptis {
 
 	toggleBossMode() {
 		settings.bossMode = !settings.bossMode;
-		setTimeout(this.signalChange.bind(this), 500);
+		this.signalChange();
+		document.getElementsByTagName('html')[0].className = settings.bossMode ? 'bossMode' : '';
 	}
 
 	getCurrentUser() {

@@ -1,16 +1,11 @@
 import React from 'react';
 import { NODE_TYPES } from './Node';
+import Node from './Node';
 import {
   Link,
 } from 'react-router-dom';
 
 class Home extends React.Component {
-  deleteNode(node, e) {
-    const { annuitCœptis } = this.props;
-    e.preventDefault();
-    if (window.confirm('Delete it?')) annuitCœptis.delete(node);
-  }
-
   render() {
     const { annuitCœptis } = this.props;
     const nodes = annuitCœptis.getTree().data.filter(
@@ -24,13 +19,15 @@ class Home extends React.Component {
     return (
       <>
         <input type="text" placeholder="Speak" />
-        <ul className="home">
+        <ul className="home clearfix">
           {
             nodes.map(
               node =>
                 <li key={ node.id } className="node">
-                  <Link to={`/node/${node._id}`} exact>{ node.data }</Link>
+                  <Node match={{ params: { nodeId: node._id }}} annuitCœptis={ annuitCœptis } asAncestor />
+                  { /*
                   <button onClick={ this.deleteNode.bind(this, node) }>❌</button>
+                  */ }
                 </li>
             )
           }

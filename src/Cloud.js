@@ -1,20 +1,34 @@
 import React from 'react';
-import NODE_TYPES from './Node';
+import { NODE_TYPES } from './Node';
+import { Link } from 'react-router-dom';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import "react-tabs/style/react-tabs.css";
 const activeClassName = 'active';
 
 class Cloud extends React.Component {
-  onChange() {
-
-  }
-
   render() {
     const { annuitCœptis, authorMode, node } = this.props;
     const children = (node.children || []).filter(
       node =>
         node.type === NODE_TYPES.NODE_TYPE_NODE
+    );
+
+    return (
+      <>
+        <ul class="clearfix">
+          {
+            children.map(
+              node =>
+                <li>
+                  <Link to={ `/node/${node._id}` }>
+                    { node.text }
+                  </Link>
+                </li>
+            )
+          }
+        </ul>
+      </>
     );
 
     return (

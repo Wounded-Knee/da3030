@@ -26,6 +26,7 @@ class Exposure extends React.Component {
 
   render() {
     return <input
+      className="exposure"
       onChange={ this.onChange.bind(this) }
       size="1"
       maxlength="1"

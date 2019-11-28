@@ -1,6 +1,14 @@
 import React from 'react';
 
 const menu = {
+	'Boss Mode': {
+		summary: 'Enables stealth mode, concealing it from shoulder surfers',
+		execute: (cheatMenu) => {
+			const { annuitCœptis } = cheatMenu.props;
+			annuitCœptis.toggleBossMode();
+			return true;
+		}
+	},
 	'Initialize': {
 		summary: 'Wipe all data clean and insert fresh testing data.',
 		execute: (cheatMenu) => {

@@ -7,8 +7,15 @@ import {
 class Profile extends React.Component {
   render() {
     const { annuitCœptis } = this.props;
-    const user = annuitCœptis.getCurrentUser();
-    const userNodes = annuitCœptis.filter( node => node.type === NODE_TYPES.NODE_TYPE_NODE && node.authorId === user.id );
+    const userId = this.props.match.params.userId;
+    const user = userId ? annuitCœptis.getUserById(userId) : annuitCœptis.getCurrentUser();
+    if (!user) return null;
+
+    const userNodes = annuitCœptis.filter(
+      node =>
+        node.type === NODE_TYPES.NODE_TYPE_NODE
+        && node.authorId === user.id
+    );
     window.da = {
       ...window.da,
       user: user,
@@ -21,6 +28,9 @@ class Profile extends React.Component {
         { userNodes.map( node => (
           <Node match={{ params: { nodeId: node._id }}} annuitCœptis={ annuitCœptis } asAncestor noAncestors />
         ))}
+
+        <h2>Your Cohorts</h2>
+        <p>Unknown</p>
 
       </div>
     );

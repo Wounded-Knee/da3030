@@ -23,6 +23,11 @@ class Node extends React.Component {
     this.updateNode = this.updateNode.bind(this);
     this.promptAddChildNode = this.promptAddChildNode.bind(this);
     this.state = this.getFreshState();
+
+    window.da = {
+      ...window.da,
+      Node: [ ...(window.da.Node || []), this],
+    };
   }
 
   getFreshState() {
@@ -86,7 +91,15 @@ class Node extends React.Component {
   }
 
   promptAddChildNode() {
-    const text = prompt('Say what?', '');
+    const { annuitCœptis } = this.props;
+    const node = this.getNode();
+    const fromUser = annuitCœptis.getCurrentUser();
+    const toUser = annuitCœptis.getUserById(node.authorId);
+    const subj = node.data.substring(node.data.length-20);
+    const text = prompt(
+      `From: ${ fromUser.name }\n`+
+      `To: ${ toUser.name }\n`+
+      `Subj: ... ${ subj }\n`, '');
     if (text) this.addChildNode(text);
   }
 
@@ -126,6 +139,11 @@ class Node extends React.Component {
     console.log('Exposure level: ', level);
   }
 
+  deleteNode() {
+    const { annuitCœptis } = this.props;
+    if (window.confirm('Delete it?')) annuitCœptis.delete(this.getNode());
+  }
+
   render() {
     if (this.state.data === undefined) {
       this.setState(this.getFreshState());
@@ -156,7 +174,7 @@ class Node extends React.Component {
         { parentNode && !noAncestors ? (
           <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
         ) : null }
-        <article>
+        <article className="node">
 
           {/* Speech Bubble */}
           <p className={ classNames }>
@@ -168,7 +186,16 @@ class Node extends React.Component {
                   </Link>
                 : this.state.data
             }
-            <Exposure level={ node.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
+            <div class="controls">
+              <span class="buttons">
+                <button onClick={ this.promptAddChildNode.bind(this) }>💭</button>
+                <button onClick={ this.deleteNode.bind(this) }>❌</button>
+              </span>
+              <span class="author">
+                { author.name }
+              </span>
+              <Exposure level={ node.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
+            </div>
           </p>
 
           {/* Cloud */}
