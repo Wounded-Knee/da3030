@@ -27,7 +27,6 @@ button {
   border: 0;
 }
 
-
 /* HEADER / FOOTER
 ******************/
 header,
@@ -131,6 +130,8 @@ header select {
 main ul {
   list-style-type: none;
   padding: 0;
+  margin: auto;
+  width: 500px;
 }
 main ul li {
   clear: both;
@@ -156,47 +157,51 @@ main button {
   border: 0;
   font-size: 15px;
 }
-main .node .controls button {
-  font-size: 9px;
-  margin-top: -13px;
-  position: relative;
-  top: -7px;
-  left: -6px;
-}
-
-/* Node Components -> Visibilities
-************************************/
-main .node .controls .author,
-main .node .controls .exposure,
-main .node .controls button {
-  opacity: 0;
-}
-main .node:hover .controls .author,
-main .node:hover .controls .exposure,
-main .node:hover .controls button {
-  opacity: 0.5;
-}
-main .node .controls .author:hover,
-main .node .controls .exposure:hover,
-main .node .controls button:hover {
-  opacity: 1;
-}
-
 
 .App-link {
   color: #09d3ac;
 }
 
-/* Article
-************/
-article {
+/* Node List
+**************/
+.nodeList {
   max-width: 500px;
   margin: auto;
 }
 
-/* Article -> Speech Bubble
+/* Node
+************/
+article.node .controls button {
+  font-size: 26px;
+}
+
+/* Node -> Controls -> Carousel
+******************************/
+article.node .slick-list {
+  clear: both;
+}
+
+/* Node -> Controls -> Visibilities
+************************************/
+article.node .controls .author,
+article.node .controls .exposure,
+article.node .controls button {
+  opacity: 0;
+}
+article.node:hover .controls .author,
+article.node:hover .controls .exposure,
+article.node:hover .controls button {
+  opacity: 0.5;
+}
+article.node .controls .author:hover,
+article.node .controls .exposure:hover,
+article.node .controls button:hover {
+  opacity: 1;
+}
+
+/* Node -> Speech Bubble
 ***************************/
-article .speech-bubble {
+article.node {
   position: relative;
   margin: 1em;
   padding: 1em;
@@ -204,12 +209,12 @@ article .speech-bubble {
   clear: both;
 }
 
-article .speech-bubble a {
+article.node a {
   color: #000;
   text-decoration: none;
 }
 
-article .speech-bubble:after {
+article.node:after {
   content: '';
   position: absolute;
   top: 50%;
@@ -219,79 +224,58 @@ article .speech-bubble:after {
   margin-top: -10px;
 }
 
-article .speech-bubble:before {
+article.node:before {
   position: absolute;
   font-size: 3em;
   top: 0;
 }
 
-/* Article -> Temporary Authorship Insignia
-********************************************/
-article .speech-bubble.author_🦄:before {
-  content: '🦄';
-}
-article .speech-bubble.author_🌈:before {
-  content: '🌈';
-}
-article .speech-bubble.author_🙃:before {
-  content: '🙃';
-}
-article .speech-bubble.author_💀:before {
-  content: '💀';
-}
-article .speech-bubble.author_💩:before {
-  content: '💩';
-}
-article .speech-bubble.author_💸:before {
-  content: '💸';
-}
-
-/* Article -> Speech Bubble: Left
-*********************************/
-article :not(.author).speech-bubble {
+/* Node -> Speech Bubble: Left
+******************************/
+article.node:not(.author) {
   background: #fffdb8;
   text-align: left;
   float: left;
 }
 
-article :not(.author).speech-bubble:after {
+article.node:not(.author):after {
   left: 0;
   border-right-color: #fffdb8;
   border-left: 0;
   margin-left: -10px;
 }
 
-article :not(.author).speech-bubble:before {
+article.node:not(.author):before {
   left: -1.5em;
 }
-article :not(.author).speech-bubble .controls {
+article.node:not(.author) .controls {
   float: right;
 }
 
-/* Article -> Speech Bubble: Right
+/* Node -> Speech Bubble: Right
 *********************************/
-article .author.speech-bubble {
+article.node.author {
   background: #62bcff;
   text-align: right;
   float: right;
 }
 
-article .author.speech-bubble:after {
+article.node.author:after {
   right: 0;
   border-left-color: #62bcff;
   border-right: 0;
   margin-right: -10px;
 }
 
-article .author.speech-bubble:before {
+article.node.author:before {
   right: -1.5em;
 }
 
-article .author.speech-bubble .controls {
+article.node.author .controls {
   float: left;
 }
 
-article .react-tabs {
+article.node .react-tabs {
   clear: both;
 }
 

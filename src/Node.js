@@ -1,6 +1,7 @@
 import React from 'react';
 import Cloud from './Cloud';
 import Exposure from './Exposure';
+import Slider from "react-slick";
 import {
   BrowserRouter as Router,
   Link,
@@ -8,6 +9,8 @@ import {
 import { Typeahead } from 'react-bootstrap-typeahead';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import "react-tabs/style/react-tabs.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 const NODE_TYPES = {
   NODE_TYPE_USER: 'user',
   NODE_TYPE_RESPONSE_GROUP: 'responseGroup',
@@ -144,6 +147,70 @@ class Node extends React.Component {
     if (window.confirm('Delete it?')) annuitCœptis.delete(this.getNode());
   }
 
+  getControls(node, authorMode, author) {
+    const controls = [
+      {
+        name: 'Delete',
+        display: '❌',
+        hint: 'Delete this node',
+        action: this.deleteNode.bind(this),
+        visible: authorMode,
+      },
+      {
+        name: 'Reply',
+        display: '💭',
+        hint: 'Reply to this node',
+        action: this.promptAddChildNode.bind(this),
+        visible: !authorMode,
+      }
+    ];
+
+    return (
+      <div class="controls">
+        <span class="buttons">
+          {
+            controls.map(
+              control => (
+                control.visible ? <button title={ control.hint } onClick={ control.action }>{ control.display }</button> : null
+              )
+            )
+          }
+        </span>
+        <span class="author">
+          { author.name }
+        </span>
+        <Exposure level={ node.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
+      </div>
+    );
+  }
+
+  getCarousel() {
+    const { annuitCœptis } = this.props;
+    const node = this.getNode();
+    const settings = {
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1
+    };
+
+    return (
+      <Slider {...settings} className="clearfix">
+        {
+          node.children.map(
+            node => <Node
+              match={{ params: { nodeId: node._id }}}
+              annuitCœptis={ annuitCœptis }
+              noAncestors
+              asAncestor
+            />
+          )
+        }
+      </Slider>
+    );
+  }
+
   render() {
     if (this.state.data === undefined) {
       this.setState(this.getFreshState());
@@ -158,52 +225,37 @@ class Node extends React.Component {
     const authorMode = spectator === author;
     const [authorClass] = author.name;
     const classNames = [
+      "node",
       "speech-bubble",
       authorMode ? 'author' : '',
       "author_"+authorClass,
     ].join(' ');
-    if (setDocumentTitle) setDocumentTitle( author.name + ': ' + node.text );
+    const linkedText = asAncestor
+      ? <Link to={`/node/${node._id}`} exact>{ this.state.data }</Link>
+      : this.state.data;
 
-    window.da = {
-      ...window.da,
-      node: node,
-    };
+    if (setDocumentTitle) setDocumentTitle( author.name + ': ' + node.text );
 
     return (
       <>
         { parentNode && !noAncestors ? (
           <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
         ) : null }
-        <article className="node">
 
-          {/* Speech Bubble */}
-          <p className={ classNames }>
-            {
-              asAncestor
-                ?
-                  <Link to={`/node/${node._id}`} exact>
-                    { this.state.data }
-                  </Link>
-                : this.state.data
-            }
-            <div class="controls">
-              <span class="buttons">
-                <button onClick={ this.promptAddChildNode.bind(this) }>💭</button>
-                <button onClick={ this.deleteNode.bind(this) }>❌</button>
-              </span>
-              <span class="author">
-                { author.name }
-              </span>
-              <Exposure level={ node.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
-            </div>
-          </p>
-
-          {/* Cloud */}
-          { !asAncestor ?
-            <Cloud node={ node } annuitCœptis={ annuitCœptis } authorMode />
-          : null }
-
+        {/* Speech Bubble */}
+        <article className={ classNames }>
+          { linkedText }
+          { this.getControls( node, authorMode, author ) }
         </article>
+
+        { !asAncestor ? this.getCarousel() : null }
+
+        {/* Cloud 
+        { !asAncestor ?
+          <Cloud node={ node } annuitCœptis={ annuitCœptis } authorMode />
+        : null }
+        */}
+
       </>
     );
   }

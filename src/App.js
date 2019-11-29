@@ -100,9 +100,20 @@ class App extends React.Component {
 
   render() {
     const currentUser = this.annuitCœptis.getCurrentUser() || { name: 'Anonymous' };
+    const css = this.annuitCœptis.getUsers().map(
+      user => {
+        const [ emoji ] = user.name;
+        return (`
+          article.node.author_${emoji}:before {
+            content: '${emoji}';
+          }
+        `)
+      }
+    ).join('\n');
 
     return (
       <div className="App">
+        <style>{ css }</style>
         <Router>
 
           { this.state.redirectId ? <Redirect to={ `/node/${this.state.redirectId}` } /> : null }

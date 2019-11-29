@@ -19,7 +19,7 @@ class Home extends React.Component {
     return (
       <>
         <input type="text" placeholder="Speak" />
-        <ul className="home clearfix">
+        <ul className="nodeList clearfix">
           {
             nodes.map(
               node =>
