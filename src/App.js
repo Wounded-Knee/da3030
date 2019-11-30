@@ -167,12 +167,16 @@ class App extends React.Component {
               <Route
                 path="/node/:nodeId"
                 render={
-                  props => <Node
-                    {...props}
-                    setDocumentTitle={ this.setDocumentTitle.bind(this) }
-                    redirect={ this.redirect.bind(this) }
-                    annuitCœptis={ this.annuitCœptis }
-                  />
+                  props => <ul className="nodeList">
+                    <li>
+                      <Node
+                        {...props}
+                        setDocumentTitle={ this.setDocumentTitle.bind(this) }
+                        redirect={ this.redirect.bind(this) }
+                        annuitCœptis={ this.annuitCœptis }
+                      />
+                    </li>
+                  </ul>
                 }
               />
 

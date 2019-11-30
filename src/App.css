@@ -177,6 +177,7 @@ article.node .controls button {
 
 /* Node -> Controls -> Carousel
 ******************************/
+.nodeList li .slick-slider,
 article.node .slick-list {
   clear: both;
 }
@@ -203,7 +204,7 @@ article.node .controls button:hover {
 ***************************/
 article.node {
   position: relative;
-  margin: 1em;
+  margin: 1em 5em;
   padding: 1em;
   border-radius: .4em;
   clear: both;
