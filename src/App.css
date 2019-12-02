@@ -167,6 +167,8 @@ main button {
 .nodeList {
   max-width: 500px;
   margin: auto;
+  overflow-y: auto;
+  height: 500px;
 }
 
 /* Node

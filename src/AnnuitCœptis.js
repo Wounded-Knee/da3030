@@ -44,6 +44,7 @@ class AnnuitCœptis {
 	// Extension of tax() method
 	remove(node) {
 		var rv = this.tax.remove(node._id);
+		console.log('remove() ', rv, node);
 		this.signalChange();
 		return rv;
 	}
@@ -59,13 +60,20 @@ class AnnuitCœptis {
 	}
 
 	load() {
-		const storageData = localStorage.getItem(localStorageName);
+		const { storageData } = this.getLocalStorageInfo();
 		const storageSettings = localStorage.getItem(localStorageSettingsName);
 
 		if (storageData) this.setTree(JSON.parse(storageData));
 		if (storageSettings) settings = JSON.parse(storageSettings);
 
 		document.getElementsByTagName('html')[0].className = settings.bossMode ? 'bossMode' : '';
+	}
+
+	getLocalStorageInfo() {
+		const storageData = localStorage.getItem(localStorageName);
+		return {
+			storageData: storageData,
+		}
 	}
 
 	/**
@@ -122,8 +130,12 @@ class AnnuitCœptis {
 		if (!parentNode) {
 			return new Error('Cannot add a responseGroup without a parentNode');
 		}
-		const newResponseGroup = this.addTaxNode(NODE_TYPES.NODE_TYPE_RESPONSE_GROUP, data, parentNode);
-
+		const newResponseGroup = this.addTaxNode(
+			NODE_TYPES.NODE_TYPE_RESPONSE_GROUP,
+			data,
+			parentNode
+		);
+		return newResponseGroup;
 	}
 
 	moveNodeIntoResponseGroup(node, responseGroup) {
@@ -202,8 +214,7 @@ class AnnuitCœptis {
 	}
 
 	delete(node) {
-		console.log('Removing ', node);
-		this.remove(node._id);
+		this.remove(node);
 	}
 };
 

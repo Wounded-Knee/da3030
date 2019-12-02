@@ -22,7 +22,6 @@ class Node extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleChange = this.handleChange.bind(this);
     this.updateNode = this.updateNode.bind(this);
     this.promptAddChildNode = this.promptAddChildNode.bind(this);
     this.state = this.getFreshState();
@@ -43,18 +42,9 @@ class Node extends React.Component {
     };
   }
 
-  getUrl() {
-    return this.props.match.url;
-  }
-
   getNode() {
     const { match: { params: { nodeId } }, annuitCœptis } = this.props;
     return annuitCœptis.find(nodeId);
-  }
-
-  handleChange(e) {
-    console.log('handleChange');
-    this.setData(e.target.value);
   }
 
   /**
@@ -66,20 +56,6 @@ class Node extends React.Component {
    **/
   updateNode(e) {
     this.props.annuitCœptis.update(this.getNode()._id, this.state.data);
-  }
-
-  setData(data) {
-    if (this.state.data !== data) {
-      this.setState({ data: data });
-    }
-  }
-
-  getChildNodeList() {
-    return this.getNode().children;
-  }
-
-  getResponseGroups() {
-    //return this.annuitCœptis.
   }
 
   addChildNode(text) {
@@ -104,35 +80,6 @@ class Node extends React.Component {
       `To: ${ toUser.name }\n`+
       `Subj: ... ${ subj }\n`, '');
     if (text) this.addChildNode(text);
-  }
-
-  submitForm() {
-    const { annuitCœptis, redirect } = this.props;
-    const { inputString } = this.state;
-    const selectedOption = annuitCœptis.filter( node => node.type === 'node' && node.text === inputString );
-    var _id;
-
-    if (!selectedOption.length) {
-      _id = this.addChildNode(inputString)._id;
-    } else {
-      [{ _id }] = selectedOption;
-    }
-    redirect(_id);
-  }
-
-  onChange(selected) {
-    var inputString;
-    switch(typeof selected) {
-      case 'object':
-        if (selected.length) {
-          [ inputString ] = selected;
-        }
-      break;
-      case 'string':
-        inputString = selected;
-      break;
-    }
-    this.setState({inputString: inputString});
   }
 
   onChangeExposure(level) {
@@ -176,17 +123,46 @@ class Node extends React.Component {
             )
           }
         </span>
-        <span class="author">
-          { author.name }
-        </span>
         <Exposure level={ node.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
       </div>
     );
   }
 
-  getCarousel() {
-    const { annuitCœptis } = this.props;
-    const node = this.getNode();
+  renderAncestralNodes() {
+    const {
+      parentNode,
+      noAncestors,
+      annuitCœptis,
+    } = this.getMetaData();
+
+    return parentNode && !noAncestors ? (
+      <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
+    ) : null;
+  }
+
+  renderCurrentNode() {
+    const {
+      node,
+      authorMode,
+      author,
+      linkedText,
+      classNames,
+    } = this.getMetaData();
+
+    return (
+      <article className={ classNames }>
+        { linkedText }
+        { this.getControls( node, authorMode, author ) }
+      </article>
+    );
+  }
+
+  renderDescendantNodes() {
+    const {
+      asAncestor,
+      annuitCœptis,
+      node,
+    } = this.getMetaData();
     const settings = {
       dots: true,
       infinite: true,
@@ -194,6 +170,8 @@ class Node extends React.Component {
       slidesToShow: 1,
       slidesToScroll: 1
     };
+
+    if (asAncestor) return null;
 
     return (
       <Slider {...settings} className="clearfix">
@@ -211,12 +189,7 @@ class Node extends React.Component {
     );
   }
 
-  render() {
-    if (this.state.data === undefined) {
-      this.setState(this.getFreshState());
-      return null;
-    }
-
+  getMetaData() {
     const { annuitCœptis, asAncestor, setDocumentTitle, noAncestors } = this.props;
     const node = this.getNode();
     const author = annuitCœptis.getUserById(node.authorId);
@@ -234,28 +207,41 @@ class Node extends React.Component {
       ? <Link to={`/node/${node._id}`} exact>{ this.state.data }</Link>
       : this.state.data;
 
-    if (setDocumentTitle) setDocumentTitle( author.name + ': ' + node.text );
+    return {
+      node: node,
+      author: author,
+      spectator: spectator,
+      parentNode: parentNode,
+      authorMode: authorMode,
+      authorClass: authorClass,
+      classNames: classNames,
+      linkedText: linkedText,
+      noAncestors: noAncestors,
+      annuitCœptis: annuitCœptis,
+      setDocumentTitle: setDocumentTitle,
+      asAncestor: asAncestor,
+    }
+  }
+
+  render() {
+    if (this.state.data === undefined) {
+      this.setState(this.getFreshState());
+      return null;
+    }
+
+    const {
+      node,
+      author,
+      setDocumentTitle,
+    } = this.getMetaData();
+
+    if (setDocumentTitle) setDocumentTitle( node.text + ' - ' + author.name );
 
     return (
       <>
-        { parentNode && !noAncestors ? (
-          <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
-        ) : null }
-
-        {/* Speech Bubble */}
-        <article className={ classNames }>
-          { linkedText }
-          { this.getControls( node, authorMode, author ) }
-        </article>
-
-        { !asAncestor ? this.getCarousel() : null }
-
-        {/* Cloud 
-        { !asAncestor ?
-          <Cloud node={ node } annuitCœptis={ annuitCœptis } authorMode />
-        : null }
-        */}
-
+        { this.renderAncestralNodes() }
+        { this.renderCurrentNode() }
+        { this.renderDescendantNodes() }
       </>
     );
   }

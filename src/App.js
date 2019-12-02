@@ -1,4 +1,5 @@
 import React from 'react';
+import initialize from './initialize';
 import UserSelector from './UserSelector';
 import Profile from './Profile';
 import {
@@ -32,44 +33,7 @@ class App extends React.Component {
       ...window.da,
       app: this,
       annuitCœptis: this.annuitCœptis,
-      initialize: function() {
-        this.annuitCœptis.setTree({ data: [] }); // Erase everything
-
-        const addUser = username => {
-          const newUser = this.annuitCœptis.addUser(username);
-          console.log('Added user: ', newUser);
-          return newUser;
-        }
-
-        const speak = (words, conversation, author) => {
-          var newWordsSpoken;
-          const lastWordsSpoken = conversation[conversation.length-1];
-          this.annuitCœptis.setCurrentUser(author.id);
-          newWordsSpoken = this.annuitCœptis.addNewNode(words);
-          if (lastWordsSpoken) newWordsSpoken = this.annuitCœptis.move(newWordsSpoken, lastWordsSpoken);
-          conversation.push(
-            newWordsSpoken
-          );
-        }
-
-        // Setup users
-        const userCharlie = addUser('💀 Charlie');
-        const userBow = addUser('🌈 Magical Rainbow');
-        const userHeyoka = addUser('🙃 ɐʞoʎǝH');
-        const userNorNor = addUser('🦄 Nor Nor');
-        const userBodhi = addUser('💩 Donald Trump');
-        const userInigo = addUser('💸 Money Man');
-
-        // Set up conversations
-        const charlie = [], bow = [], heyoka = [];
-
-        // Populate nodes
-        speak("Hi", charlie, userCharlie);
-        speak("Hello, Charlie!", charlie, userBow);
-
-        speak("Crazy Things in Bed Tonight", heyoka, userHeyoka);
-        speak("yeah... I am excited for that, and I'm sorry but I told Charlie that you were rambling during poker game tonight he might have a worse opinion of you now, you better tell him your version of what happend", heyoka, userBow);
-      }.bind(this),
+      initialize: initialize.bind(this, this.annuitCœptis),
     };
   }
 

@@ -50,6 +50,11 @@ class CheatMenu extends React.Component {
 
 	render() {
 		const { initialize } = this.props.da;
+		const { annuitCœptis } = this.props;
+		const localStorageSizeKb = parseInt(
+			(annuitCœptis.getLocalStorageInfo().storageData || '').length / 1024 * 100
+		)/100;
+
 		return (
 			<>
 				<button id="money" onClick={ this.onClick.bind(this) }>💵</button>
@@ -64,6 +69,13 @@ class CheatMenu extends React.Component {
 							);
 						})}
 					</ul>
+
+					<h2>Information</h2>
+					<dl>
+						<dt>Local Storage</dt>
+						<dd>{ localStorageSizeKb }Kb</dd>
+					</dl>
+
 					<div class="logo">
 						<span class="d">D</span>
 						<span class="three">3</span>
