@@ -1,12 +1,12 @@
 import React from 'react';
 
 const UserSelector = ({ annuitCœptis }) => {
-	const users = annuitCœptis.getUsers();
-	const currentUser = annuitCœptis.getCurrentUser() || { id: -1, name: 'Anonymous' };
+	const users = annuitCœptis.User.getAll();
+	const currentUser = annuitCœptis.User.getCurrent() || { id: -1, name: 'Anonymous' };
 	const onChange = e => {
 		const index = e.nativeEvent.target.selectedIndex;
 		const userId = users[index].id;
-		annuitCœptis.setCurrentUser(userId);
+		annuitCœptis.User.setCurrent(userId);
 	};
 
 	return (

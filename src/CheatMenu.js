@@ -12,10 +12,10 @@ const menu = {
 	'Initialize': {
 		summary: 'Wipe all data clean and insert fresh testing data.',
 		execute: (cheatMenu) => {
-			const { da, redirect } = cheatMenu.props;
+			const { da } = cheatMenu.props;
 			const { initialize } = da;
 			if (window.confirm('Are you sure?')) {
-				initialize();
+				console.log(initialize());
 				return true;
 			}
 			return false;
@@ -49,7 +49,6 @@ class CheatMenu extends React.Component {
 	}
 
 	render() {
-		const { initialize } = this.props.da;
 		const { annuitCœptis } = this.props;
 		const localStorageSizeKb = parseInt(
 			(annuitCœptis.getLocalStorageInfo().storageData || '').length / 1024 * 100

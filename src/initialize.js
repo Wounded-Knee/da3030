@@ -1,6 +1,6 @@
 const initialize = (annuitCœptis) => {
   const addUser = username => {
-    const newUser = annuitCœptis.addUser(username);
+    const newUser = annuitCœptis.User.create(username);
     console.log('Added user: ', newUser);
     return newUser;
   }
@@ -8,7 +8,7 @@ const initialize = (annuitCœptis) => {
   const speak = (words, conversation, author) => {
     var newWordsSpoken;
     const lastWordsSpoken = conversation[conversation.length-1];
-    annuitCœptis.setCurrentUser(author.id);
+    annuitCœptis.User.be(author.id);
     newWordsSpoken = annuitCœptis.addNewNode(words);
     if (lastWordsSpoken) newWordsSpoken = annuitCœptis.move(newWordsSpoken, lastWordsSpoken);
     conversation.push(
@@ -23,12 +23,21 @@ const initialize = (annuitCœptis) => {
   const userBow = addUser('🌈 Magical Rainbow');
   const userHeyoka = addUser('🙃 ɐʞoʎǝH');
   const userNorNor = addUser('🦄 Nor Nor');
-  const userBodhi = addUser('💩 Donald Trump');
-  const userInigo = addUser('💸 Money Man');
+  const userDonaldTrump = addUser('💩 Donald Trump');
+  const userMoneyMan = addUser('💸 Money Man');
   const userSunlightFoundation = addUser('🌄 Sunlight Foundation');
+  const userNewYorkTimes = addUser('📰 New York Times');
 
   // Set up conversations
-  const charlie = [], bow = [], heyoka = [], sunlightFoundation = [];
+  const
+    charlie = [],
+    bow = [],
+    heyoka = [],
+    norNor = [],
+    donaldTrump = [],
+    moneyMan = [],
+    sunlightFoundation = [],
+    newYorkTimes = [];
 
   // Populate nodes
   speak("Hi", charlie, userCharlie);
@@ -53,6 +62,8 @@ const initialize = (annuitCœptis) => {
   speak("Join us.", sunlightFoundation, userSunlightFoundation);
   speak("Sunlight Foundation", sunlightFoundation, userSunlightFoundation);
   speak("Are you in?", sunlightFoundation, userSunlightFoundation);
+
+  return 'Okay, turkey.';
 }
 
 export default initialize;

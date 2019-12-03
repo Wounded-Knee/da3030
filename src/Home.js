@@ -1,9 +1,6 @@
 import React from 'react';
 import { NODE_TYPES } from './Node';
 import Node from './Node';
-import {
-  Link,
-} from 'react-router-dom';
 
 class Home extends React.Component {
   render() {
@@ -25,9 +22,6 @@ class Home extends React.Component {
               node =>
                 <li key={ node.id } className="node">
                   <Node match={{ params: { nodeId: node._id }}} annuitCœptis={ annuitCœptis } asAncestor />
-                  { /*
-                  <button onClick={ this.deleteNode.bind(this, node) }>❌</button>
-                  */ }
                 </li>
             )
           }

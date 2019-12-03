@@ -1,14 +1,11 @@
 import React from 'react';
 import { default as Node, NODE_TYPES } from './Node';
-import {
-  Link,
-} from 'react-router-dom';
 
 class Profile extends React.Component {
   render() {
     const { annuitCœptis } = this.props;
     const userId = this.props.match.params.userId;
-    const user = userId ? annuitCœptis.getUserById(userId) : annuitCœptis.getCurrentUser();
+    const user = userId ? annuitCœptis.User.getById(userId) : annuitCœptis.User.getCurrent();
     if (!user) return null;
 
     const userNodes = annuitCœptis.filter(

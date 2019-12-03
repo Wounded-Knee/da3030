@@ -1,4 +1,7 @@
 import { NODE_TYPES } from './Node';
+import Policy from './Policy';
+import Certification from './Certification';
+import User from './User';
 const tax = require('taxonomy').tax;
 const localStorageName = 'AnnuitCœptis';
 const localStorageSettingsName = 'da3000';
@@ -37,7 +40,13 @@ class AnnuitCœptis {
 			}
 		);
 
+		const args = {
+			annuitCœptis: this,
+		};
 		this.tax = tax;
+		this.Policy = new Policy(args);
+		this.Certification = new Certification(args);
+		this.User = new User(args);
 		this.load();
 	}
 
@@ -76,22 +85,11 @@ class AnnuitCœptis {
 		}
 	}
 
-	/**
-	 * Adds a user to the DB
-	 * Returns the user record
-	 **/
-	addUser(username) {
-		const data = {
-			name: username,
-			data: username,
-		};
-
-		return this.addTaxNode(NODE_TYPES.NODE_TYPE_USER, data);
+	getCurrentUser() {
+		return this.User.getById( settings.userId );
 	}
 
 	setCurrentUser(userId) {
-		const oldUser = this.getCurrentUser();
-		const freshUser = this.getUserById(userId);
 		settings.userId = userId;
 		this.signalChange();
 	}
@@ -102,18 +100,6 @@ class AnnuitCœptis {
 		document.getElementsByTagName('html')[0].className = settings.bossMode ? 'bossMode' : '';
 	}
 
-	getCurrentUser() {
-		return this.getUsers().find( node => node.id === settings.userId );
-	}
-
-	getUsers() {
-		return this.getTaxNodesByType(NODE_TYPES.NODE_TYPE_USER);
-	}
-
-	getUserById(userId) {
-		return this.getUsers().find( node => node.id === userId );
-	}
-
 	addNewNode(text, parentNode = null) {
 		return this.addTaxNode(NODE_TYPES.NODE_TYPE_NODE, {
 			authorId: settings.userId,
@@ -122,27 +108,8 @@ class AnnuitCœptis {
 		}, parentNode);
 	}
 
-	/**
-	 * Creates a response group under parentNode
-	 * Moves the given list of extant child nodes under the new response group
-	 **/
-	addResponseGroup(data, parentNode) {
-		if (!parentNode) {
-			return new Error('Cannot add a responseGroup without a parentNode');
-		}
-		const newResponseGroup = this.addTaxNode(
-			NODE_TYPES.NODE_TYPE_RESPONSE_GROUP,
-			data,
-			parentNode
-		);
-		return newResponseGroup;
-	}
-
-	moveNodeIntoResponseGroup(node, responseGroup) {
-		this.move.apply(arguments);
-	}
-
 	move(node, newParentNode) {
+		if (node.type !== 'node') console.warn('Still calling legacy AnnuitCœptis.move() for type ', node.type);
 		const newData = { ...node };
 		this.remove(node);
 		['_id', 'attr', 'type', 'children', 'isLeaf'].forEach(attr => delete newData[attr]);
@@ -153,18 +120,6 @@ class AnnuitCœptis {
 		);
 
 		return newNode;
-	}
-
-	getResponseGroups() {
-		return this.getTaxNodesByType(NODE_TYPES.NODE_TYPE_RESPONSE_GROUP);
-	}
-
-	getResponseGroupsByParentNode(parentNode) {
-		return this.filter(
-			node =>
-				node.type === NODE_TYPES.NODE_TYPE_RESPONSE_GROUP
-				&& node.parentNodeId
-		);
 	}
 
 	getTaxNodesByType(nodeType) {
@@ -211,6 +166,17 @@ class AnnuitCœptis {
 
 	getParentNode(childNode) {
 		return this.filter( node => node.children.find( child => child._id === childNode._id ) )[0];
+	}
+
+	/**
+	 * Returns the node at the start of this track
+	 **/
+	getTrailhead(childNode) {
+		const parentNode = this.getParentNode(childNode);
+
+		return parentNode === undefined
+			? childNode
+			: this.getTrailhead(parentNode)
 	}
 
 	delete(node) {

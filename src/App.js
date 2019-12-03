@@ -63,8 +63,8 @@ class App extends React.Component {
   }
 
   render() {
-    const currentUser = this.annuitCœptis.getCurrentUser() || { name: 'Anonymous' };
-    const css = this.annuitCœptis.getUsers().map(
+    const currentUser = this.annuitCœptis.User.getCurrent() || { name: 'Anonymous' };
+    const css = this.annuitCœptis.User.getAll().map(
       user => {
         const [ emoji ] = user.name;
         return (`

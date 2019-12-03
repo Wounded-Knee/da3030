@@ -1,13 +1,9 @@
 import React from 'react';
-import Cloud from './Cloud';
 import Exposure from './Exposure';
 import Slider from "react-slick";
 import {
-  BrowserRouter as Router,
   Link,
 } from 'react-router-dom';
-import { Typeahead } from 'react-bootstrap-typeahead';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import "react-tabs/style/react-tabs.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -15,8 +11,9 @@ const NODE_TYPES = {
   NODE_TYPE_USER: 'user',
   NODE_TYPE_RESPONSE_GROUP: 'responseGroup',
   NODE_TYPE_NODE: 'node',
+  NODE_TYPE_POLICY: 'policy',
+  NODE_TYPE_CERTIFICATION: 'certification',
 };
-const activeClassName = 'active';
 
 class Node extends React.Component {
   constructor(props) {
@@ -72,8 +69,8 @@ class Node extends React.Component {
   promptAddChildNode() {
     const { annuitCœptis } = this.props;
     const node = this.getNode();
-    const fromUser = annuitCœptis.getCurrentUser();
-    const toUser = annuitCœptis.getUserById(node.authorId);
+    const fromUser = annuitCœptis.User.getCurrent();
+    const toUser = annuitCœptis.User.getById(node.authorId);
     const subj = node.data.substring(node.data.length-20);
     const text = prompt(
       `From: ${ fromUser.name }\n`+
@@ -192,14 +189,16 @@ class Node extends React.Component {
   getMetaData() {
     const { annuitCœptis, asAncestor, setDocumentTitle, noAncestors } = this.props;
     const node = this.getNode();
-    const author = annuitCœptis.getUserById(node.authorId);
-    const spectator = annuitCœptis.getCurrentUser();
+    const author = annuitCœptis.User.getById(node.authorId);
+    const spectator = annuitCœptis.User.getCurrent();
     const parentNode = annuitCœptis.getParentNode(node);
     const authorMode = spectator === author;
+    const trailWardenMode = annuitCœptis.getTrailhead(node).authorId === author.id;
     const [authorClass] = author.name;
     const classNames = [
       "node",
       "speech-bubble",
+      trailWardenMode ? 'trailWarden' : 'noTW',
       authorMode ? 'author' : '',
       "author_"+authorClass,
     ].join(' ');
