@@ -6,7 +6,7 @@ const UserSelector = ({ annuitCœptis }) => {
 	const onChange = e => {
 		const index = e.nativeEvent.target.selectedIndex;
 		const userId = users[index].id;
-		annuitCœptis.User.setCurrent(userId);
+		annuitCœptis.User.be(userId);
 	};
 
 	return (

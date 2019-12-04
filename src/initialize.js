@@ -9,8 +9,8 @@ const initialize = (annuitCœptis) => {
     var newWordsSpoken;
     const lastWordsSpoken = conversation[conversation.length-1];
     annuitCœptis.User.be(author.id);
-    newWordsSpoken = annuitCœptis.addNewNode(words);
-    if (lastWordsSpoken) newWordsSpoken = annuitCœptis.move(newWordsSpoken, lastWordsSpoken);
+    newWordsSpoken = annuitCœptis.Node.create(words);
+    if (lastWordsSpoken) newWordsSpoken = annuitCœptis.Node.move(newWordsSpoken, lastWordsSpoken);
     conversation.push(
       newWordsSpoken
     );

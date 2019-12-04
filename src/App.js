@@ -54,7 +54,7 @@ class App extends React.Component {
   addNodePrompt() {
     const data = prompt('Node name?','');
     if (data) {
-      this.annuitCœptis.addNewNode(data);
+      this.annuitCœptis.Node.create(data);
     }
   }
 

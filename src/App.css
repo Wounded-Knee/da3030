@@ -262,9 +262,10 @@ article.node:not(.author) .controls {
 /* Node -> Speech Bubble: Left -> Trail Warden
 ***********************************************/
 article.node.trailWarden {
-  border: 1px solid red;
+  -webkit-box-shadow: 0px 0px 18px 0px rgba(255,247,0,1);
+  -moz-box-shadow: 0px 0px 18px 0px rgba(255,247,0,1);
+  box-shadow: 0px 0px 18px 0px rgba(255,247,0,1);
 }
-
 
 /* Node -> Speech Bubble: Right
 *********************************/

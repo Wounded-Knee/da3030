@@ -6,31 +6,49 @@ class NodeManager {
 	}
 
 	getAll() {
-		return this.annuitCœptis.getTaxNodesByType(this.nodeType);
+		return this.filter( node => node.type === this.nodeType );
 	}
 
-	create(nodeData) {
-		return this.annuitCœptis.addTaxNode(
-			this.nodeType,
-			this._createNodeData(nodeData)
+	create(data, parentNode = null) {
+		const newId = this._getFreshId();
+		const data2 = this._createNodeData(data);
+
+		return this.annuitCœptis.addNode(
+			this.annuitCœptis.createNode(parentNode, data2, {
+				id: newId,
+				type: this.nodeType,
+				...data2,
+			}),
+			parentNode
 		);
+	}
+
+	delete(node) {
+		return this.annuitCœptis.remove(node);
+	}
+
+	updateDataAttribute(node, data) {
+		return this.annuitCœptis.update(node._id, data);
 	}
 
 	move(node, newParentNode) {
 		const newData = { ...node };
-		this.annuitCœptis.remove(node);
+		this.delete(node);
 		['_id', 'attr', 'type', 'children', 'isLeaf'].forEach(attr => delete newData[attr]);
-		const newNode = this.annuitCœptis.addTaxNode(
-			node.type,
+		const newNode = this.create(
 			newData,
-			newParentNode
+			newParentNode,
 		);
 
 		return newNode;
 	}
 
+	find(nodeId) {
+		return this.annuitCœptis.find(nodeId);
+	}
+
 	getParentOf(childNode) {
-		return this.annuitCœptis.filter(
+		return this.filter(
 			node => node.children.find(
 				child => child._id === childNode._id
 			)
@@ -41,6 +59,31 @@ class NodeManager {
 		return this.getAll().find(
 			node => node.id === id
 		);
+	}
+
+	filter(callback, startingPoint) {
+		const tree = startingPoint || this.annuitCœptis.getTree().data;
+
+		return tree.length ? [
+			...tree.filter(callback),
+			...this.filter(
+				callback,
+				tree.reduce(
+					(arr, val) => [ ...arr, ...val.children], []
+				)
+			)
+		] : [];
+	}
+
+	// Returns an unused ID
+	// Finds the max ID int in the passed-in arguments, adds +1 to it.
+	_getFreshId(nodes = this.getAll()) {
+		return Math.max.apply(
+			Math,
+			nodes.map(
+				node => parseInt(node.id) || 0
+			)
+		) + 1;
 	}
 
 	_createNodeData(nodeData) {

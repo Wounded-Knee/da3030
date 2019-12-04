@@ -19,7 +19,6 @@ class Node extends React.Component {
   constructor(props) {
     super(props);
 
-    this.updateNode = this.updateNode.bind(this);
     this.promptAddChildNode = this.promptAddChildNode.bind(this);
     this.state = this.getFreshState();
 
@@ -41,29 +40,7 @@ class Node extends React.Component {
 
   getNode() {
     const { match: { params: { nodeId } }, annuitCœptis } = this.props;
-    return annuitCœptis.find(nodeId);
-  }
-
-  /**
-   * For the moment, this only updates the data (aka "text") of the node.
-   * The underlying taxonomy library does not permit update() to
-   * modify any of the other attributes of the node. So, I will have to
-   * hack a workaround into annuitCœptis to accomodate changes to a node's
-   * other attributes such as Exposure Level, etc.
-   **/
-  updateNode(e) {
-    this.props.annuitCœptis.update(this.getNode()._id, this.state.data);
-  }
-
-  addChildNode(text) {
-    if (text === undefined) return false;
-    console.log('addChildNode ', text);
-    const { annuitCœptis } = this.props;
-    const newNode = annuitCœptis.addNewNode(
-      text,
-      this.getNode()
-    );
-    return newNode;
+    return annuitCœptis.Node.find(nodeId);
   }
 
   promptAddChildNode() {
@@ -76,7 +53,7 @@ class Node extends React.Component {
       `From: ${ fromUser.name }\n`+
       `To: ${ toUser.name }\n`+
       `Subj: ... ${ subj }\n`, '');
-    if (text) this.addChildNode(text);
+    if (text) annuitCœptis.Node.create(text);
   }
 
   onChangeExposure(level) {
@@ -88,7 +65,7 @@ class Node extends React.Component {
 
   deleteNode() {
     const { annuitCœptis } = this.props;
-    if (window.confirm('Delete it?')) annuitCœptis.delete(this.getNode());
+    if (window.confirm('Delete it?')) annuitCœptis.Node.delete(this.getNode());
   }
 
   getControls(node, authorMode, author) {
@@ -188,12 +165,13 @@ class Node extends React.Component {
 
   getMetaData() {
     const { annuitCœptis, asAncestor, setDocumentTitle, noAncestors } = this.props;
+    const { User } = annuitCœptis;
     const node = this.getNode();
-    const author = annuitCœptis.User.getById(node.authorId);
-    const spectator = annuitCœptis.User.getCurrent();
-    const parentNode = annuitCœptis.getParentNode(node);
+    const author = User.getById(node.authorId);
+    const spectator = User.getCurrent();
+    const parentNode = annuitCœptis.Node.getParentOf(node);
     const authorMode = spectator === author;
-    const trailWardenMode = annuitCœptis.getTrailhead(node).authorId === author.id;
+    const trailWardenMode = annuitCœptis.Node.getTrailhead(node).authorId === author.id;
     const [authorClass] = author.name;
     const classNames = [
       "node",
