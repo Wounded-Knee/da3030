@@ -10,17 +10,10 @@ class NodeManager {
 	}
 
 	create(data, parentNode = null) {
-		const newId = this._getFreshId();
 		const data2 = this._createNodeData(data);
-
-		return this.annuitCœptis.addNode(
-			this.annuitCœptis.createNode(parentNode, data2, {
-				id: newId,
-				type: this.nodeType,
-				...data2,
-			}),
-			parentNode
-		);
+		const dataAttribute = data2.data;
+		delete data2.data;
+		return this._create(parentNode, dataAttribute, data2);
 	}
 
 	delete(node) {
@@ -32,12 +25,13 @@ class NodeManager {
 	}
 
 	move(node, newParentNode) {
-		const newData = { ...node };
+		const newData = { ...node, moved: true };
 		this.delete(node);
 		['_id', 'attr', 'type', 'children', 'isLeaf'].forEach(attr => delete newData[attr]);
-		const newNode = this.create(
-			newData,
+		const newNode = this._create(
 			newParentNode,
+			newData.data,
+			newData,
 		);
 
 		return newNode;
@@ -86,11 +80,28 @@ class NodeManager {
 		) + 1;
 	}
 
+	/**
+	 * This has to return an object
+	 * One of the keys must be 'data' and it must have data
+	 * 
+	 */
 	_createNodeData(nodeData) {
 		return {
 			data: nodeData,
 			...nodeData,
 		};
+	}
+
+	_create(parentNode = null, data, otherData) {
+		const newId = this._getFreshId();
+		return this.annuitCœptis.addNode(
+			this.annuitCœptis.createNode(parentNode, data, {
+				id: newId,
+				type: this.nodeType,
+				...otherData,
+			}),
+			parentNode
+		);
 	}
 };
 

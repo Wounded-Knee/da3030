@@ -7,14 +7,11 @@ class NodeClass extends NodeManager {
 		this.nodeType = NODE_TYPES.NODE_TYPE_NODE;
 	}
 
-	create(text, parentNode = null) {
-		const { userId } = this.annuitCœptis.getSettings();
-		const data = {
-			authorId: userId,
-			data: text,
-			text: text,
-		};
-		return super.create(data, parentNode);
+	getByAuthorId(authorId) {
+		return this.filter(
+			node =>
+				node.authorId === authorId
+		);
 	}
 
 	/**
@@ -26,6 +23,15 @@ class NodeClass extends NodeManager {
 		return parentNode === undefined
 			? childNode
 			: this.getTrailhead(parentNode)
+	}
+
+	_createNodeData(text) {
+		const { userId } = this.annuitCœptis.getSettings();
+		return {
+			data: text,
+			text: text,
+			authorId: userId,
+		};
 	}
 };
 

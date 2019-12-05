@@ -181,7 +181,7 @@ class Node extends React.Component {
       "author_"+authorClass,
     ].join(' ');
     const linkedText = asAncestor
-      ? <Link to={`/node/${node._id}`} exact>{ this.state.data }</Link>
+      ? <Link to={`/node/${node._id}`} exact>{ node.text }</Link>
       : this.state.data;
 
     return {

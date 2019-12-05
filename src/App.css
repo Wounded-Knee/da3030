@@ -235,14 +235,12 @@ article.node:before {
 
 /* Node -> Speech Bubble: Left
 ******************************/
-article.node.trailWarden,
 article.node:not(.author) {
   background: #fffdb8;
   text-align: left;
   float: left;
 }
 
-article.node.trailWarden:after,
 article.node:not(.author):after {
   left: 0;
   border-right-color: #fffdb8;
@@ -250,11 +248,9 @@ article.node:not(.author):after {
   margin-left: -10px;
 }
 
-article.node.trailWarden:before,
 article.node:not(.author):before {
   left: -1.5em;
 }
-article.node.trailWarden .controls,
 article.node:not(.author) .controls {
   float: right;
 }
@@ -262,9 +258,9 @@ article.node:not(.author) .controls {
 /* Node -> Speech Bubble: Left -> Trail Warden
 ***********************************************/
 article.node.trailWarden {
-  -webkit-box-shadow: 0px 0px 18px 0px rgba(255,247,0,1);
-  -moz-box-shadow: 0px 0px 18px 0px rgba(255,247,0,1);
-  box-shadow: 0px 0px 18px 0px rgba(255,247,0,1);
+  -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
 }
 
 /* Node -> Speech Bubble: Right

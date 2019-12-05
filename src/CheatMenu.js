@@ -62,7 +62,7 @@ class CheatMenu extends React.Component {
 						{ Object.keys(menu).map( key => {
 							const item = menu[key];
 							return (
-								<li onClick={ this.onItemClick.bind(this, key) } title={ item.summary }>
+								<li key={ key } onClick={ this.onItemClick.bind(this, key) } title={ item.summary }>
 									{ key }
 								</li>
 							);
@@ -75,9 +75,9 @@ class CheatMenu extends React.Component {
 						<dd>{ localStorageSizeKb }Kb</dd>
 					</dl>
 
-					<div class="logo">
-						<span class="d">D</span>
-						<span class="three">3</span>
+					<div className="logo">
+						<span className="d">D</span>
+						<span className="three">3</span>
 					</div>
 				</div>
 			</>

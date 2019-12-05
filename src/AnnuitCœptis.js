@@ -1,4 +1,3 @@
-import { NODE_TYPES } from './Node';
 import Policy from './Policy';
 import Certification from './Certification';
 import User from './User';
