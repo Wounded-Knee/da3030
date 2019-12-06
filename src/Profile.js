@@ -1,4 +1,5 @@
 import React from 'react';
+import CloudView from './CloudView';
 import { default as Node } from './Node';
 
 class Profile extends React.Component {
@@ -12,6 +13,7 @@ class Profile extends React.Component {
       return null;
     }
     const userNodes = annuitCœptis.Node.getByAuthorId(user.id);
+    const userClouds = annuitCœptis.Cloud.getByContributorId(user.id);
     const ownerLanguage = mirrorMode ? 'Your' : user.name+"'s";
     window.da = {
       ...window.da,
@@ -28,9 +30,12 @@ class Profile extends React.Component {
           ))}
         </div>
 
-        <h2>{ ownerLanguage } Cohorts</h2>
-        <p>Unknown</p>
-
+        <h2>Clouds { ownerLanguage } Has Contributed</h2>
+        <div className="cloudList clearfix">
+          { userClouds.map( cloud => (
+            <CloudView match={{ params: { cloudId: cloud.id }}} annuitCœptis={ annuitCœptis } asChip />
+          ))}
+        </div>
       </div>
     );
   }

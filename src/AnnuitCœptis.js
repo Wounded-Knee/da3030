@@ -2,6 +2,8 @@ import Policy from './Policy';
 import Certification from './Certification';
 import User from './User';
 import Node from './NodeClass';
+import Cloud from './CloudClass';
+import Track from './Track';
 const tax = require('taxonomy').tax;
 const localStorageName = 'AnnuitCœptis';
 const localStorageSettingsName = 'da3000';
@@ -48,6 +50,8 @@ class AnnuitCœptis {
 		this.Certification = new Certification(args);
 		this.User = new User(args);
 		this.Node = new Node(args);
+		this.Cloud = new Cloud(args);
+		this.Track = new Track(args);
 		this.load();
 	}
 
@@ -80,6 +84,11 @@ class AnnuitCœptis {
 
 	getSettings() {
 		return settings;
+	}
+
+	setSettings(newSettings) {
+		settings = newSettings;
+		return true;
 	}
 
 	getLocalStorageInfo() {

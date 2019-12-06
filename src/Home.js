@@ -1,8 +1,26 @@
 import React from 'react';
 import { NODE_TYPES } from './Node';
 import Node from './Node';
+import CloudView from './CloudView';
 
 class Home extends React.Component {
+  getUserClouds() {
+    const { annuitCœptis } = this.props;
+    const { Cloud, User } = annuitCœptis;
+    const { getByUserEligibility } = Cloud;
+    const currentUser = User.getCurrent();
+
+    return (
+      <>
+        {
+          Cloud.getByUserEligibility(currentUser).map(
+            cloud => <CloudView match={{ params: { cloudId: cloud.id }}} annuitCœptis={ annuitCœptis } asChip />
+          )
+        }
+      </>
+    );
+  }
+
   render() {
     const { annuitCœptis } = this.props;
     const nodes = annuitCœptis.getTree().data.filter(
@@ -25,6 +43,8 @@ class Home extends React.Component {
                 </li>
             )
           }
+
+          { this.getUserClouds() }
         </ul>
       </>
     );

@@ -27,6 +27,12 @@ class NodeClass extends NodeManager {
 
 	_createNodeData(text) {
 		const { userId } = this.annuitCœptis.getSettings();
+
+		if (
+			userId === undefined ||
+			text === undefined
+		) return false;
+
 		return {
 			data: text,
 			text: text,

@@ -290,6 +290,13 @@ article.node .react-tabs {
   clear: both;
 }
 
+/* Cloud
+********/
+.cloud {
+  display: inline-block;
+  position: relative;
+}
+
 /* FOOTER
 ******************/
 footer {

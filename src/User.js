@@ -15,6 +15,14 @@ class User extends NodeManager {
 		return this.annuitCœptis.getCurrentUser();
 	}
 
+	makeTrack(node) {
+
+	}
+
+	getTracks() {
+		
+	}
+
 	_createNodeData(nodeData) {
 		return {
 			data: nodeData,

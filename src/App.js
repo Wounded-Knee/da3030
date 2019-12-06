@@ -12,6 +12,7 @@ import {
 import Node from './Node';
 import AnnuitCœptis from './AnnuitCœptis';
 import CheatMenu from './CheatMenu';
+import CloudView from './CloudView';
 import Home from './Home';
 import './App.css';
 
@@ -102,6 +103,16 @@ class App extends React.Component {
                   props => <Home
                     {...props}
                     redirect={ this.redirect.bind(this) }
+                    annuitCœptis={ this.annuitCœptis }
+                  />
+                }
+              />
+
+              <Route
+                path="/cloud/:cloudId"
+                render={
+                  props => <CloudView
+                    {...props}
                     annuitCœptis={ this.annuitCœptis }
                   />
                 }

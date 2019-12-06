@@ -11,6 +11,7 @@ class NodeManager {
 
 	create(data, parentNode = null) {
 		const data2 = this._createNodeData(data);
+		if (data2 === false) return false;
 		const dataAttribute = data2.data;
 		delete data2.data;
 		return this._create(parentNode, dataAttribute, data2);
@@ -51,12 +52,12 @@ class NodeManager {
 
 	getById(id) {
 		return this.getAll().find(
-			node => node.id === id
+			node => node.id === parseInt(id)
 		);
 	}
 
 	filter(callback, startingPoint) {
-		const tree = startingPoint || this.annuitCœptis.getTree().data;
+		const tree = startingPoint || this.annuitCœptis.getTree().data.filter( node => node.type === this.nodeType );
 
 		return tree.length ? [
 			...tree.filter(callback),
@@ -72,20 +73,24 @@ class NodeManager {
 	// Returns an unused ID
 	// Finds the max ID int in the passed-in arguments, adds +1 to it.
 	_getFreshId(nodes = this.getAll()) {
-		return Math.max.apply(
-			Math,
-			nodes.map(
-				node => parseInt(node.id) || 0
-			)
-		) + 1;
+		return Math.max(
+			Math.max.apply(
+				Math,
+				nodes.map(
+					node => parseInt(node.id) || 0
+				)
+			) + 1
+		, 0);
 	}
 
 	/**
 	 * This has to return an object
 	 * One of the keys must be 'data' and it must have data
-	 * 
+	 * Validation happens here.
+	 * Return false to deny creation with these parameters.
 	 */
 	_createNodeData(nodeData) {
+		if (nodeData === undefined) return false;
 		return {
 			data: nodeData,
 			...nodeData,

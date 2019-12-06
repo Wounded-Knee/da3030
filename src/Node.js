@@ -13,6 +13,8 @@ const NODE_TYPES = {
   NODE_TYPE_NODE: 'node',
   NODE_TYPE_POLICY: 'policy',
   NODE_TYPE_CERTIFICATION: 'certification',
+  NODE_TYPE_CLOUD: 'cloud',
+  NODE_TYPE_TRACK: 'track',
 };
 
 class Node extends React.Component {
@@ -200,11 +202,20 @@ class Node extends React.Component {
     }
   }
 
+  track() {
+    const { annuitCœptis } = this.props;
+
+    annuitCœptis.Track.userAddTrack(this.getNode(), annuitCœptis.User.getCurrent());
+  }
+
   render() {
     if (this.state.data === undefined) {
       this.setState(this.getFreshState());
       return null;
     }
+
+    
+    this.track();
 
     const {
       node,
