@@ -21,6 +21,11 @@ class CloudView extends React.Component {
     return (
       <div { ...topProps }>
         <Link to={`/cloud/${id}`}>{ external.name }</Link>
+        { !asChip ? (
+            external.description
+          ) : (
+            null
+        )}
       </div>
     );
   }

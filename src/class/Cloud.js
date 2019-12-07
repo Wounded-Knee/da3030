@@ -1,7 +1,7 @@
-import NodeManager from './NodeManager';
+import DataManager from './DataManager';
 import { NODE_TYPES } from './Node';
 
-class Cloud extends NodeManager {
+class Cloud extends DataManager {
 	constructor() {
 		super(...arguments);
 		this.nodeType = NODE_TYPES.NODE_TYPE_CLOUD;
@@ -16,12 +16,10 @@ class Cloud extends NodeManager {
 
 	getByUserEligibility(user) {
 		return this.filter(
-			cloud => {
-				const qualifiedClouds = cloud.external.qualification.filter(
-					nodeId => this.annuitCœptis.Track.userHasTrack(nodeId, user)
-				);
-				return qualifiedClouds.length === cloud.external.qualification.length;
-			}
+			cloud => cloud.external.qualification.filter(
+				nodeId =>
+					this.annuitCœptis.Track.userHasTrack(nodeId, user)
+			).length === cloud.external.qualification.length
 		);
 	}
 

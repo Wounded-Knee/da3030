@@ -1,20 +1,20 @@
 import React from 'react';
-import { NODE_TYPES } from './Node';
+import { NODE_TYPES } from '../class/Node';
 import Node from './Node';
-import CloudView from './CloudView';
+import Cloud from './Cloud';
 
 class Home extends React.Component {
   getUserClouds() {
     const { annuitCœptis } = this.props;
-    const { Cloud, User } = annuitCœptis;
-    const { getByUserEligibility } = Cloud;
+    const { Cloud: CloudManager, User } = annuitCœptis;
+    const { getByUserEligibility } = CloudManager;
     const currentUser = User.getCurrent();
 
     return (
       <>
         {
-          Cloud.getByUserEligibility(currentUser).map(
-            cloud => <CloudView match={{ params: { cloudId: cloud.id }}} annuitCœptis={ annuitCœptis } asChip />
+          CloudManager.getByUserEligibility(currentUser).map(
+            cloud => <Cloud match={{ params: { cloudId: cloud.id }}} annuitCœptis={ annuitCœptis } asChip />
           )
         }
       </>

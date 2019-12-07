@@ -1,4 +1,4 @@
-class NodeManager {
+class DataManager {
 	constructor(config) {
 		this.config = config;
 		this.annuitCœptis = config.annuitCœptis;
@@ -110,4 +110,4 @@ class NodeManager {
 	}
 };
 
-export default NodeManager;
+export default DataManager;

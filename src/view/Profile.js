@@ -1,6 +1,6 @@
 import React from 'react';
-import CloudView from './CloudView';
-import { default as Node } from './Node';
+import Cloud from './Cloud';
+import Node from './Node';
 
 class Profile extends React.Component {
   render() {
@@ -33,7 +33,7 @@ class Profile extends React.Component {
         <h2>Clouds { ownerLanguage } Has Contributed</h2>
         <div className="cloudList clearfix">
           { userClouds.map( cloud => (
-            <CloudView match={{ params: { cloudId: cloud.id }}} annuitCœptis={ annuitCœptis } asChip />
+            <Cloud match={{ params: { cloudId: cloud.id }}} annuitCœptis={ annuitCœptis } asChip />
           ))}
         </div>
       </div>

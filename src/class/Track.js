@@ -1,7 +1,7 @@
-import NodeManager from './NodeManager';
+import DataManager from './DataManager';
 import { NODE_TYPES } from './Node';
 
-class Track extends NodeManager {
+class Track extends DataManager {
 	constructor() {
 		super(...arguments);
 		this.nodeType = NODE_TYPES.NODE_TYPE_TRACK;
@@ -19,6 +19,7 @@ class Track extends NodeManager {
 
 	userAddTrack(node, user) {
 		const oldSettings = this.annuitCœptis.getSettings();
+		console.log(`${user.name} tracked: `, node);
 
 		return this.annuitCœptis.setSettings({
 			...oldSettings,
@@ -40,9 +41,9 @@ class Track extends NodeManager {
 	}
 
 	getUserTracks(user) {
-		const settings = this.annuitCœptis.getSettings();
-
-		return settings.tracks;
+		return this.annuitCœptis.getSettings().tracks.filter(
+			track => track.userId === user.id
+		);
 	}
 
 	_createNodeData(nodeData) {

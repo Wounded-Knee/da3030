@@ -1,5 +1,6 @@
 import React from 'react';
 import Exposure from './Exposure';
+import { NODE_TYPES } from '../class/Node';
 import Slider from "react-slick";
 import {
   Link,
@@ -7,15 +8,6 @@ import {
 import "react-tabs/style/react-tabs.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-const NODE_TYPES = {
-  NODE_TYPE_USER: 'user',
-  NODE_TYPE_RESPONSE_GROUP: 'responseGroup',
-  NODE_TYPE_NODE: 'node',
-  NODE_TYPE_POLICY: 'policy',
-  NODE_TYPE_CERTIFICATION: 'certification',
-  NODE_TYPE_CLOUD: 'cloud',
-  NODE_TYPE_TRACK: 'track',
-};
 
 class Node extends React.Component {
   constructor(props) {
@@ -81,7 +73,7 @@ class Node extends React.Component {
       },
       {
         name: 'Reply',
-        display: '💭',
+        display: '💬',
         hint: 'Reply to this node',
         action: this.promptAddChildNode.bind(this),
         visible: !authorMode,
@@ -157,7 +149,7 @@ class Node extends React.Component {
               match={{ params: { nodeId: node._id }}}
               annuitCœptis={ annuitCœptis }
               noAncestors
-              asAncestor
+              asDescendant
             />
           )
         }
@@ -166,7 +158,7 @@ class Node extends React.Component {
   }
 
   getMetaData() {
-    const { annuitCœptis, asAncestor, setDocumentTitle, noAncestors } = this.props;
+    const { annuitCœptis, asAncestor, asDescendant, setDocumentTitle, noAncestors } = this.props;
     const { User } = annuitCœptis;
     const node = this.getNode();
     const author = User.getById(node.authorId);
@@ -182,7 +174,7 @@ class Node extends React.Component {
       authorMode ? 'author' : '',
       "author_"+authorClass,
     ].join(' ');
-    const linkedText = asAncestor
+    const linkedText = asAncestor || asDescendant
       ? <Link to={`/node/${node._id}`} exact>{ node.text }</Link>
       : this.state.data;
 
@@ -199,6 +191,7 @@ class Node extends React.Component {
       annuitCœptis: annuitCœptis,
       setDocumentTitle: setDocumentTitle,
       asAncestor: asAncestor,
+      asDescendant: asDescendant,
     }
   }
 
@@ -214,15 +207,15 @@ class Node extends React.Component {
       return null;
     }
 
-    
-    this.track();
-
     const {
       node,
       author,
       setDocumentTitle,
+      asAncestor,
+      asDescendant,
     } = this.getMetaData();
 
+    if (!asAncestor && !asDescendant) this.track();
     if (setDocumentTitle) setDocumentTitle( node.text + ' - ' + author.name );
 
     return (
@@ -242,7 +235,4 @@ class Node extends React.Component {
   }
 };
 
-export {
-  NODE_TYPES,
-  Node as default
-};
+export default Node;

@@ -1,7 +1,7 @@
-import NodeManager from './NodeManager';
+import DataManager from './DataManager';
 import { NODE_TYPES } from './Node';
 
-class User extends NodeManager {
+class User extends DataManager {
 	constructor() {
 		super(...arguments);
 		this.nodeType = NODE_TYPES.NODE_TYPE_USER;
@@ -13,14 +13,6 @@ class User extends NodeManager {
 
 	getCurrent() {
 		return this.annuitCœptis.getCurrentUser();
-	}
-
-	makeTrack(node) {
-
-	}
-
-	getTracks() {
-		
 	}
 
 	_createNodeData(nodeData) {

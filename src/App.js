@@ -1,7 +1,7 @@
 import React from 'react';
 import initialize from './initialize';
-import UserSelector from './UserSelector';
-import Profile from './Profile';
+import UserSelector from './view/UserSelector';
+import Profile from './view/Profile';
 import {
   BrowserRouter as Router,
   Route,
@@ -9,11 +9,11 @@ import {
   Redirect,
   NavLink,
 } from 'react-router-dom';
-import Node from './Node';
-import AnnuitCœptis from './AnnuitCœptis';
-import CheatMenu from './CheatMenu';
-import CloudView from './CloudView';
-import Home from './Home';
+import Node from './view/Node';
+import AnnuitCœptis from './class/AnnuitCœptis';
+import CheatMenu from './view/CheatMenu';
+import Cloud from './view/Cloud';
+import Home from './view/Home';
 import './App.css';
 
 const activeClassName = 'active';
@@ -111,7 +111,7 @@ class App extends React.Component {
               <Route
                 path="/cloud/:cloudId"
                 render={
-                  props => <CloudView
+                  props => <Cloud
                     {...props}
                     annuitCœptis={ this.annuitCœptis }
                   />
