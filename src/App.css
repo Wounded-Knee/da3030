@@ -50,6 +50,8 @@ header {
 header ul {
   list-style-type: none;
   padding: 0;
+  margin: 0;
+  font-size: 40px;
 }
 header ul li {
   display: inline-block;
@@ -65,9 +67,6 @@ header ul li a:hover {
 }
 header ul li a.active {
   font-weight: bold;
-}
-header ul li button {
-  font-size: 15px;
 }
 
 /* HEADER -> Money Menu

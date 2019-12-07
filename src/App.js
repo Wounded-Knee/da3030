@@ -65,6 +65,8 @@ class App extends React.Component {
 
   render() {
     const currentUser = this.annuitCœptis.User.getCurrent() || { name: 'Anonymous' };
+    const [ currentUserEmoji ] = currentUser.name;
+    const currentUserName = currentUser.name.substring(2);
     const css = this.annuitCœptis.User.getAll().map(
       user => {
         const [ emoji ] = user.name;
@@ -87,9 +89,9 @@ class App extends React.Component {
             <CheatMenu da={ window.da } redirect={ this.redirect.bind(this) } annuitCœptis={ this.annuitCœptis } />
             <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
-              <li><NavLink to="/" exact activeClassName={ activeClassName }>Home</NavLink></li>
-              <li><NavLink to="/profile" exact activeClassName={ activeClassName }>{ currentUser.name }</NavLink></li>
-              <li><button onClick={ this.addNodePrompt.bind(this) }>💬</button></li>
+              <li title="Home"><NavLink to="/" exact activeClassName={ activeClassName }>🏠</NavLink></li>
+              <li title={ currentUserName }><NavLink to="/profile" exact activeClassName={ activeClassName }>{ currentUserEmoji }</NavLink></li>
+              <li title="Speak"><button onClick={ this.addNodePrompt.bind(this) }>💬</button></li>
             </ul>
           </header>
 

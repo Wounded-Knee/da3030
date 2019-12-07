@@ -35,6 +35,7 @@ const initialize = (annuitCœptis) => {
   }
 
   annuitCœptis.setTree({ data: [] }); // Erase everything
+  annuitCœptis.setSettings({}); // Erase settings too
 
   // Setup users
   const userCharlie = addUser('💀 Charlie');

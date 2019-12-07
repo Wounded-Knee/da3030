@@ -41,7 +41,7 @@ class Track extends DataManager {
 	}
 
 	getUserTracks(user) {
-		return this.annuitCœptis.getSettings().tracks.filter(
+		return (this.annuitCœptis.getSettings().tracks || []).filter(
 			track => track.userId === user.id
 		);
 	}
