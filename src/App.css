@@ -43,6 +43,9 @@ footer {
 /* HEADER
 ******************/
 header {
+  position: fixed;
+  left: 0;
+  right: 0;
 }
 
 /* HEADER -> Nav Menu
@@ -122,6 +125,12 @@ header #moneyMenu .logo .three {
 header select {
   position: absolute;
   right: 1em;
+}
+
+/* MAIN
+*********/
+main {
+  padding-top: 5em;
 }
 
 /* HOME
