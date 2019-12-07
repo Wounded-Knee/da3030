@@ -4,23 +4,6 @@ import Node from './Node';
 import Cloud from './Cloud';
 
 class Home extends React.Component {
-  getUserClouds() {
-    const { annuitCœptis } = this.props;
-    const { Cloud: CloudManager, User } = annuitCœptis;
-    const { getByUserEligibility } = CloudManager;
-    const currentUser = User.getCurrent();
-
-    return (
-      <>
-        {
-          CloudManager.getByUserEligibility(currentUser).map(
-            cloud => <Cloud match={{ params: { cloudId: cloud.id }}} annuitCœptis={ annuitCœptis } asChip />
-          )
-        }
-      </>
-    );
-  }
-
   render() {
     const { annuitCœptis } = this.props;
     const nodes = annuitCœptis.getTree().data.filter(
@@ -43,8 +26,6 @@ class Home extends React.Component {
                 </li>
             )
           }
-
-          { this.getUserClouds() }
         </ul>
       </>
     );

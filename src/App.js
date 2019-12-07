@@ -13,6 +13,7 @@ import Node from './view/Node';
 import AnnuitCœptis from './class/AnnuitCœptis';
 import CheatMenu from './view/CheatMenu';
 import Cloud from './view/Cloud';
+import Clouds from './view/Clouds';
 import Home from './view/Home';
 import './App.css';
 
@@ -52,8 +53,11 @@ class App extends React.Component {
     });
   }
 
-  addNodePrompt() {
+  addNodePrompt(e) {
     const data = prompt('Node name?','');
+
+    e.preventDefault();
+    
     if (data) {
       this.annuitCœptis.Node.create(data);
     }
@@ -90,8 +94,9 @@ class App extends React.Component {
             <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
               <li title="Home"><NavLink to="/" exact activeClassName={ activeClassName }>🏠</NavLink></li>
+              <li title="Clouds"><NavLink to="/clouds" exact activeClassName={ activeClassName }>☁️</NavLink></li>
               <li title={ currentUserName }><NavLink to="/profile" exact activeClassName={ activeClassName }>{ currentUserEmoji }</NavLink></li>
-              <li title="Speak"><button onClick={ this.addNodePrompt.bind(this) }>💬</button></li>
+              <li title="Speak"><NavLink onClick={ this.addNodePrompt.bind(this) } to="/speak" exact activeClassName={ activeClassName }>💬</NavLink></li>
             </ul>
           </header>
 
@@ -105,6 +110,17 @@ class App extends React.Component {
                   props => <Home
                     {...props}
                     redirect={ this.redirect.bind(this) }
+                    annuitCœptis={ this.annuitCœptis }
+                  />
+                }
+              />
+
+              <Route
+                path="/clouds"
+                exact
+                render={
+                  props => <Clouds
+                    {...props}
                     annuitCœptis={ this.annuitCœptis }
                   />
                 }

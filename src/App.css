@@ -50,26 +50,29 @@ header {
 
 /* HEADER -> Nav Menu
 ***********************/
-header ul {
+header > ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
   font-size: 40px;
 }
-header ul li {
+header > ul li {
   display: inline-block;
   margin: 0 1em;
 }
-header ul li a:hover,
-header ul li a {
+header > ul li a:hover,
+header > ul li a {
   color: #8b92a0;
   text-decoration: none;
+  border: 0.1em solid transparent;
 }
-header ul li a:hover {
+header > ul li a:hover {
   color: #fff;
+  border-bottom-color: #5c748c;
 }
-header ul li a.active {
+header > ul li a.active {
   font-weight: bold;
+  border-bottom-color: #fff;
 }
 
 /* HEADER -> Money Menu
@@ -93,10 +96,11 @@ header #moneyMenu {
   left: 0;
   background: #282c34;
   color: #fff;
-  height: 300px;
-  width: 200px;
-  margin-top: 20em;
-  padding-top: 1em;
+  margin-top: 10em;
+  padding-top: 23em;
+}
+header #moneyMenu ul {
+  padding: 0;
 }
 header #moneyMenu.open {
   display: block;
@@ -175,8 +179,6 @@ main button {
 .nodeList {
   max-width: 500px;
   margin: auto;
-  overflow-y: auto;
-  height: 400px;
 }
 
 /* Node

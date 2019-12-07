@@ -17,7 +17,7 @@ const initialize = (annuitCœptis) => {
     return newWordsSpoken;
   }
 
-  const addCloud = (name, description, qualificationNodes) => {
+  const addCloud = (name, description, intName, intDesc, accMessage, invMessage, qualificationNodes) => {
     console.log(qualificationNodes);
     return annuitCœptis.Cloud.create({
       external: {
@@ -26,7 +26,8 @@ const initialize = (annuitCœptis) => {
         qualification: qualificationNodes.map(node => node.id),
       },
       internal: {
-        name: '',
+        name: intName,
+        description: intDesc,
         acceptanceMessage: '',
         invitationMessage: '',
         color1: '', color2: '', color3: '',
@@ -70,7 +71,14 @@ const initialize = (annuitCœptis) => {
   const jellyYes = speak('Yes', jelly, userCharlie, jelly[0]);
   speak('No', jelly, userCharlie, jelly[0]);
 
-  addCloud('PB&J', 'Peanut butter jelly time!', [ pbYes, jellyYes ]);
+  addCloud(
+    'PB&J',
+    'Peanut butter & jelly enthusiasts support group',
+    'Peanut Butter & Jelly',
+    'We love PB&J!',
+    'Welcome to the PB&J cloud.',
+    'Join for a peanut butter jelly time!',
+    [ pbYes, jellyYes ]);
 
   return 'Okay, turkey.';
 }

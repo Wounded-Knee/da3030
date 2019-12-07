@@ -1,20 +1,21 @@
 import React from 'react';
 
+const boomSummary = 'Wipe all data clean and insert fresh testing data.';
 const menu = {
-	'Boss Mode': {
-		summary: 'Enables stealth mode, concealing it from shoulder surfers',
+	'😎': {
+		summary: 'Enable stealth mode, concealing D3 from shoulder surfers.',
 		execute: (cheatMenu) => {
 			const { annuitCœptis } = cheatMenu.props;
 			annuitCœptis.toggleBossMode();
 			return true;
 		}
 	},
-	'Initialize': {
-		summary: 'Wipe all data clean and insert fresh testing data.',
+	'💥': {
+		summary: boomSummary,
 		execute: (cheatMenu) => {
 			const { da } = cheatMenu.props;
 			const { initialize } = da;
-			if (window.confirm('Are you sure?')) {
+			if (window.confirm(`${boomSummary}\n\nAre you sure?`)) {
 				console.log(initialize());
 				return true;
 			}
@@ -69,9 +70,8 @@ class CheatMenu extends React.Component {
 						})}
 					</ul>
 
-					<h2>Information</h2>
 					<dl>
-						<dt>Local Storage</dt>
+						<dt title="Local Storage data size">💾</dt>
 						<dd>{ localStorageSizeKb }Kb</dd>
 					</dl>
 
