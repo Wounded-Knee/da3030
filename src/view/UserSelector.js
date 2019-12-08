@@ -10,7 +10,7 @@ const UserSelector = ({ annuitCœptis }) => {
 	};
 
 	return (
-		<select onChange={ onChange }>
+		<select class="userSelector" onChange={ onChange }>
 			{ users.map( (user, index) => {
 				const [ emoji ] = user.name;
 				return (

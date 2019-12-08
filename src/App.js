@@ -57,7 +57,7 @@ class App extends React.Component {
     const data = prompt('Node name?','');
 
     e.preventDefault();
-    
+
     if (data) {
       this.annuitCœptis.Node.create(data);
     }
@@ -65,6 +65,11 @@ class App extends React.Component {
 
   setDocumentTitle(title) {
     document.title = title;
+  }
+
+  renderNotifications(qty) {
+    console.log(qty);
+    return qty ? <span className="count">{ qty }</span> : null;
   }
 
   render() {
@@ -93,10 +98,21 @@ class App extends React.Component {
             <CheatMenu da={ window.da } redirect={ this.redirect.bind(this) } annuitCœptis={ this.annuitCœptis } />
             <UserSelector annuitCœptis={ this.annuitCœptis } />
             <ul>
-              <li title="Home"><NavLink to="/" exact activeClassName={ activeClassName }>🏠</NavLink></li>
-              <li title="Clouds"><NavLink to="/clouds" exact activeClassName={ activeClassName }>☁️</NavLink></li>
-              <li title={ currentUserName }><NavLink to="/profile" exact activeClassName={ activeClassName }>{ currentUserEmoji }</NavLink></li>
-              <li title="Speak"><NavLink onClick={ this.addNodePrompt.bind(this) } to="/speak" exact activeClassName={ activeClassName }>💬</NavLink></li>
+              <li title="Home" className="home">
+                { this.renderNotifications(0) }
+                <NavLink to="/" exact activeClassName={ activeClassName }>🏠</NavLink>
+              </li>
+              <li title="Clouds" className="clouds">
+                { this.renderNotifications(this.annuitCœptis.Cloud.getNotifications(currentUser)) }
+                <NavLink to="/clouds" exact activeClassName={ activeClassName }>☁️</NavLink>
+              </li>
+              <li title={ currentUserName } className="profile">
+                { this.renderNotifications(0) }
+                <NavLink to="/profile" exact activeClassName={ activeClassName }>{ currentUserEmoji }</NavLink>
+              </li>
+              <li title="Speak">
+                <NavLink onClick={ this.addNodePrompt.bind(this) } to="/speak" exact activeClassName={ activeClassName }>💬</NavLink>
+              </li>
             </ul>
           </header>
 

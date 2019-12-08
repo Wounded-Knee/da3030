@@ -6,35 +6,26 @@ class DataManager {
 	}
 
 	getAll() {
-		return this.filter( node => node.type === this.nodeType );
-	}
-
-	create(data, parentNode = null) {
-		const data2 = this._createNodeData(data);
-		if (data2 === false) return false;
-		const dataAttribute = data2.data;
-		delete data2.data;
-		return this._create(parentNode, dataAttribute, data2);
+		return this.filter( node => node.data.type === this.nodeType );
 	}
 
 	delete(node) {
 		return this.annuitCœptis.remove(node);
 	}
 
-	updateDataAttribute(node, data) {
+	update(node, data) {
 		return this.annuitCœptis.update(node._id, data);
 	}
 
 	move(node, newParentNode) {
-		const newData = { ...node, moved: true };
-		this.delete(node);
-		['_id', 'attr', 'type', 'children', 'isLeaf'].forEach(attr => delete newData[attr]);
 		const newNode = this._create(
+			{
+				...node.data,
+				moved: true,
+			},
 			newParentNode,
-			newData.data,
-			newData,
 		);
-
+		this.delete(node);
 		return newNode;
 	}
 
@@ -52,12 +43,16 @@ class DataManager {
 
 	getById(id) {
 		return this.getAll().find(
-			node => node.id === parseInt(id)
+			node => node.data.id === parseInt(id)
 		);
 	}
 
 	filter(callback, startingPoint) {
-		const tree = startingPoint || this.annuitCœptis.getTree().data.filter( node => node.type === this.nodeType );
+		const tree =
+			startingPoint ||
+			this.annuitCœptis.getTree().data.filter(
+				node => node.data.type === this.nodeType
+			);
 
 		return tree.length ? [
 			...tree.filter(callback),
@@ -70,6 +65,39 @@ class DataManager {
 		] : [];
 	}
 
+	create(data, parentNode = null) {
+		return this._create(
+			data,
+			parentNode,
+		);
+	}
+
+	_create(data, parentNode = null) {
+		const newData = this._createNodeData(data);
+
+		return newData ? this.annuitCœptis.addNode(
+			this.annuitCœptis.createNode(
+				parentNode,
+				newData,
+				{ annuitCœptis: 'annuitCœptis'}
+			),
+			parentNode
+		) : false;
+	}
+
+	_createNodeData(nodeData) {
+		const newId = this._getFreshId();
+
+		return (
+			nodeData instanceof Object
+				? {
+					...nodeData,
+					id: newId,
+					type: this.nodeType,
+				} : false
+		);
+	}
+
 	// Returns an unused ID
 	// Finds the max ID int in the passed-in arguments, adds +1 to it.
 	_getFreshId(nodes = this.getAll()) {
@@ -77,36 +105,10 @@ class DataManager {
 			Math.max.apply(
 				Math,
 				nodes.map(
-					node => parseInt(node.id) || 0
+					node => parseInt(node.data.id) || 0
 				)
 			) + 1
 		, 0);
-	}
-
-	/**
-	 * This has to return an object
-	 * One of the keys must be 'data' and it must have data
-	 * Validation happens here.
-	 * Return false to deny creation with these parameters.
-	 */
-	_createNodeData(nodeData) {
-		if (nodeData === undefined) return false;
-		return {
-			data: nodeData,
-			...nodeData,
-		};
-	}
-
-	_create(parentNode = null, data, otherData) {
-		const newId = this._getFreshId();
-		return this.annuitCœptis.addNode(
-			this.annuitCœptis.createNode(parentNode, data, {
-				id: newId,
-				type: this.nodeType,
-				...otherData,
-			}),
-			parentNode
-		);
 	}
 };
 

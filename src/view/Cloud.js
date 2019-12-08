@@ -4,15 +4,37 @@ import {
 } from 'react-router-dom';
 
 class CloudView extends React.Component {
-  render() {
+  getName() {
+    return this.getStuff().dataNode.external.name;
+  }
+
+  getId() {
+    return this.getStuff().dataNode.id;
+  }
+
+  getDescription() {
+    return this.getStuff().dataNode.external.description;
+  }
+
+  getStuff() {
     const {
       match: { params: { cloudId } },
       annuitCœptis,
       asChip,
     } = this.props;
     const { Cloud } = annuitCœptis;
-    const { external, internal, id } = Cloud.getById(cloudId);
-    const topProps = asChip ? {
+    const dataNode = Cloud.getById(cloudId);
+
+    return {
+      Cloud: Cloud,
+      annuitCœptis: annuitCœptis,
+      dataNode: dataNode,
+      asChip: asChip,
+    }
+  }
+
+  render() {
+    const topProps = this.getStuff().asChip ? {
       className: 'cloud'
     } : {
       id: 'cloud'
@@ -20,9 +42,9 @@ class CloudView extends React.Component {
 
     return (
       <div { ...topProps }>
-        <Link to={`/cloud/${id}`}>{ external.name }</Link>
-        { !asChip ? (
-            external.description
+        <Link to={`/cloud/${ this.getId() }`}>{ this.getName() }</Link>
+        { !this.getStuff().asChip ? (
+            this.getDescription()
           ) : (
             null
         )}

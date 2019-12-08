@@ -14,13 +14,26 @@ class Cloud extends DataManager {
 		);
 	}
 
+	// Returns info on how this user relates to this cloud.
+	// Are they subscribed?
+	getUserDisposition(user, cloud) {
+
+	}
+
 	getByUserEligibility(user) {
 		return this.filter(
-			cloud => cloud.external.qualification.filter(
-				nodeId =>
-					this.annuitCœptis.Track.userHasTrack(nodeId, user)
-			).length === cloud.external.qualification.length
+			cloud => {
+				console.log('cloud', cloud);
+				return cloud.external.qualification.filter(
+					nodeId =>
+						this.annuitCœptis.Track.userHasTrack(nodeId, user)
+				).length === cloud.external.qualification.length
+			}
 		);
+	}
+
+	getNotifications(user) {
+		return this.getByUserEligibility(user).length;
 	}
 
 	_createNodeData(nodeData) {
@@ -32,9 +45,10 @@ class Cloud extends DataManager {
 		) return false;
 
 		return {
-			data: nodeData.internal.name,
-			contributorId: userId,
-			...nodeData,
+			data: {
+				...nodeData,
+				contributorId: userId,
+			}
 		};
 	}
 };

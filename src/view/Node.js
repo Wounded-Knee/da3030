@@ -47,7 +47,7 @@ class Node extends React.Component {
       `From: ${ fromUser.name }\n`+
       `To: ${ toUser.name }\n`+
       `Subj: ... ${ subj }\n`, '');
-    if (text) annuitCœptis.Node.create(text);
+    if (text) annuitCœptis.Node.create(text, node);
   }
 
   onChangeExposure(level) {
@@ -128,6 +128,7 @@ class Node extends React.Component {
   renderDescendantNodes() {
     const {
       asAncestor,
+      asDescendant,
       annuitCœptis,
       node,
     } = this.getMetaData();
@@ -139,7 +140,7 @@ class Node extends React.Component {
       slidesToScroll: 1
     };
 
-    if (asAncestor) return null;
+    if (asAncestor || asDescendant) return null;
 
     return (
       <Slider {...settings} className="clearfix">

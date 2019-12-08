@@ -11,7 +11,8 @@
     "react-slick": "^0.25.2",
     "react-tabs": "^3.0.0",
     "slick-carousel": "^1.8.1",
-    "taxonomy": "^0.1.0"
+    "taxonomy": "^0.1.0",
+    "underscore": "^1.9.1"
   },
   "scripts": {
     "start": "react-scripts start",

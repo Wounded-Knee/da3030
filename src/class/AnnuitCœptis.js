@@ -4,7 +4,8 @@ import User from './User';
 import Node from './Node';
 import Cloud from './Cloud';
 import Track from './Track';
-const tax = require('taxonomy').tax;
+import tax from '../lib/taxonomy';
+
 const localStorageName = 'AnnuitCœptis';
 const localStorageSettingsName = 'da3000';
 const taxMethodsToAlias = [

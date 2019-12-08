@@ -12,7 +12,12 @@ class Home extends React.Component {
       <ul className="cloudList clearfix">
         {
           CloudManager.getByUserEligibility(currentUser).map(
-            cloud => <Cloud match={{ params: { cloudId: cloud.id }}} annuitCœptis={ annuitCœptis } asChip />
+            cloud =>
+              <Cloud
+                match={{ params: { cloudId: cloud.id }}}
+                annuitCœptis={ annuitCœptis }
+                asChip
+              />
           )
         }
       </ul>
