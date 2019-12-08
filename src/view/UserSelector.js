@@ -10,11 +10,11 @@ const UserSelector = ({ annuitCœptis }) => {
 	};
 
 	return (
-		<select className="userSelector" onChange={ onChange }>
+		<select className="userSelector" value={ currentUser.data.id } onChange={ onChange }>
 			{ users.map( (user, index) => {
 				const [ emoji ] = user.data.name;
 				return (
-					<option key={ index } value={ user.data.id } selected={ user.data.id === currentUser.data.id }>{ emoji }</option>
+					<option key={ index } value={ user.data.id }>{ emoji }</option>
 				);
 			}) }
 		</select>
