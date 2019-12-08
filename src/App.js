@@ -68,17 +68,16 @@ class App extends React.Component {
   }
 
   renderNotifications(qty) {
-    console.log(qty);
     return qty ? <span className="count">{ qty }</span> : null;
   }
 
   render() {
-    const currentUser = this.annuitCœptis.User.getCurrent() || { name: 'Anonymous' };
-    const [ currentUserEmoji ] = currentUser.name;
-    const currentUserName = currentUser.name.substring(2);
+    const currentUser = this.annuitCœptis.User.getCurrent();
+    const [ currentUserEmoji ] = currentUser.data.name;
+    const currentUserName = currentUser.data.name.substring(2);
     const css = this.annuitCœptis.User.getAll().map(
       user => {
-        const [ emoji ] = user.name;
+        const [ emoji ] = user.data.name;
         return (`
           article.node.author_${emoji}:before {
             content: '${emoji}';

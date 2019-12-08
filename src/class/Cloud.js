@@ -23,7 +23,6 @@ class Cloud extends DataManager {
 	getByUserEligibility(user) {
 		return this.filter(
 			cloud => {
-				console.log('cloud', cloud);
 				return cloud.external.qualification.filter(
 					nodeId =>
 						this.annuitCœptis.Track.userHasTrack(nodeId, user)

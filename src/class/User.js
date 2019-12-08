@@ -12,15 +12,15 @@ class User extends DataManager {
 	}
 
 	getCurrent() {
-		return this.annuitCœptis.getCurrentUser();
+		return this.annuitCœptis.getCurrentUser() || { data: { id: -1, name: '❓ Anonymous' } };
 	}
 
 	_createNodeData(nodeData) {
-		return {
-			data: nodeData,
+		if (typeof nodeData !== 'string') return false;
+
+		return super._createNodeData({
 			name: nodeData,
-			username: nodeData,
-		}
+		});
 	}
 };
 

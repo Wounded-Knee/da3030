@@ -2,19 +2,19 @@ import React from 'react';
 
 const UserSelector = ({ annuitCœptis }) => {
 	const users = annuitCœptis.User.getAll();
-	const currentUser = annuitCœptis.User.getCurrent() || { id: -1, name: 'Anonymous' };
+	const currentUser = annuitCœptis.User.getCurrent();
 	const onChange = e => {
 		const index = e.nativeEvent.target.selectedIndex;
-		const userId = users[index].id;
+		const userId = users[index].data.id;
 		annuitCœptis.User.be(userId);
 	};
 
 	return (
-		<select class="userSelector" onChange={ onChange }>
+		<select className="userSelector" onChange={ onChange }>
 			{ users.map( (user, index) => {
-				const [ emoji ] = user.name;
+				const [ emoji ] = user.data.name;
 				return (
-					<option key={ index } value={ user.id } selected={ user.id === currentUser.id }>{ emoji }</option>
+					<option key={ index } value={ user.data.id } selected={ user.data.id === currentUser.data.id }>{ emoji }</option>
 				);
 			}) }
 		</select>

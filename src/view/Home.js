@@ -6,9 +6,7 @@ import Cloud from './Cloud';
 class Home extends React.Component {
   render() {
     const { annuitCœptis } = this.props;
-    const nodes = annuitCœptis.getTree().data.filter(
-      node => node.type === NODE_TYPES.NODE_TYPE_NODE
-    );
+    const nodes = annuitCœptis.Node.getAll();
     window.da = {
       ...window.da,
       homeNodes: nodes,
@@ -21,7 +19,7 @@ class Home extends React.Component {
           {
             nodes.map(
               node =>
-                <li key={ node.id } className="node">
+                <li key={ node.data.id } className="node">
                   <Node match={{ params: { nodeId: node._id }}} annuitCœptis={ annuitCœptis } asAncestor />
                 </li>
             )

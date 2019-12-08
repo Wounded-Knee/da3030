@@ -18,7 +18,7 @@ class Node extends DataManager {
 	getByAuthorId(authorId) {
 		return this.filter(
 			node =>
-				node.authorId === authorId
+				node.data.authorId === authorId
 		);
 	}
 
@@ -33,19 +33,15 @@ class Node extends DataManager {
 			: this.getTrailhead(parentNode)
 	}
 
+	move(node, newParentNode) {
+		return super.move({ data: node.data.text }, newParentNode);
+	}
+
 	_createNodeData(text) {
-		const { userId } = this.annuitCœptis.getSettings();
-
-		if (
-			userId === undefined ||
-			text === undefined
-		) return false;
-
-		return {
-			data: text,
-			text: text,
-			authorId: userId,
-		};
+		return text !== undefined
+			? super._createNodeData({
+				text,
+			}) : false;
 	}
 };
 

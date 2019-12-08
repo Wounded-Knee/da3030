@@ -19,10 +19,7 @@ class DataManager {
 
 	move(node, newParentNode) {
 		const newNode = this._create(
-			{
-				...node.data,
-				moved: true,
-			},
+			node.data,
 			newParentNode,
 		);
 		this.delete(node);
@@ -87,14 +84,18 @@ class DataManager {
 
 	_createNodeData(nodeData) {
 		const newId = this._getFreshId();
+		const { userId } = this.annuitCœptis.getSettings();
+		const newData = {
+			...nodeData,
+			id: newId,
+			type: this.nodeType,
+			authorId: userId,
+		};
+		console.log('Node._createNodeData()', newData, this.annuitCœptis.getSettings());
 
 		return (
 			nodeData instanceof Object
-				? {
-					...nodeData,
-					id: newId,
-					type: this.nodeType,
-				} : false
+				? newData : false
 		);
 	}
 

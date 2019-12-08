@@ -43,7 +43,6 @@ class CheatMenu extends React.Component {
 	}
 
 	onClick() {
-		console.log(this.state.menuOpen);
 		this.setState({
 			menuOpen: !this.state.menuOpen
 		});

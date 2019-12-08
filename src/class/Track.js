@@ -50,8 +50,6 @@ class Track extends DataManager {
 		const currentUser = this.annuitCœptis.getCurrentUser();
 		if (!currentUser) return false;
 
-		console.log('Creating Track', nodeData);
-
 		return {
 			data: 'Node #'+nodeData.id,
 			userId: currentUser.id,

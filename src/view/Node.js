@@ -39,15 +39,15 @@ class Node extends React.Component {
 
   promptAddChildNode() {
     const { annuitCœptis } = this.props;
-    const node = this.getNode();
+    const parentNode = this.getNode();
     const fromUser = annuitCœptis.User.getCurrent();
-    const toUser = annuitCœptis.User.getById(node.authorId);
-    const subj = node.data.substring(node.data.length-20);
+    const toUser = annuitCœptis.User.getById(parentNode.data.authorId);
+    const subj = parentNode.data.text.substring(parentNode.data.text.length - 20);
     const text = prompt(
-      `From: ${ fromUser.name }\n`+
-      `To: ${ toUser.name }\n`+
+      `From: ${ fromUser.data.name }\n`+
+      `To: ${ toUser.data.name }\n`+
       `Subj: ... ${ subj }\n`, '');
-    if (text) annuitCœptis.Node.create(text, node);
+    if (text) annuitCœptis.Node.create(text, parentNode);
   }
 
   onChangeExposure(level) {
@@ -91,7 +91,7 @@ class Node extends React.Component {
             )
           }
         </span>
-        <Exposure level={ node.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
+        <Exposure level={ node.data.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
       </div>
     );
   }
@@ -162,12 +162,13 @@ class Node extends React.Component {
     const { annuitCœptis, asAncestor, asDescendant, setDocumentTitle, noAncestors } = this.props;
     const { User } = annuitCœptis;
     const node = this.getNode();
-    const author = User.getById(node.authorId);
+    const author = User.getById(node.data.authorId);
+    if (author === undefined) debugger;
     const spectator = User.getCurrent();
     const parentNode = annuitCœptis.Node.getParentOf(node);
     const authorMode = spectator === author;
-    const trailWardenMode = annuitCœptis.Node.getTrailhead(node).authorId === author.id;
-    const [authorClass] = author.name;
+    const trailWardenMode = annuitCœptis.Node.getTrailhead(node).data.authorId === author.data.id;
+    const [authorClass] = author.data.name;
     const classNames = [
       "node",
       "speech-bubble",
@@ -176,7 +177,7 @@ class Node extends React.Component {
       "author_"+authorClass,
     ].join(' ');
     const linkedText = asAncestor || asDescendant
-      ? <Link to={`/node/${node._id}`} exact>{ node.text }</Link>
+      ? <Link to={`/node/${node._id}`} exact>{ node.data.text }</Link>
       : this.state.data;
 
     return {
@@ -217,7 +218,7 @@ class Node extends React.Component {
     } = this.getMetaData();
 
     if (!asAncestor && !asDescendant) this.track();
-    if (setDocumentTitle) setDocumentTitle( node.text + ' - ' + author.name );
+    if (setDocumentTitle) setDocumentTitle( node.data.text + ' - ' + author.data.name );
 
     return (
       <>

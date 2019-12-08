@@ -1,16 +1,14 @@
 const initialize = (annuitCœptis) => {
   const addUser = username => {
     const newUser = annuitCœptis.User.create(username);
-    console.log('Added user: ', newUser);
     return newUser;
   }
 
   const speak = (words, conversation, author, parentNode = null) => {
     var newWordsSpoken;
     const lastWordsSpoken = parentNode || conversation[conversation.length-1];
-    annuitCœptis.User.be(author.id);
-    newWordsSpoken = annuitCœptis.Node.create(words);
-    if (lastWordsSpoken) newWordsSpoken = annuitCœptis.Node.move(newWordsSpoken, lastWordsSpoken);
+    annuitCœptis.User.be(author.data.id);
+    newWordsSpoken = annuitCœptis.Node.create(words, lastWordsSpoken);
     conversation.push(
       newWordsSpoken
     );
@@ -18,12 +16,12 @@ const initialize = (annuitCœptis) => {
   }
 
   const addCloud = (name, description, intName, intDesc, accMessage, invMessage, qualificationNodes) => {
-    console.log(qualificationNodes);
+    console.log('qn ', qualificationNodes);
     return annuitCœptis.Cloud.create({
       external: {
         name: name,
         description: description,
-        qualification: qualificationNodes.map(node => node.id),
+        qualification: qualificationNodes.map(node => node.data.id),
       },
       internal: {
         name: intName,
@@ -71,6 +69,9 @@ const initialize = (annuitCœptis) => {
   const jellyYes = speak('Yes', jelly, userCharlie, jelly[0]);
   speak('No', jelly, userCharlie, jelly[0]);
 
+  `Test
+`.split('\n').forEach(line => speak(line, newYorkTimes, userNewYorkTimes));
+
   addCloud(
     'PB&J',
     'Peanut butter & jelly enthusiasts support group',
@@ -78,7 +79,8 @@ const initialize = (annuitCœptis) => {
     'We love PB&J!',
     'Welcome to the PB&J cloud.',
     'Join for a peanut butter jelly time!',
-    [ pbYes, jellyYes ]);
+    [ pbYes, jellyYes ]
+  );
 
   return 'Okay, turkey.';
 }
