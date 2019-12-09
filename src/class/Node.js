@@ -1,40 +1,11 @@
-import DataManager from './DataManager';
-const NODE_TYPES = {
-  NODE_TYPE_USER: 'user',
-  NODE_TYPE_RESPONSE_GROUP: 'responseGroup',
-  NODE_TYPE_NODE: 'node',
-  NODE_TYPE_POLICY: 'policy',
-  NODE_TYPE_CERTIFICATION: 'certification',
-  NODE_TYPE_CLOUD: 'cloud',
-  NODE_TYPE_TRACK: 'track',
-};
+import AbstractNode, { NODE_TYPES } from './AbstractNode';
+import { SHADOW_NODE_TYPES } from './ShadowNode';
+const NODE_TYPE = NODE_TYPES.NODE_TYPE_NODE;
 
-class Node extends DataManager {
+class Node extends AbstractNode {
 	constructor() {
 		super(...arguments);
-		this.nodeType = NODE_TYPES.NODE_TYPE_NODE;
-	}
-
-	getByAuthorId(authorId) {
-		return this.filter(
-			node =>
-				node.data.authorId === authorId
-		);
-	}
-
-	/**
-	 * Returns the node at the start of this track
-	 **/
-	getTrailhead(childNode) {
-		const parentNode = this.getParentOf(childNode);
-
-		return parentNode === undefined
-			? childNode
-			: this.getTrailhead(parentNode)
-	}
-
-	move(node, newParentNode) {
-		return super.move({ data: node.data.text }, newParentNode);
+		this.nodeType = NODE_TYPE;
 	}
 
 	_createNodeData(text) {
@@ -45,7 +16,4 @@ class Node extends DataManager {
 	}
 };
 
-export {
-  NODE_TYPES,
-  Node as default
-};
+export default Node;

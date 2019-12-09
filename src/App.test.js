@@ -35,9 +35,18 @@ it('can add a node', () => {
 })
 
 it('can add a child node', () => {
-	const parentNode = da.annuitCœptis.Node.getById(0);
-	const childNode = da.annuitCœptis.Node.create('We are like chameleons, we take our hue and the color of our moral character, from those who are around us.', parentNode);
-	expect(da.annuitCœptis.Node.getById(parentNode.data.id).children[0].data).toMatchSnapshot();
+	const { Node } = da.annuitCœptis;
+	const parentNode = Node.getById(0);
+	const { data: { id: parentId } } = parentNode;
+	const childNode = Node.create(
+		`We are like chameleons,
+		we take our hue and the color
+		of our moral character,
+		from those who are around us.`
+		, parentNode
+	);
+	expect(Node.getById(parentId).children.length).toEqual(1);
+	expect(Node.getById(parentId).children[0].data).toMatchSnapshot();
 });
 
 it('can track a visit to a node', () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import Exposure from './Exposure';
-import { NODE_TYPES } from '../class/Node';
+import { NODE_TYPES } from '../class/AbstractNode';
 import Slider from "react-slick";
 import {
   Link,
@@ -131,6 +131,9 @@ class Node extends React.Component {
       asDescendant,
       annuitCœptis,
       node,
+      children,
+      authorMode,
+      shadowChildren,
     } = this.getMetaData();
     const settings = {
       dots: true,
@@ -139,13 +142,14 @@ class Node extends React.Component {
       slidesToShow: 1,
       slidesToScroll: 1
     };
+    const finalChildren = authorMode ? [ ...shadowChildren, ...children ] : children;
 
     if (asAncestor || asDescendant) return null;
 
     return (
       <Slider {...settings} className="clearfix">
         {
-          node.children.map(
+          finalChildren.map(
             node => <Node
               match={{ params: { nodeId: node._id }}}
               annuitCœptis={ annuitCœptis }
@@ -160,15 +164,43 @@ class Node extends React.Component {
 
   getMetaData() {
     const { annuitCœptis, asAncestor, asDescendant, setDocumentTitle, noAncestors } = this.props;
-    const { User } = annuitCœptis;
-    const node = this.getNode();
-    const author = User.getById(node.data.authorId);
-    if (author === undefined) debugger;
+    const { User, Node, ShadowNode } = annuitCœptis;
+    const trueNode = this.getNode();
+    const anonymousUser = {
+      data: {
+        id: -1,
+        name: '👤 Anonymous',
+      }
+    };
+
+    switch (trueNode.data.type) {
+      case 'shadowNode':
+        var node = {
+          ...trueNode,
+          data: {
+            ...trueNode.data,
+            authorId: anonymousUser.id,
+            text: '...',
+          }
+        };
+      break;
+      default:
+        var node = trueNode;
+      break;
+    }
+
+    var nodeText = node.data.text;
+    const children = Node.getChildrenOf(node);
+    const shadowChildren = ShadowNode.getChildrenOf(node);
+    const author = node.data.authorId === anonymousUser.id
+      ? anonymousUser
+      : User.getById(node.data.authorId);
     const spectator = User.getCurrent();
     const parentNode = annuitCœptis.Node.getParentOf(node);
     const authorMode = spectator === author;
     const trailWardenMode = annuitCœptis.Node.getTrailhead(node).data.authorId === author.data.id;
-    const [authorClass] = author.data.name;
+    const regularNodeType = node.data.type === NODE_TYPES.NODE_TYPE_NODE;
+    const authorClass = author.data.name.substring(0,2);
     const classNames = [
       "node",
       "speech-bubble",
@@ -177,23 +209,25 @@ class Node extends React.Component {
       "author_"+authorClass,
     ].join(' ');
     const linkedText = asAncestor || asDescendant
-      ? <Link to={`/node/${node._id}`} exact>{ node.data.text }</Link>
-      : this.state.data.text;
+      ? <Link to={`/node/${node._id}`} exact>{ nodeText }</Link>
+      : nodeText;
 
     return {
-      node: node,
-      author: author,
-      spectator: spectator,
-      parentNode: parentNode,
-      authorMode: authorMode,
-      authorClass: authorClass,
-      classNames: classNames,
-      linkedText: linkedText,
-      noAncestors: noAncestors,
-      annuitCœptis: annuitCœptis,
-      setDocumentTitle: setDocumentTitle,
-      asAncestor: asAncestor,
-      asDescendant: asDescendant,
+      node,
+      author,
+      spectator,
+      parentNode,
+      authorMode,
+      authorClass,
+      classNames,
+      linkedText,
+      noAncestors,
+      annuitCœptis,
+      setDocumentTitle,
+      asAncestor,
+      asDescendant,
+      children,
+      shadowChildren,
     }
   }
 

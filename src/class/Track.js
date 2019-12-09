@@ -1,5 +1,5 @@
 import DataManager from './DataManager';
-import { NODE_TYPES } from './Node';
+import { NODE_TYPES } from './AbstractNode';
 
 class Track extends DataManager {
 	constructor() {
@@ -19,7 +19,7 @@ class Track extends DataManager {
 
 	userAddTrack(node, user) {
 		const oldSettings = this.annuitCœptis.getSettings();
-		console.log(`${user.data.name} tracked: `, node);
+		console.log(`${user.data.name} tracked: `, node.data.text.substring(0,50)+'...');
 
 		return this.annuitCœptis.setSettings({
 			...oldSettings,

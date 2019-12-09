@@ -9,6 +9,10 @@ class DataManager {
 		return this.filter( node => node.data.type === this.nodeType );
 	}
 
+	getTrailheads() {
+		return this.filter( node => !node.isLeaf );
+	}
+
 	delete(node) {
 		return this.annuitCœptis.remove(node);
 	}
@@ -23,25 +27,12 @@ class DataManager {
 			newParentNode,
 		);
 		this.delete(node);
+		this.onMove(node, newNode);
 		return newNode;
 	}
 
-	find(nodeId) {
-		return this.annuitCœptis.find(nodeId);
-	}
-
-	getParentOf(childNode) {
-		return this.filter(
-			node => node.children.find(
-				child => child._id === childNode._id
-			)
-		)[0];
-	}
-
-	getById(id) {
-		return this.getAll().find(
-			node => node.data.id === parseInt(id)
-		);
+	find(nodeTaxId) {
+		return this.annuitCœptis.find(nodeTaxId);
 	}
 
 	filter(callback, startingPoint) {
@@ -62,16 +53,46 @@ class DataManager {
 		] : [];
 	}
 
+	getParentOf(childNode) {
+		return this.filter(
+			node => node.children.find(
+				child => child._id === childNode._id
+			)
+		)[0];
+	}
+
+	getChildrenOf(parentNode) {
+		return parentNode.children.filter(
+			child => child.data.type === this.nodeType
+		);
+	}
+
+	getById(id) {
+		return this.getAll().find(
+			node => node.data.id === parseInt(id)
+		);
+	}
+
 	create(data, parentNode = null) {
-		return this._create(
+		const newNode = this._create(
 			data,
 			parentNode,
 		);
+		this.onCreate(newNode);
+		return newNode;
+	}
+
+	// Override available
+	onCreate(newNode) {
+		return this.config.onCreate ? this.config.onCreate(newNode) : newNode => newNode;
+	}
+
+	onMove(oldNode, newNode) {
+		return;
 	}
 
 	_create(data, parentNode = null) {
 		const newData = this._createNodeData(data);
-
 		return newData ? this.annuitCœptis.addNode(
 			this.annuitCœptis.createNode(
 				parentNode,

@@ -1,12 +1,12 @@
 import React from 'react';
-import { NODE_TYPES } from '../class/Node';
+import { NODE_TYPES } from '../class/AbstractNode';
 import Node from './Node';
 import Cloud from './Cloud';
 
 class Home extends React.Component {
   render() {
     const { annuitCœptis } = this.props;
-    const nodes = annuitCœptis.Node.getAll();
+    const nodes = annuitCœptis.Node.getTrailheads();
     window.da = {
       ...window.da,
       homeNodes: nodes,

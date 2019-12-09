@@ -1,5 +1,5 @@
 import DataManager from './DataManager';
-import { NODE_TYPES } from './Node';
+import { NODE_TYPES } from './AbstractNode';
 
 class Cloud extends DataManager {
 	constructor() {

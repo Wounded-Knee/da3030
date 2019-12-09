@@ -4,7 +4,10 @@ exports[`can add a child node 1`] = `
 Object {
   "authorId": 1,
   "id": 1,
-  "text": "We are like chameleons, we take our hue and the color of our moral character, from those who are around us.",
+  "text": "We are like chameleons,
+		we take our hue and the color
+		of our moral character,
+		from those who are around us.",
   "type": "node",
 }
 `;

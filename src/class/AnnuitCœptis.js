@@ -2,6 +2,7 @@ import Policy from './Policy';
 import Certification from './Certification';
 import User from './User';
 import Node from './Node';
+import ShadowNode from './ShadowNode';
 import Cloud from './Cloud';
 import Track from './Track';
 import tax from '../lib/taxonomy';
@@ -17,6 +18,7 @@ const taxMethodsToAlias = [
 	'find',
 	'getTree',
 	'setTree',
+	'findParentChild',
 ];
 const taxMethodsCausingChanges = [
 	'update',
@@ -50,7 +52,11 @@ class AnnuitCœptis {
 		this.Policy = new Policy(args);
 		this.Certification = new Certification(args);
 		this.User = new User(args);
-		this.Node = new Node(args);
+		this.ShadowNode = new ShadowNode(args);
+		this.Node = new Node({
+			...args,
+			onCreate: this.ShadowNode.shadow.bind(this.ShadowNode),
+		});
 		this.Cloud = new Cloud(args);
 		this.Track = new Track(args);
 		this.load();
@@ -89,6 +95,7 @@ class AnnuitCœptis {
 
 	setSettings(newSettings) {
 		settings = newSettings;
+		this.persist();
 		return true;
 	}
 
