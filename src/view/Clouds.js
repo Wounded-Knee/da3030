@@ -14,7 +14,7 @@ class Home extends React.Component {
           CloudManager.getByUserEligibility(currentUser).map(
             cloud =>
               <Cloud
-                match={{ params: { cloudId: cloud.id }}}
+                match={{ params: { cloudId: cloud.data.id }}}
                 annuitCœptis={ annuitCœptis }
                 asChip
               />

@@ -5,15 +5,15 @@ import {
 
 class CloudView extends React.Component {
   getName() {
-    return this.getStuff().dataNode.external.name;
+    return this.getStuff().cloud.data.external.name;
   }
 
   getId() {
-    return this.getStuff().dataNode.id;
+    return this.getStuff().cloud.data.id;
   }
 
   getDescription() {
-    return this.getStuff().dataNode.external.description;
+    return this.getStuff().cloud.data.external.description;
   }
 
   getStuff() {
@@ -23,13 +23,13 @@ class CloudView extends React.Component {
       asChip,
     } = this.props;
     const { Cloud } = annuitCœptis;
-    const dataNode = Cloud.getById(cloudId);
+    const cloud = Cloud.getById(cloudId);
 
     return {
-      Cloud: Cloud,
-      annuitCœptis: annuitCœptis,
-      dataNode: dataNode,
-      asChip: asChip,
+      Cloud,
+      annuitCœptis,
+      cloud,
+      asChip,
     }
   }
 

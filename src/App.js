@@ -35,6 +35,7 @@ class App extends React.Component {
       ...window.da,
       app: this,
       annuitCœptis: this.annuitCœptis,
+      user: this.annuitCœptis.User.getCurrent.bind(this.annuitCœptis.User),
       initialize: initialize.bind(this, this.annuitCœptis),
     };
   }

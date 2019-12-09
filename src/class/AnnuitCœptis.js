@@ -105,7 +105,6 @@ class AnnuitCœptis {
 
 	setCurrentUser(userId) {
 		settings.userId = userId;
-		console.log('Settings ', settings);
 		this.signalChange();
 	}
 

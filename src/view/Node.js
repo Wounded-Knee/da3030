@@ -178,7 +178,7 @@ class Node extends React.Component {
     ].join(' ');
     const linkedText = asAncestor || asDescendant
       ? <Link to={`/node/${node._id}`} exact>{ node.data.text }</Link>
-      : this.state.data;
+      : this.state.data.text;
 
     return {
       node: node,
@@ -219,6 +219,7 @@ class Node extends React.Component {
 
     if (!asAncestor && !asDescendant) this.track();
     if (setDocumentTitle) setDocumentTitle( node.data.text + ' - ' + author.data.name );
+
 
     return (
       <>

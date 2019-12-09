@@ -19,15 +19,15 @@ class Track extends DataManager {
 
 	userAddTrack(node, user) {
 		const oldSettings = this.annuitCœptis.getSettings();
-		console.log(`${user.name} tracked: `, node);
+		console.log(`${user.data.name} tracked: `, node);
 
 		return this.annuitCœptis.setSettings({
 			...oldSettings,
 			tracks: [
 				...(oldSettings.tracks || []),
 				{
-					nodeId: node.id,
-					userId: user.id,
+					nodeId: node.data.id,
+					userId: user.data.id,
 					date: new Date(),
 				},
 			],
@@ -36,13 +36,13 @@ class Track extends DataManager {
 
 	userHasTrack(nodeId, user) {
 		return this.getUserTracks(user).filter(
-			track => track.nodeId === nodeId && track.userId === user.id
+			track => track.nodeId === nodeId
 		).length > 0;
 	}
 
 	getUserTracks(user) {
 		return (this.annuitCœptis.getSettings().tracks || []).filter(
-			track => track.userId === user.id
+			track => track.userId === user.data.id
 		);
 	}
 
@@ -52,7 +52,7 @@ class Track extends DataManager {
 
 		return {
 			data: 'Node #'+nodeData.id,
-			userId: currentUser.id,
+			userId: currentUser.data.id,
 			nodeId: nodeData.id,
 			date: new Date(),
 		}

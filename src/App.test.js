@@ -2,22 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
-const addUser = username => {
-	return da.annuitCœptis.User.create(username);
-}
-
-const getUser = username => {
+const getUserByName = username => {
 	return da.annuitCœptis.User.filter(
 		user => user.data.name === username
 	)[0];
-}
-
-const addNode = (words, parentNode = null) => {
-	return da.annuitCœptis.Node.create(words, parentNode);
-}
-
-const getNodeById = id => {
-	return da.annuitCœptis.Node.getById(id);
 }
 
 it('renders without crashing', () => {
@@ -27,36 +15,37 @@ it('renders without crashing', () => {
 });
 
 it('can add user', () => {
-	addUser('John Locke');
-	const gotUser = getUser('John Locke');
-	expect(gotUser.data).toMatchSnapshot();
-})
-
-it('can be user', () => {
-	da.annuitCœptis.User.be(0);
-	const gotUser = da.annuitCœptis.getCurrentUser();
-	expect(gotUser.data).toMatchSnapshot();
+	da.annuitCœptis.User.create('Benjamin Franklin');
+	expect(getUserByName('Benjamin Franklin').data).toMatchSnapshot();
 })
 
 it('can add second user', () => {
-	addUser('Benjamin Franklin');
-	expect(getUser('Benjamin Franklin').data).toMatchSnapshot();
+	da.annuitCœptis.User.create('John Locke');
+	expect(getUserByName('John Locke').data).toMatchSnapshot();
 })
 
-it('persists users between tests', () => {
-	expect(getUser('Benjamin Franklin').data).toMatchSnapshot();	
-});
+it('can be user', () => {
+	da.annuitCœptis.User.be(1);
+	expect(da.annuitCœptis.getCurrentUser().data).toMatchSnapshot();
+})
 
 it('can add a node', () => {
-	const newNode = addNode('Test');
-	expect(getNodeById(newNode.data.id).data).toMatchSnapshot();
+	const newNode = da.annuitCœptis.Node.create('As people are walking all the time, in the same spot, a path appears.');
+	expect(da.annuitCœptis.Node.getById(newNode.data.id).data).toMatchSnapshot();
 })
 
 it('can add a child node', () => {
-	const parentNode = addNode('Test 2');
-	expect(getNodeById(parentNode.data.id).children).toMatchSnapshot();
-
-	const childNode = addNode('Test 2.1', parentNode);
-	expect(getNodeById(parentNode.data.id).children[0].data).toMatchSnapshot();
+	const parentNode = da.annuitCœptis.Node.getById(0);
+	const childNode = da.annuitCœptis.Node.create('We are like chameleons, we take our hue and the color of our moral character, from those who are around us.', parentNode);
+	expect(da.annuitCœptis.Node.getById(parentNode.data.id).children[0].data).toMatchSnapshot();
 });
 
+it('can track a visit to a node', () => {
+	const trackedNode = da.annuitCœptis.Node.getById(0);
+	const untrackedNode = da.annuitCœptis.Node.getById(1);
+	const user = da.annuitCœptis.getCurrentUser();
+	const track = da.annuitCœptis.Track.userAddTrack(trackedNode, user);
+
+	expect(da.annuitCœptis.Track.userHasTrack(trackedNode.data.id, user)).toEqual(true);
+	expect(da.annuitCœptis.Track.userHasTrack(untrackedNode.data.id, user)).toEqual(false);
+});

@@ -10,7 +10,7 @@ class Cloud extends DataManager {
 	getByContributorId(contributorId) {
 		return this.filter(
 			cloud =>
-				cloud.contributorId === contributorId
+				cloud.data.contributorId === contributorId
 		);
 	}
 
@@ -23,10 +23,10 @@ class Cloud extends DataManager {
 	getByUserEligibility(user) {
 		return this.filter(
 			cloud => {
-				return cloud.external.qualification.filter(
+				return cloud.data.external.qualification.filter(
 					nodeId =>
 						this.annuitCœptis.Track.userHasTrack(nodeId, user)
-				).length === cloud.external.qualification.length
+				).length === cloud.data.external.qualification.length
 			}
 		);
 	}
@@ -43,12 +43,10 @@ class Cloud extends DataManager {
 			nodeData === undefined
 		) return false;
 
-		return {
-			data: {
-				...nodeData,
-				contributorId: userId,
-			}
-		};
+		return super._createNodeData({
+			...nodeData,
+			contributorId: userId,
+		});
 	}
 };
 

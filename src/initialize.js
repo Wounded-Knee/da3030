@@ -16,7 +16,6 @@ const initialize = (annuitCœptis) => {
   }
 
   const addCloud = (name, description, intName, intDesc, accMessage, invMessage, qualificationNodes) => {
-    console.log('qn ', qualificationNodes);
     return annuitCœptis.Cloud.create({
       external: {
         name: name,

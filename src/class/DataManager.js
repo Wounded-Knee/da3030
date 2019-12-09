@@ -91,7 +91,6 @@ class DataManager {
 			type: this.nodeType,
 			authorId: userId,
 		};
-		console.log('Node._createNodeData()', newData, this.annuitCœptis.getSettings());
 
 		return (
 			nodeData instanceof Object

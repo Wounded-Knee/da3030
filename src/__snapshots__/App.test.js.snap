@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`can add a child node 1`] = `
+Object {
+  "authorId": 1,
+  "id": 1,
+  "text": "We are like chameleons, we take our hue and the color of our moral character, from those who are around us.",
+  "type": "node",
+}
+`;
+
+exports[`can add a node 1`] = `
+Object {
+  "authorId": 1,
+  "id": 0,
+  "text": "As people are walking all the time, in the same spot, a path appears.",
+  "type": "node",
+}
+`;
+
+exports[`can add second user 1`] = `
+Object {
+  "authorId": undefined,
+  "id": 1,
+  "name": "John Locke",
+  "type": "user",
+}
+`;
+
+exports[`can add user 1`] = `
+Object {
+  "authorId": undefined,
+  "id": 0,
+  "name": "Benjamin Franklin",
+  "type": "user",
+}
+`;
+
+exports[`can be user 1`] = `
+Object {
+  "authorId": undefined,
+  "id": 1,
+  "name": "John Locke",
+  "type": "user",
+}
+`;

@@ -184,7 +184,6 @@ var exports = {};
     * @return {Object} The node updated or null.
     */
     var update = function(id, newData, otherData = {}) {
-    	console.log('updating '+id);
         var theMatch = null;
         _.each(root.data, function(obj) {
             if(!theMatch) {
