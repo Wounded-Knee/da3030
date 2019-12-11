@@ -1,6 +1,7 @@
 import React from 'react';
 import Exposure from './Exposure';
 import { NODE_TYPES } from '../class/AbstractNode';
+import { anonymousUser } from '../class/User';
 import Slider from "react-slick";
 import {
   Link,
@@ -166,21 +167,27 @@ class Node extends React.Component {
     const { annuitCœptis, asAncestor, asDescendant, setDocumentTitle, noAncestors } = this.props;
     const { User, Node, ShadowNode } = annuitCœptis;
     const trueNode = this.getNode();
-    const anonymousUser = {
-      data: {
-        id: -1,
-        name: '👤 Anonymous',
+
+    const shadowNodeFills = {
+      'catchall': {
+        text: '...'
+      },
+      'skip': {
+        text: '[skip]'
       }
     };
 
     switch (trueNode.data.type) {
       case 'shadowNode':
+        const shadowNodeType = trueNode.data.shadowNodeType;
+        const nodeText = shadowNodeFills[shadowNodeType];
+        console.log('Backfilling ShadowNode.'+shadowNodeType+' with text: ', nodeText);
         var node = {
           ...trueNode,
           data: {
             ...trueNode.data,
             authorId: anonymousUser.id,
-            text: '...',
+            ...nodeText,
           }
         };
       break;
@@ -204,7 +211,7 @@ class Node extends React.Component {
     const classNames = [
       "node",
       "speech-bubble",
-      trailWardenMode ? 'trailWarden' : 'noTW',
+      trailWardenMode ? 'trailWarden' : '',
       authorMode ? 'author' : '',
       "author_"+authorClass,
     ].join(' ');

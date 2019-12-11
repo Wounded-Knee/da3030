@@ -11,6 +11,7 @@ import {
 } from 'react-router-dom';
 import Node from './view/Node';
 import AnnuitCœptis from './class/AnnuitCœptis';
+import AnnuitCœptisII from './class/AnnuitCœptisII';
 import CheatMenu from './view/CheatMenu';
 import Cloud from './view/Cloud';
 import Clouds from './view/Clouds';
@@ -34,6 +35,7 @@ class App extends React.Component {
     window.da = {
       ...window.da,
       app: this,
+      ac2: new AnnuitCœptisII(),
       annuitCœptis: this.annuitCœptis,
       user: this.annuitCœptis.User.getCurrent.bind(this.annuitCœptis.User),
       initialize: initialize.bind(this, this.annuitCœptis),

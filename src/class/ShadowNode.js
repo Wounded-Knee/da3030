@@ -1,15 +1,14 @@
 import AbstractNode, { NODE_TYPES } from './AbstractNode';
 const SHADOW_NODE_TYPES = {
 	SHADOW_NODE_CATCHALL: 'catchall',
+	SHADOW_NODE_SKIP: 'skip',
 };
 const NODE_TYPE = NODE_TYPES.NODE_TYPE_SHADOWNODE;
-const SHADOW_NODE_TYPE = SHADOW_NODE_TYPES.SHADOW_NODE_CATCHALL;
 
 class ShadowNode extends AbstractNode {
 	constructor() {
 		super(...arguments);
 		this.nodeType = NODE_TYPE;
-		this.shadowNodeType = SHADOW_NODE_TYPE;
 	}
 
 	getChildrenOf(parentNode) {
@@ -18,7 +17,7 @@ class ShadowNode extends AbstractNode {
 				...child,
 				data: {
 					...child.data,
-					text: '...',
+					text: 'xxx',
 				}
 			})
 		);
@@ -26,18 +25,11 @@ class ShadowNode extends AbstractNode {
 	}
 
 	shadow(node) {
-		console.log(`Shadowing ${node.data.text}`);
-		const rv = this.create({
-			shadowNodeType: SHADOW_NODE_TYPES.SHADOW_NODE_CATCHALL,
-		}, node);
-		console.log('shadow', rv);
-		return rv;
-	}
-
-	_createNodeData(data) {
-		return super._createNodeData({
-			shadowNodeType: this.shadowNodeType,
-		});
+		console.log([
+			'shadow nodes created: ',
+			this.create({ parentNodeId: node.data.id, shadowNodeType: SHADOW_NODE_TYPES.SHADOW_NODE_CATCHALL}),
+			this.create({ parentNodeId: node.data.id, shadowNodeType: SHADOW_NODE_TYPES.SHADOW_NODE_SKIP}),
+		]);
 	}
 };
 

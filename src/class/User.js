@@ -1,5 +1,11 @@
 import DataManager from './DataManager';
 import { NODE_TYPES } from './AbstractNode';
+const anonymousUser = {
+  data: {
+    id: -1,
+    name: '👤 Anonymous',
+  }
+};
 
 class User extends DataManager {
 	constructor() {
@@ -12,7 +18,7 @@ class User extends DataManager {
 	}
 
 	getCurrent() {
-		return this.annuitCœptis.getCurrentUser() || { data: { id: -1, name: '❓ Anonymous' } };
+		return this.annuitCœptis.getCurrentUser() || anonymousUser;
 	}
 
 	_createNodeData(nodeData) {
@@ -24,4 +30,7 @@ class User extends DataManager {
 	}
 };
 
-export default User;
+export {
+	anonymousUser,
+	User as default,
+};
