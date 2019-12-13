@@ -10,6 +10,7 @@ const EVENT_TYPES = {
 const ATTRIBUTE_NAMES = {
 	META: '_meta',
 	MODEL_TYPE: 'modelName',
+	ID: 'id',
 };
 
 class Generic {
@@ -23,6 +24,10 @@ class Generic {
 
 	get(attribute) {
 		return attribute ? this.data[attribute] : this.data;
+	}
+
+	getId() {
+		return this.metaData[ATTRIBUTE_NAMES.ID];
 	}
 
 	serialize() {
