@@ -7,27 +7,18 @@ const EVENT_TYPES = {
 	SERIALIZED: 'Serialized',
 	DESERIALIZED: 'Deserialized',
 };
+const ATTRIBUTE_NAMES = {
+	META: '_meta',
+	MODEL_TYPE: 'modelName',
+};
 
 class Generic {
 	constructor(data) {
-		this.data = data;
-		this.modelName = MODEL_TYPES.GENERIC;
+		this.deserialize(data);
+	}
 
-		this.data = {
-			...data,
-			meta: {
-				...this.data.meta,
-				modelName: this.modelName,
-				events: [
-					...this.data.meta.events || [],
-					{
-						userId: 0,
-						date: new Date(),
-						type: EVENT_TYPES.CREATED,
-					}
-				],
-			}
-		};
+	getModelType() {
+		return MODEL_TYPES.GENERIC;
 	}
 
 	get(attribute) {
@@ -35,52 +26,73 @@ class Generic {
 	}
 
 	serialize() {
+		this.recordEvent(EVENT_TYPES.SERIALIZED);
 		return {
 			...this.data,
-			meta: {
-				...this.data.meta,
-				events: [
-					...this.data.meta.events,
-					{
-						userId: 0,
-						date: new Date(),
-						type: EVENT_TYPES.SERIALIZED,
-					}
-				],
+			[ATTRIBUTE_NAMES.META]: {
+				...this.metaData,
+				[ATTRIBUTE_NAMES.MODEL_TYPE]: this.getModelType(),
 			}
 		};
 	}
 
 	deserialize(data) {
-		this.data = {
-			...data,
-			meta: {
-				...data.meta,
-				events: [
-					...data.meta.events,
-					{
-						userId: 0,
-						date: new Date(),
-						type: EVENT_TYPES.DESERIALIZED,
-					}
-				],
-			}
+		this.data = {};
+		this.metaData = {
+			events: [],
 		};
+		if (data) {
+			const metaData = data[ATTRIBUTE_NAMES.META];
+			this.data = data;
+			if (metaData) {
+				const modelName = metaData[ATTRIBUTE_NAMES.MODEL_TYPE];
+				if (modelName !== this.getModelType()) {
+					throw new Error(`${this.getModelType()}.deserialize() Wrong model type: ${modelName}`);
+					return false;
+				}
+				this.metaData = {
+					...metaData,
+					events: [
+						...metaData.events || [],
+					]
+				};
+				delete this.data[ATTRIBUTE_NAMES.META];
+			} else {
+				throw new Error(`${this.getModelType()}.deserialize() No metadata`, data);
+				return false;
+			}
+		}
+		this.recordEvent(EVENT_TYPES.DESERIALIZED)
 		return this.data;
+	}
+
+	recordEvent(eventType, eventData) {
+		if (Object.values(EVENT_TYPES).indexOf(eventType) === -1) {
+			throw new Error(`${this.getModelType()}.recordEvent() Can't record an invalid eventType: ${eventType}`);
+			return false;
+		}
+
+		const newEvent = {
+			userId: 0,
+			date: new Date(),
+			type: eventType,
+			data: eventData,
+		};
+		this.metaData.events.push(newEvent);
+		return newEvent;
 	}
 }
 
 class Clown extends Generic {
-	constructor(data) {
-		const rv = super(data);
-		this.modelName = MODEL_TYPES.CLOWN;
-		return rv;
+	getModelType() {
+		return MODEL_TYPES.CLOWN;
 	}
 }
 
 export {
 	MODEL_TYPES,
 	EVENT_TYPES,
+	ATTRIBUTE_NAMES,
 	Generic,
 	Clown,
 }

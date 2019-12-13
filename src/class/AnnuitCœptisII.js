@@ -1,5 +1,5 @@
 import * as Models from './Models';
-const { MODEL_TYPES } = Models;
+const { MODEL_TYPES, ATTRIBUTE_NAMES } = Models;
 const AnnuitCœptisIIData = [];
 
 class AnnuitCœptisII {
@@ -13,8 +13,9 @@ class AnnuitCœptisII {
 		const model = Models[modelType];
 		const newNode = new model({
 			...data,
-			meta: {
+			[ATTRIBUTE_NAMES.META]: {
 				id: this.iterator++,
+				[ATTRIBUTE_NAMES.MODEL_TYPE]: modelType,
 			},
 		});
 		AnnuitCœptisIIData.push(newNode);
