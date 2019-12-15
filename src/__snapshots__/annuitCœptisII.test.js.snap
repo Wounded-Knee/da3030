@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Can have children 1`] = `"Generic 1003"`;
+
+exports[`Can have children 2`] = `"Generic 1004"`;
+
+exports[`Can load() 1`] = `1000`;
+
+exports[`Can retrieve an arbitrary node by text value 1`] = `1000`;
+
+exports[`Can retrieve an arbitrary node by text value 2`] = `1002`;
+
+exports[`Can set data by attribute 1`] = `"H.Con.Res.331-1988"`;
+
+exports[`Can set data by attribute 2`] = `"1GCEG15W4Y1142815"`;
+
+exports[`Cannot be clear()'ed 1`] = `1000`;
+
+exports[`Records audit trail in events 1`] = `"Set Data by Attribute"`;
+
+exports[`Records audit trail in events 2`] = `2`;
