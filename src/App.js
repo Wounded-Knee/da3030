@@ -2,6 +2,11 @@ import React from 'react';
 import initialize from './initialize';
 import UserSelector from './view/UserSelector';
 import Profile from './view/Profile';
+import CheatMenu from './view/CheatMenu';
+import {
+  User,
+  MODEL_TYPES,
+} from './class/Models';
 import {
   BrowserRouter as Router,
   Route,
@@ -9,12 +14,7 @@ import {
   Redirect,
   NavLink,
 } from 'react-router-dom';
-import Node from './view/Node';
-import AnnuitCœptis from './class/AnnuitCœptis';
 import AnnuitCœptisII from './class/AnnuitCœptisII';
-import CheatMenu from './view/CheatMenu';
-import Cloud from './view/Cloud';
-import Clouds from './view/Clouds';
 import Home from './view/Home';
 import './App.css';
 
@@ -28,17 +28,15 @@ class App extends React.Component {
       renderAgain: 0,
     };
 
-    this.annuitCœptis = new AnnuitCœptis({
+    this.annuitCœptisII = new AnnuitCœptisII({
       onChange: this.triggerRender.bind(this),
     });
 
     window.da = {
       ...window.da,
       app: this,
-      ac2: new AnnuitCœptisII(),
-      annuitCœptis: this.annuitCœptis,
-      user: this.annuitCœptis.User.getCurrent.bind(this.annuitCœptis.User),
-      initialize: initialize.bind(this, this.annuitCœptis),
+      ac2: this.annuitCœptisII,
+      initialize: initialize.bind(this, this.annuitCœptisII),
     };
   }
 
@@ -57,12 +55,14 @@ class App extends React.Component {
   }
 
   addNodePrompt(e) {
-    const data = prompt('Node name?','');
+    const text = prompt('Node name?','');
 
     e.preventDefault();
 
-    if (data) {
-      this.annuitCœptis.Node.create(data);
+    if (text) {
+      this.annuitCœptisII.create({
+        text
+      }, MODEL_TYPES.TEXT_NODE);
     }
   }
 
@@ -70,21 +70,19 @@ class App extends React.Component {
     document.title = title;
   }
 
-  renderNotifications(qty) {
+  renderNotifications(notificationType) {
+    const notifications = this.annuitCœptisII.getByModelType(notificationType);
+    const qty = notifications.length;
     return qty ? <span className="count">{ qty }</span> : null;
   }
 
   render() {
-    const currentUser = this.annuitCœptis.User.getCurrent();
+    const currentUser = this.annuitCœptisII.getCurrentUser();
     const [ currentUserEmoji ] = currentUser.data.name;
     const currentUserName = currentUser.data.name.substring(2);
     const css = [
-      ...this.annuitCœptis.User.getAll(),
-      {
-        data: {
-          name: '👤 Anonymous'
-        }
-      },
+      ...this.annuitCœptisII.filter(user => user.getModelType() === MODEL_TYPES.USER),
+      User.getAnonymous(),
     ].map(
       user => {
         const [ emoji ] = user.data.name;
@@ -104,19 +102,42 @@ class App extends React.Component {
           { this.state.redirectId ? <Redirect to={ `/node/${this.state.redirectId}` } /> : null }
 
           <header className="App-header">
-            <CheatMenu da={ window.da } redirect={ this.redirect.bind(this) } annuitCœptis={ this.annuitCœptis } />
-            <UserSelector annuitCœptis={ this.annuitCœptis } />
+            <CheatMenu da={ window.da } redirect={ this.redirect.bind(this) } annuitCœptisII={ this.annuitCœptisII } />
+            <UserSelector annuitCœptisII={ this.annuitCœptisII } />
             <ul>
               <li title="Home" className="home">
-                { this.renderNotifications(0) }
+                {/*
+                  Home is where you see all the recent stuff contributed by your friends into
+                  their own Home zone. We skim from your friends, and your followed entities,
+                  the stuff they are posting for followers, it is all aggregated in HOME.
+                */}
+                { this.renderNotifications(MODEL_TYPES.HOME_NOTIFICATION) }
                 <NavLink to="/" exact activeClassName={ activeClassName }>🏠</NavLink>
               </li>
               <li title="Clouds" className="clouds">
-                { this.renderNotifications(this.annuitCœptis.Cloud.getNotifications(currentUser)) }
+                {/*
+                  Cloud is where you see a CLOUD of entities. These are your friends and your
+                  followed entities, themselves. Here you can see the list of them, organized
+                  geometrically. Your mom, your pastor, your buddy, your friend's dog.
+
+                  Upon selecting an entity, you see only the stuff contributed by that entity,
+                  but unlike with Home, you see ALL of it, and it's concentrated.
+                */}
+                { this.renderNotifications(MODEL_TYPES.CLOUD_NOTIFICATION) }
                 <NavLink to="/clouds" exact activeClassName={ activeClassName }>☁️</NavLink>
               </li>
               <li title={ currentUserName } className="profile">
-                { this.renderNotifications(0) }
+                {/*
+                  Profile? Depends. Who's viewing it?
+                    The owner of it
+                      The owner sees everything he's ever posted.
+
+                    Someone else
+                      This is where your followed entities, and friends, see what you have posted
+                      UP TO the boundary of the realm of privacy to which that friend / entity is party, according
+                      to your own designation.
+                */}
+                { this.renderNotifications(MODEL_TYPES.USER_NOTIFICATION) }
                 <NavLink to="/profile" exact activeClassName={ activeClassName }>{ currentUserEmoji }</NavLink>
               </li>
               <li title="Speak">
@@ -135,31 +156,31 @@ class App extends React.Component {
                   props => <Home
                     {...props}
                     redirect={ this.redirect.bind(this) }
-                    annuitCœptis={ this.annuitCœptis }
+                    annuitCœptisII={ this.annuitCœptisII }
                   />
                 }
               />
 
-              <Route
+{/*              <Route
                 path="/clouds"
                 exact
                 render={
                   props => <Clouds
                     {...props}
-                    annuitCœptis={ this.annuitCœptis }
+                    annuitCœptisII={ this.annuitCœptisII }
                   />
                 }
               />
-
               <Route
                 path="/cloud/:cloudId"
                 render={
                   props => <Cloud
                     {...props}
-                    annuitCœptis={ this.annuitCœptis }
+                    annuitCœptisII={ this.annuitCœptisII }
                   />
                 }
               />
+*/}
 
               <Route
                 path="/profile"
@@ -167,7 +188,7 @@ class App extends React.Component {
                 render={
                   props => <Profile
                     {...props}
-                    annuitCœptis={ this.annuitCœptis }
+                    annuitCœptisII={ this.annuitCœptisII }
                   />
                 }
               />
@@ -177,7 +198,7 @@ class App extends React.Component {
                 render={
                   props => <Profile
                     {...props}
-                    annuitCœptis={ this.annuitCœptis }
+                    annuitCœptisII={ this.annuitCœptisII }
                   />
                 }
               />
@@ -187,13 +208,13 @@ class App extends React.Component {
                 render={
                   props => <ul className="nodeList">
                     <li>
-                      <Node
+{/*                      <Node
                         {...props}
                         setDocumentTitle={ this.setDocumentTitle.bind(this) }
                         redirect={ this.redirect.bind(this) }
-                        annuitCœptis={ this.annuitCœptis }
+                        annuitCœptisII={ this.annuitCœptisII }
                       />
-                    </li>
+*/}                    </li>
                   </ul>
                 }
               />

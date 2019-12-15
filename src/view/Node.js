@@ -1,7 +1,6 @@
 import React from 'react';
 import Exposure from './Exposure';
-import { NODE_TYPES } from '../class/AbstractNode';
-import { anonymousUser } from '../class/User';
+import { User } from '../class/Models';
 import Slider from "react-slick";
 import {
   Link,
@@ -34,21 +33,21 @@ class Node extends React.Component {
   }
 
   getNode() {
-    const { match: { params: { nodeId } }, annuitCœptis } = this.props;
-    return annuitCœptis.Node.find(nodeId);
+    const { match: { params: { nodeId } }, annuitCœptisII } = this.props;
+    return annuitCœptisII.getById(nodeId);
   }
 
   promptAddChildNode() {
-    const { annuitCœptis } = this.props;
+    const { annuitCœptisII } = this.props;
     const parentNode = this.getNode();
-    const fromUser = annuitCœptis.User.getCurrent();
-    const toUser = annuitCœptis.User.getById(parentNode.data.authorId);
+    const fromUser = annuitCœptisII.User.getCurrent();
+    const toUser = annuitCœptisII.User.getById(parentNode.data.authorId);
     const subj = parentNode.data.text.substring(parentNode.data.text.length - 20);
     const text = prompt(
       `From: ${ fromUser.data.name }\n`+
       `To: ${ toUser.data.name }\n`+
       `Subj: ... ${ subj }\n`, '');
-    if (text) annuitCœptis.Node.create(text, parentNode);
+    if (text) annuitCœptisII.Node.create(text, parentNode);
   }
 
   onChangeExposure(level) {
@@ -59,8 +58,8 @@ class Node extends React.Component {
   }
 
   deleteNode() {
-    const { annuitCœptis } = this.props;
-    if (window.confirm('Delete it?')) annuitCœptis.Node.delete(this.getNode());
+    const { annuitCœptisII } = this.props;
+    if (window.confirm('Delete it?')) annuitCœptisII.Node.delete(this.getNode());
   }
 
   getControls(node, authorMode, author) {
@@ -101,11 +100,11 @@ class Node extends React.Component {
     const {
       parentNode,
       noAncestors,
-      annuitCœptis,
+      annuitCœptisII,
     } = this.getMetaData();
 
     return parentNode && !noAncestors ? (
-      <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptis={ annuitCœptis } asAncestor />
+      <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptisII={ annuitCœptisII } asAncestor />
     ) : null;
   }
 
@@ -130,7 +129,7 @@ class Node extends React.Component {
     const {
       asAncestor,
       asDescendant,
-      annuitCœptis,
+      annuitCœptisII,
       node,
       children,
       authorMode,
@@ -153,7 +152,7 @@ class Node extends React.Component {
           finalChildren.map(
             node => <Node
               match={{ params: { nodeId: node._id }}}
-              annuitCœptis={ annuitCœptis }
+              annuitCœptisII={ annuitCœptisII }
               noAncestors
               asDescendant
             />
@@ -164,8 +163,8 @@ class Node extends React.Component {
   }
 
   getMetaData() {
-    const { annuitCœptis, asAncestor, asDescendant, setDocumentTitle, noAncestors } = this.props;
-    const { User, Node, ShadowNode } = annuitCœptis;
+    const { annuitCœptisII, asAncestor, asDescendant, setDocumentTitle, noAncestors } = this.props;
+    const { Node, ShadowNode } = annuitCœptisII;
     const trueNode = this.getNode();
 
     const shadowNodeFills = {
@@ -186,7 +185,7 @@ class Node extends React.Component {
           ...trueNode,
           data: {
             ...trueNode.data,
-            authorId: anonymousUser.id,
+            authorId: User.getAnonymous().id,
             ...nodeText,
           }
         };
@@ -196,17 +195,18 @@ class Node extends React.Component {
       break;
     }
 
-    var nodeText = node.data.text;
-    const children = Node.getChildrenOf(node);
-    const shadowChildren = ShadowNode.getChildrenOf(node);
-    const author = node.data.authorId === anonymousUser.id
-      ? anonymousUser
+    var nodeText = node.getCardinalValue();
+    const children = node.getChildren();
+    //const shadowChildren = ShadowNode.getChildrenOf(node);
+    const shadowChildren = [];
+    console.log('User',User);
+    const author = node.data.authorId === User.getAnonymous().id
+      ? User.getAnonymous()
       : User.getById(node.data.authorId);
-    const spectator = User.getCurrent();
-    const parentNode = annuitCœptis.Node.getParentOf(node);
+    const spectator = annuitCœptisII.getCurrentUser();
+    const parentNode = node.getParent();
     const authorMode = spectator === author;
-    const trailWardenMode = annuitCœptis.Node.getTrailhead(node).data.authorId === author.data.id;
-    const regularNodeType = node.data.type === NODE_TYPES.NODE_TYPE_NODE;
+    const trailWardenMode = false; //annuitCœptisII.Node.getTrailhead(node).data.authorId === author.data.id;
     const authorClass = author.data.name.substring(0,2);
     const classNames = [
       "node",
@@ -229,7 +229,7 @@ class Node extends React.Component {
       classNames,
       linkedText,
       noAncestors,
-      annuitCœptis,
+      annuitCœptisII,
       setDocumentTitle,
       asAncestor,
       asDescendant,
@@ -239,9 +239,9 @@ class Node extends React.Component {
   }
 
   track() {
-    const { annuitCœptis } = this.props;
+    const { annuitCœptisII } = this.props;
 
-    annuitCœptis.Track.userAddTrack(this.getNode(), annuitCœptis.User.getCurrent());
+    annuitCœptisII.Track.userAddTrack(this.getNode(), annuitCœptisII.User.getCurrent());
   }
 
   render() {

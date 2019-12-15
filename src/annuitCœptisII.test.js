@@ -10,16 +10,30 @@ const {
 const annuitCœptisII = new AnnuitCœptisII();
 const saveFileName = 'SH10151';
 const testTextValue = '1GCEG15W4Y1142815';
-const getData = (nodeType, iterator) => ({ text: `This is ${nodeType} #${iterator}` });
+const getData = (modelType, iterator) => {
+	var data = {
+		_meta: {
+			id: iterator
+		}
+	};
+	switch (modelType) {
+		default:
+			return {
+				...data,
+				text: `This is ${modelType} #${iterator}`
+			};
+		break;
+	}
+};
 
-const testCreateBatchByType = (nodeType, qty, getDataCallback = getData) => {
+const testCreateBatchByType = (modelType, qty, getDataCallback = getData) => {
 	for (var x=0; x<qty; x++) {
-		annuitCœptisII.create(getDataCallback(nodeType, x), nodeType);
+		annuitCœptisII.create(getDataCallback(modelType, x), modelType);
 	}
 
 	expect(
 		annuitCœptisII.filter(
-			node => node.getModelType() === nodeType
+			node => node.getModelType() === modelType
 		).length
 	).toEqual(qty);
 };
@@ -75,7 +89,7 @@ it(`Can retrieve an arbitrary node by text value`, () => {
 	testCreateBatchByType(
 		MODEL_TYPES.GENERIC,
 		3,
-		(nodeType, iterator) => ({ text: testTextValue }),
+		(modelType, iterator) => ({ text: testTextValue }),
 	);
 
 	const results = annuitCœptisII.filter(
@@ -92,8 +106,8 @@ it(`Can have children`, () => {
 	testCreateBatchByType(
 		MODEL_TYPES.GENERIC,
 		1914,
-		(nodeType, iterator) => ({
-			...getData(nodeType, iterator),
+		(modelType, iterator) => ({
+			...getData(modelType, iterator),
 			maternityTest: true
 		}),
 	);

@@ -1,35 +1,42 @@
 import * as Models from './Models';
-const { MODEL_TYPES, ATTRIBUTE_NAMES } = Models;
+import { LOCAL_STORAGE_NAMES } from '../PROPHET60091';
+const {
+	MODEL_TYPES,
+	ATTRIBUTE_NAMES,
+	User
+} = Models;
 var AnnuitCœptisIIData = [];
 
 class AnnuitCœptisII {
-	constructor({ loadFile } = {}) {
+	constructor({ loadFile, onChange } = {}) {
 		this.iterator = 0;
 		this.dirty = false;
+		this.onChange = onChange || function() {};
 		this.load(loadFile);
-		this.models = {
-			[MODEL_TYPES.GENERIC]: Models[MODEL_TYPES.GENERIC],
-		};
+		this.models = Models;
+	}
+
+	somethingChanged(model = undefined) {
+		this.onChange();
 	}
 
 	create(data, modelType = MODEL_TYPES.GENERIC) {
 		const model = Models[modelType];
-		const newNode = new model({
-			...data,
-			[ATTRIBUTE_NAMES.META]: {
-				[ATTRIBUTE_NAMES.ID]: this.iterator++,
-				[ATTRIBUTE_NAMES.MODEL_TYPE]: modelType,
-			},
-		}, this);
-		AnnuitCœptisIIData.push(newNode);
-		this.dirty = true;
-		return newNode;
-	}
-
-	getById(id) {
-		return this.filter(
-			node => node.getId() === id
-		)[0];
+		if (model) {
+			const newNode = new model({
+				...data,
+				[ATTRIBUTE_NAMES.META]: {
+					[ATTRIBUTE_NAMES.ID]: this.iterator++,
+					[ATTRIBUTE_NAMES.MODEL_TYPE]: modelType,
+				},
+			}, this);
+			AnnuitCœptisIIData.push(newNode);
+			this.dirty = true;
+			return newNode;
+		} else {
+			console.log(Models);
+			throw new Error(`${modelType} does not exist.`);
+		}
 	}
 
 	filter(callback) {
@@ -80,8 +87,60 @@ class AnnuitCœptisII {
 		return true;
 	}
 
+	getById(id) {
+		return this.filter(
+			node => node.getId() === id
+		)[0];
+	}
+
 	getData() {
 		return AnnuitCœptisIIData;
+	}
+
+	getNotifications(notificationType) {
+		return [];
+	}
+
+	getCurrentUser() {
+		return (this.getByModelType(MODEL_TYPES.USER).filter(
+			user => user.isCurrent()
+		)[0]) || User.getAnonymous();
+	}
+
+	getTrailheads() {
+		return this.getByModelType(MODEL_TYPES.TEXT_NODE).filter(
+			textNode => !textNode.getParent()
+		);
+	}
+
+	getByModelType(modelType) {
+		return this.filter(
+			node => node.getModelType() === modelType
+		);
+	}
+
+	getLocalStorageInfo() {
+		return {
+			storageData: this.getLocalStorage(LOCAL_STORAGE_NAMES.DATA)
+		};
+	}
+
+	getLocalStorage(fileName) {
+		return JSON.parse(localStorage.getItem(fileName) || '{}');
+	}
+
+	setLocalStorage(fileName, data) {
+		localStorage.setItem(
+			fileName,
+			JSON.stringify(data),
+		);
+		const newValue = this.getLocalStorage(fileName);
+		console.log('setLocalStorage() ', newValue);
+		return newValue;
+	}
+
+	represent() {
+		return this.map(model => model.represent());
 	}
 
 	_getFreshId(nodes = AnnuitCœptisIIData) {
@@ -96,4 +155,7 @@ class AnnuitCœptisII {
 	}
 }
 
-export default AnnuitCœptisII;
+export {
+	AnnuitCœptisII as default,
+	LOCAL_STORAGE_NAMES,
+};

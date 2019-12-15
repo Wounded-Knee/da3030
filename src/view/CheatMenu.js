@@ -5,8 +5,8 @@ const menu = {
 	'😎': {
 		summary: 'Enable stealth mode, concealing D3 from shoulder surfers.',
 		execute: (cheatMenu) => {
-			const { annuitCœptis } = cheatMenu.props;
-			annuitCœptis.toggleBossMode();
+			const { annuitCœptisII } = cheatMenu.props;
+			annuitCœptisII.toggleBossMode();
 			return true;
 		}
 	},
@@ -49,9 +49,9 @@ class CheatMenu extends React.Component {
 	}
 
 	render() {
-		const { annuitCœptis } = this.props;
+		const { annuitCœptisII } = this.props;
 		const localStorageSizeKb = parseInt(
-			(annuitCœptis.getLocalStorageInfo().storageData || '').length / 1024 * 100
+			(annuitCœptisII.getLocalStorageInfo().storageData || '').length / 1024 * 100
 		)/100;
 
 		return (

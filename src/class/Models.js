@@ -1,6 +1,13 @@
+import { LOCAL_STORAGE_NAMES } from '../PROPHET60091';
+
 const MODEL_TYPES = {
 	GENERIC: 'Generic',
 	CLOWN: 'Clown',
+	USER: 'User',
+	TEXT_NODE: 'TextNode',
+	CLOUD_NOTIFICATION: 'CloudNotification',
+	HOME_NOTIFICATION: 'HomeNotification',
+	USER_NOTIFICATION: 'UserNotification',
 };
 const EVENT_TYPES = {
 	CREATED: 'Created',
@@ -21,11 +28,30 @@ const ATTRIBUTE_NAMES = {
 	PARENT_ID: 'parentId',
 };
 
+/**
+ * Creation of a new Generic() model requires
+ * a payload of initial data, and a link to
+ * the desired annuitCœptisII instance.
+ *
+ * The payload, at bare minimum, must contain
+ *   {
+ *     [ATTRIBUTE_NAMES.META]: {
+ *       [ATTRIBUTE_NAMES.ID]: int
+ *     }
+ *   }
+ *
+ * Descendant clases may impose further
+ * requirements at their discretion.
+ **/
 class Generic {
 	constructor(data, annuitCœptisII) {
 		this.annuitCœptisII = annuitCœptisII;
-		this.deserialize(data);
+		this.set(data);
 		this.dirty = false;
+	}
+
+	onChange() {
+		if (this.annuitCœptisII) this.annuitCœptisII.somethingChanged(this);
 	}
 
 	getModelType() {
@@ -37,18 +63,37 @@ class Generic {
 	}
 
 	set(value, attributeName = undefined) {
+		const authorId = this.annuitCœptisII
+			? this.annuitCœptisII.getCurrentUser().getId()
+			: -1
 		if (!attributeName) {
 			if (!this.isValidDataObject(value)) {
 				throw new Error(`${this.getModelType()}.set(): Invalid data object provided.`);
-				return false;
 			} else {
-				this.recordEvent(EVENT_TYPES.SET_DATA_OBJ, value);
-				return this.deserialize(value);
+				const metaData = this.metaData || value[ATTRIBUTE_NAMES.META];
+				if (metaData) {
+					const modelName = metaData[ATTRIBUTE_NAMES.MODEL_TYPE] || this.getModelType();
+					if (modelName !== this.getModelType()) {
+						throw new Error(`${this.getModelType()}.set() Wrong model type: ${modelName}`);
+					}
+					this.metaData = {
+						...metaData,
+						authorId: authorId,
+						events: [
+							...metaData.events || [],
+						]
+					};
+					delete value[ATTRIBUTE_NAMES.META];
+					this.data = value;
+					this.recordEvent(EVENT_TYPES.SET_DATA_OBJ, value);
+					return true;
+				} else {
+					throw new Error(`${this.getModelType()}.set() No metadata`, value);
+				}
 			}
 		} else {
 			if (!this.isValidAttributeValue(value, attributeName)) {
 				throw new Error(`${this.getModelType()}.set(): Invalid data attribute value provided.`);
-				return false;
 			} else {
 				this.recordEvent(EVENT_TYPES.SET_DATA, {value, attributeName});
 				this.data[attributeName] = value;
@@ -89,12 +134,6 @@ class Generic {
 		);
 	}
 
-	isValidDataObject(dataObject) {
-		return dataObject instanceof Object &&
-			typeof(dataObject) === 'object' &&
-			!(dataObject instanceof Array);
-	}
-
 	isValidAttributeValue(attributeValue, attributeName) {
 		return true;
 	}
@@ -130,40 +169,9 @@ class Generic {
 		};
 	}
 
-	deserialize(data) {
-		this.data = {};
-		this.metaData = {
-			events: [],
-		};
-		if (data) {
-			const metaData = data[ATTRIBUTE_NAMES.META];
-			this.data = data;
-			if (metaData) {
-				const modelName = metaData[ATTRIBUTE_NAMES.MODEL_TYPE];
-				if (modelName !== this.getModelType()) {
-					throw new Error(`${this.getModelType()}.deserialize() Wrong model type: ${modelName}`);
-					return false;
-				}
-				this.metaData = {
-					...metaData,
-					events: [
-						...metaData.events || [],
-					]
-				};
-				delete this.data[ATTRIBUTE_NAMES.META];
-			} else {
-				throw new Error(`${this.getModelType()}.deserialize() No metadata`, data);
-				return false;
-			}
-		}
-		this.recordEvent(EVENT_TYPES.DESERIALIZED)
-		return this.data;
-	}
-
 	recordEvent(eventType, eventData) {
 		if (Object.values(EVENT_TYPES).indexOf(eventType) === -1) {
 			throw new Error(`${this.getModelType()}.recordEvent() Can't record an invalid eventType: ${eventType}`);
-			return false;
 		}
 
 		const newEvent = {
@@ -173,7 +181,10 @@ class Generic {
 			data: eventData,
 		};
 		this.metaData.events.push(newEvent);
-		if (this.isEventDirty(eventType)) this.dirty = true;
+		if (this.isEventDirty(eventType)) {
+			this.dirty = true;
+			this.onChange();
+		}
 		return newEvent;
 	}
 
@@ -196,13 +207,183 @@ class Generic {
 			event => event.type === eventType
 		);
 	}
+
+	isValidDataObject(data) {
+		if (data instanceof Object &&
+			typeof(data) === 'object' &&
+			!(data instanceof Array)
+		) {
+			const dataKeys = Object.keys(data);
+			const requiredKeys = this.getValidDataObjectKeys();
+			const requiredKeysWhichWereProvided = requiredKeys.filter(
+				requiredKey => 
+					dataKeys.includes(requiredKey)
+			);
+			const unknownKeys = dataKeys.filter(
+				providedKey => 
+					!requiredKeys.includes(providedKey)
+			);
+			if (
+				requiredKeysWhichWereProvided.length === requiredKeys.length &&
+				unknownKeys.length === 0
+			) {
+				return true;
+			} else {
+				if (unknownKeys.length > 0) {
+					console.error(data);
+					console.warn(
+						`${this.getModelType()}.isValidDataObject() received invalid keys: `, unknownKeys
+					);
+				}
+				if (requiredKeysWhichWereProvided.length !== requiredKeys.length) {
+					console.warn(requiredKeysWhichWereProvided, requiredKeys);
+				}
+				return false;
+			};
+		} else {
+			console.warn(
+				`${this.getModelType()}.isValidDataObject() was called with shit data, boss.`
+			);
+			return false;
+		}
+	}
+
+	represent() {
+		return `${this.getModelType()} ${this.getCardinalValue()}`;
+	}
+
+	getCardinalValue() {
+		return this.getId();
+	}
+
+	getValidDataObjectKeys() {
+		return [
+			ATTRIBUTE_NAMES.META
+		];
+	}
 }
 
+/**
+ * New Clown() data payload requirements:
+ *
+ *   {
+ *     [ATTRIBUTE_NAMES.META]: {
+ *       [ATTRIBUTE_NAMES.ID]: int
+ *       [CLOWN_ATTR_NAME.TEXT]: string
+ *     }
+ *   }
+ *
+ **/
+const CLOWN_ATTR_NAME = {
+	TEXT: 'text',
+};
 class Clown extends Generic {
 	getModelType() {
 		return MODEL_TYPES.CLOWN;
 	}
+
+	represent() {
+		return `${this.getModelType()} who says ${this.getCardinalValue()}`;
+	}
+
+	getCardinalValue() {
+		return this.get('text');
+	}
+
+	getValidDataObjectKeys() {
+		return [
+			...super.getValidDataObjectKeys(),
+			...Object.values(CLOWN_ATTR_NAME),
+		];
+	}
 }
+
+/**
+ * New TextNode() data payload requirements:
+ *
+ *   {
+ *     [ATTRIBUTE_NAMES.META]: {
+ *       [ATTRIBUTE_NAMES.ID]: int
+ *       [TEXT_NODE_ATTR_NAME.TEXT]: string
+ *     }
+ *   }
+ *
+ **/
+const TEXT_NODE_ATTR_NAME = {
+	TEXT: 'text',
+};
+class TextNode extends Generic {
+	getModelType() {
+		return MODEL_TYPES.TEXT_NODE;
+	}
+
+	getCardinalValue() {
+		return this.get('text');
+	}
+
+
+	getValidDataObjectKeys() {
+		return [
+			...super.getValidDataObjectKeys(),
+			...Object.values(TEXT_NODE_ATTR_NAME),
+		];
+	}
+}
+
+/**
+ * New User() data payload requirements:
+ *
+ *   {
+ *     [ATTRIBUTE_NAMES.META]: {
+ *       [ATTRIBUTE_NAMES.ID]: int
+ *       [USER_ATTR_NAME.NAME]: string
+ *     }
+ *   }
+ *
+ **/
+const USER_ATTR_NAME = {
+	NAME: 'name',
+};
+class User extends Generic {
+	getModelType() {
+		return MODEL_TYPES.USER;
+	}
+
+	be() {
+		console.log('Being ', this);
+		return this.annuitCœptisII.setLocalStorage(
+			LOCAL_STORAGE_NAMES.SETTINGS,
+			{
+				...this.annuitCœptisII.getLocalStorage(LOCAL_STORAGE_NAMES.SETTINGS),
+				userId: this.getId()
+			}
+		)
+	}
+
+	isCurrent() {
+		const { userId } = this.annuitCœptisII.getLocalStorage(LOCAL_STORAGE_NAMES.SETTINGS);
+		return userId === this.getId();
+	}
+
+	getValidDataObjectKeys() {
+		return [
+			...super.getValidDataObjectKeys(),
+			...Object.values(USER_ATTR_NAME),
+		];
+	}
+
+	getCardinalValue() {
+		return this.get(USER_ATTR_NAME.NAME);
+	}
+};
+User.__proto__.getAnonymous = () => new User(
+	{
+		name: '👤 Anonymous',
+		_meta: {
+			id: -1
+		}
+	}
+);
 
 export {
 	MODEL_TYPES,
@@ -210,4 +391,6 @@ export {
 	ATTRIBUTE_NAMES,
 	Generic,
 	Clown,
+	TextNode,
+	User,
 }

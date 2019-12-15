@@ -1,20 +1,23 @@
 import React from 'react';
+import { MODEL_TYPES, User } from '../class/Models';
 
-const UserSelector = ({ annuitCœptis }) => {
-	const users = annuitCœptis.User.getAll();
-	const currentUser = annuitCœptis.User.getCurrent();
+const UserSelector = ({ annuitCœptisII }) => {
+	const users = annuitCœptisII.getByModelType(MODEL_TYPES.USER);
+	const currentUser = annuitCœptisII.getCurrentUser();
 	const onChange = e => {
 		const index = e.nativeEvent.target.selectedIndex;
-		const userId = users[index].data.id;
-		annuitCœptis.User.be(userId);
+		const selectedUser = users[index];
+		console.log('Being ', selectedUser);
+		selectedUser.be();
+		annuitCœptisII.somethingChanged();
 	};
 
 	return (
-		<select className="userSelector" value={ currentUser.data.id } onChange={ onChange }>
+		<select className="userSelector" value={ currentUser.get('name') } onChange={ onChange }>
 			{ users.map( (user, index) => {
-				const [ emoji ] = user.data.name;
+				const [ emoji ] = user.get('name');
 				return (
-					<option key={ index } value={ user.data.id }>{ emoji }</option>
+					<option key={ index } value={ user.get('name') }>{ emoji }</option>
 				);
 			}) }
 		</select>

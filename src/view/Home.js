@@ -1,12 +1,11 @@
 import React from 'react';
-import { NODE_TYPES } from '../class/AbstractNode';
 import Node from './Node';
 import Cloud from './Cloud';
 
 class Home extends React.Component {
   render() {
-    const { annuitCœptis } = this.props;
-    const nodes = annuitCœptis.Node.getTrailheads();
+    const { annuitCœptisII } = this.props;
+    const nodes = annuitCœptisII.getTrailheads();
     window.da = {
       ...window.da,
       homeNodes: nodes,
@@ -19,8 +18,8 @@ class Home extends React.Component {
           {
             nodes.map(
               node =>
-                <li key={ node.data.id } className="node">
-                  <Node match={{ params: { nodeId: node._id }}} annuitCœptis={ annuitCœptis } asAncestor />
+                <li key={ node.getId() } className="node">
+                  <Node match={{ params: { nodeId: node.getId() }}} annuitCœptisII={ annuitCœptisII } asAncestor />
                 </li>
             )
           }
