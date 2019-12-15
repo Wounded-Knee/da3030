@@ -6,16 +6,26 @@ const EVENT_TYPES = {
 	CREATED: 'Created',
 	SERIALIZED: 'Serialized',
 	DESERIALIZED: 'Deserialized',
+	SET_DATA_OBJ: 'Set Data by Object',
+	SET_DATA: 'Set Data by Attribute',
+	DELETED: 'Deleted',
+	ADOPTEDBY: 'Adopted By',
+	ADOPTED: 'Adopted',
+	ORPHANED: 'Orphaned',
+	SAVED: 'Saved',
 };
 const ATTRIBUTE_NAMES = {
 	META: '_meta',
 	MODEL_TYPE: 'modelName',
 	ID: 'id',
+	PARENT_ID: 'parentId',
 };
 
 class Generic {
-	constructor(data) {
+	constructor(data, annuitCœptisII) {
+		this.annuitCœptisII = annuitCœptisII;
 		this.deserialize(data);
+		this.dirty = false;
 	}
 
 	getModelType() {
@@ -26,8 +36,87 @@ class Generic {
 		return attribute ? this.data[attribute] : this.data;
 	}
 
+	set(value, attributeName = undefined) {
+		if (!attributeName) {
+			if (!this.isValidDataObject(value)) {
+				throw new Error(`${this.getModelType()}.set(): Invalid data object provided.`);
+				return false;
+			} else {
+				this.recordEvent(EVENT_TYPES.SET_DATA_OBJ, value);
+				return this.deserialize(value);
+			}
+		} else {
+			if (!this.isValidAttributeValue(value, attributeName)) {
+				throw new Error(`${this.getModelType()}.set(): Invalid data attribute value provided.`);
+				return false;
+			} else {
+				this.recordEvent(EVENT_TYPES.SET_DATA, {value, attributeName});
+				this.data[attributeName] = value;
+				return true;
+			}
+		}
+	}
+
+	setParent(parentNode) {
+		const parentNodeId = parentNode.getId();
+		if (parentNodeId !== undefined) {
+			this.metaData[ATTRIBUTE_NAMES.PARENT_ID] = parentNodeId;
+			this.recordEvent(EVENT_TYPES.ADOPTEDBY, parentNodeId);
+			return true;
+		}
+		return false;
+	}
+
+	orphan() {
+		delete this.metaData[ATTRIBUTE_NAMES.PARENT_ID];
+		this.recordEvent(EVENT_TYPES.ORPHANED);
+		return true;
+	}
+
+	getChildren() {
+		const getParentId = childNode => {
+			const parentNode = childNode.getParent();
+			return parentNode ? parentNode.getId() : false;
+		};
+		return this.annuitCœptisII.filter(
+			node => getParentId(node) === this.getId()
+		);
+	}
+
+	getParent() {
+		return this.annuitCœptisII.getById(
+			this.metaData[ATTRIBUTE_NAMES.PARENT_ID]
+		);
+	}
+
+	isValidDataObject(dataObject) {
+		return dataObject instanceof Object &&
+			typeof(dataObject) === 'object' &&
+			!(dataObject instanceof Array);
+	}
+
+	isValidAttributeValue(attributeValue, attributeName) {
+		return true;
+	}
+
+	isDirty() {
+		return this.dirty;
+	}
+
 	getId() {
 		return this.metaData[ATTRIBUTE_NAMES.ID];
+	}
+
+	delete() {
+		this.recordEvent(EVENT_TYPES.DELETED);
+		return true;
+	}
+
+	save() {
+		const nodeData = this.serialize();
+		this.recordEvent(EVENT_TYPES.SAVED);
+		this.dirty = false;
+		return nodeData;
 	}
 
 	serialize() {
@@ -84,7 +173,28 @@ class Generic {
 			data: eventData,
 		};
 		this.metaData.events.push(newEvent);
+		if (this.isEventDirty(eventType)) this.dirty = true;
 		return newEvent;
+	}
+
+	// Returns true if this type of event
+	// has the effect of dirtying the model state
+	isEventDirty(eventType) {
+		return [
+			EVENT_TYPES.CREATED,
+			EVENT_TYPES.SET_DATA_OBJ,
+			EVENT_TYPES.SET_DATA,
+			EVENT_TYPES.DELETED,
+			EVENT_TYPES.ADOPTED,
+			EVENT_TYPES.ADOPTEDBY,
+			EVENT_TYPES.ORPHANED,
+		].indexOf(eventType) !== -1;
+	}
+
+	getEventsByType(eventType) {
+		return this.metaData.events.filter(
+			event => event.type === eventType
+		);
 	}
 }
 

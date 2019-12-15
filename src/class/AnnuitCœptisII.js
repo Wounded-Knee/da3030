@@ -7,6 +7,9 @@ class AnnuitCœptisII {
 		this.iterator = 0;
 		this.dirty = false;
 		this.load(loadFile);
+		this.models = {
+			[MODEL_TYPES.GENERIC]: Models[MODEL_TYPES.GENERIC],
+		};
 	}
 
 	create(data, modelType = MODEL_TYPES.GENERIC) {
@@ -17,35 +20,49 @@ class AnnuitCœptisII {
 				[ATTRIBUTE_NAMES.ID]: this.iterator++,
 				[ATTRIBUTE_NAMES.MODEL_TYPE]: modelType,
 			},
-		});
+		}, this);
 		AnnuitCœptisIIData.push(newNode);
 		this.dirty = true;
 		return newNode;
+	}
+
+	getById(id) {
+		return this.filter(
+			node => node.getId() === id
+		)[0];
 	}
 
 	filter(callback) {
 		return AnnuitCœptisIIData.filter(callback);
 	}
 
+	map(callback) {
+		return AnnuitCœptisIIData.map(callback);
+	}
+
 	isDirty() {
-		return this.dirty;
+		return this.dirty || this.map(
+			node => node.isDirty()
+		).reduce(
+			(accumulator, value) => accumulator || value,
+			this.dirty,
+		);
 	}
 
 	save(file = 'AnnuitCœptisII') {
-		const serializedData = AnnuitCœptisIIData.map(
-			node => node.serialize()
+		const serializedData = this.map(
+			node => node.save()
 		);
 		localStorage.setItem(file, JSON.stringify(serializedData));
 		this.dirty = false;
 	}
 
 	load(file = 'AnnuitCœptisII') {
-		this.loadedData = JSON.parse(localStorage.getItem(file)) || [];
-		AnnuitCœptisIIData = this.loadedData.map(
+		AnnuitCœptisIIData = (JSON.parse(localStorage.getItem(file)) || []).map(
 			nodeData => {
 				const modelType = nodeData[ATTRIBUTE_NAMES.META][ATTRIBUTE_NAMES.MODEL_TYPE];
 				const model = Models[modelType];
-				return new model(nodeData);
+				return new model(nodeData, this);
 			}
 		);
 		this.dirty = false;
@@ -55,7 +72,7 @@ class AnnuitCœptisII {
 	// Force flag, when true, will clear even if dirty.
 	// Otherwise, dirty flag acts as a safety.
 	clear(force = false) {
-		if (this.dirty && !force) {
+		if (this.isDirty() && !force) {
 			return false;
 		}
 		AnnuitCœptisIIData.length = 0;
