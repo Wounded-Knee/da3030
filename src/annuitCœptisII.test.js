@@ -17,11 +17,20 @@ const getData = (modelType, iterator) => {
 		}
 	};
 	switch (modelType) {
-		default:
+		case MODEL_TYPES.TEXT_NODE:
 			return {
 				...data,
 				text: `This is ${modelType} #${iterator}`
 			};
+		break;
+		case MODEL_TYPES.CLOWN:
+			return {
+				...data,
+				text: `🤡 ${iterator}`
+			};
+		break;
+		default:
+			return data;
 		break;
 	}
 };
@@ -42,17 +51,17 @@ it(`Is not dirty`, () => {
 	expect(annuitCœptisII.isDirty()).toEqual(false);
 });
 
-it(`Can create 5k GENERIC nodes`, () => {
+it(`Can create 5c GENERIC nodes`, () => {
 	testCreateBatchByType(
 		MODEL_TYPES.GENERIC,
-		5000,
+		500,
 	);
 });
 
-it(`Can create 5k CLOWN nodes`, () => {
+it(`Can create 5c CLOWN nodes`, () => {
 	testCreateBatchByType(
 		MODEL_TYPES.CLOWN,
-		5000,
+		500,
 	);
 });
 
@@ -62,7 +71,7 @@ it(`Is dirty due to creating nodes`, () => {
 
 it(`Cannot be clear()'ed`, () => {
 	expect(annuitCœptisII.clear()).toEqual(false);
-	expect(annuitCœptisII.getData().length).toEqual(10000);
+	expect(annuitCœptisII.getData().length).toMatchSnapshot();
 });
 
 it(`Can save()`, () => {
@@ -80,23 +89,28 @@ it(`Can be clear()'ed`, () => {
 
 it(`Can load()`, () => {
 	annuitCœptisII.load(saveFileName);
-	expect(annuitCœptisII.getData().length).toEqual(10000);	
+	expect(annuitCœptisII.getData().length).toMatchSnapshot();	
 });
 
 it(`Can retrieve an arbitrary node by text value`, () => {
 	annuitCœptisII.clear(true);
+	expect(annuitCœptisII.getData().length).toEqual(0);
+	expect(annuitCœptisII.iterator).toMatchSnapshot();
 
 	testCreateBatchByType(
-		MODEL_TYPES.GENERIC,
+		MODEL_TYPES.TEXT_NODE,
 		3,
-		(modelType, iterator) => ({ text: testTextValue }),
+		(modelType, iterator) => ({
+			...getData(modelType, iterator),
+			text: testTextValue,
+		}),
 	);
 
 	const results = annuitCœptisII.filter(
 		node => node.get('text') === testTextValue
 	);
 	expect(results.length).toEqual(3);
-	expect(results[2].getId()).toEqual(3);
+	expect(results[2].getId()).toMatchSnapshot();
 });
 
 it(`Can have children`, () => {
@@ -106,56 +120,51 @@ it(`Can have children`, () => {
 	testCreateBatchByType(
 		MODEL_TYPES.GENERIC,
 		1914,
-		(modelType, iterator) => ({
-			...getData(modelType, iterator),
-			maternityTest: true
-		}),
 	);
 
-	const parent = annuitCœptisII.getById(10);
-	const child = annuitCœptisII.getById(100);
+	const [
+		parent,
+		child
+	] = annuitCœptisII.getByModelType(MODEL_TYPES.GENERIC);
+	expect(parent.represent()).toMatchSnapshot();
+	expect(child.represent()).toMatchSnapshot();
 	expect(child.getEventsByType(eventType).length).toEqual(0);
 	child.setParent(parent);
 	expect(child.getEventsByType(eventType).length).toEqual(1);
 	expect(parent.getChildren()[0].getId()).toEqual(child.getId());
 	expect(child.getParent().getId()).toEqual(parent.getId());
-	expect(child.get('maternityTest')).toEqual(true);
 });
 
 it(`Can be orphaned`, () => {
-	const child = annuitCœptisII.getById(100);
+	const [
+		,child
+	] = annuitCœptisII.getByModelType(MODEL_TYPES.GENERIC);
 	expect(child.getParent()).not.toBeFalsy();
 	child.orphan();
 	expect(child.getParent()).toBeFalsy();
 });
 
-it(`Is clean after save()`, () => {
-	// Previous testing dirtied it
-	expect(annuitCœptisII.isDirty()).toEqual(true);
-	annuitCœptisII.save();
-	expect(annuitCœptisII.isDirty()).toEqual(false);
-});
-
 it(`Can set data by attribute`, () => {
-	const node = annuitCœptisII.getById(1913);
-	expect(node.get('text')).toEqual('This is Generic #1909');
-	node.set(testTextValue, 'text');
-	expect(node.get('text')).toEqual(testTextValue);
-});
+	const testTextValue2 = 'H.Con.Res.331-1988';
+	testCreateBatchByType(
+		MODEL_TYPES.TEXT_NODE,
+		3,
+		(modelType, iterator) => ({
+			...getData(modelType, iterator),
+			text: testTextValue2,
+		}),
+	);
 
-it(`Can get dirty by setting data in a child model`, () => {
-	expect(annuitCœptisII.isDirty()).toEqual(true);	
+	const [ node ] = annuitCœptisII.getByModelType(MODEL_TYPES.TEXT_NODE);
+	expect(node.get('text')).toMatchSnapshot();
+	node.set(testTextValue, 'text');
+	expect(node.get('text')).toMatchSnapshot();
 });
 
 it(`Records audit trail in events`, () => {
-	const eventType = EVENT_TYPES.SET_DATA;
-	const node = annuitCœptisII.getById(1913);
-	const events = node.getEventsByType(eventType);
-	expect(events[0].type).toEqual(eventType);
-	expect(events.length).toEqual(1);
-});
-
-it(`Can be forced to clear() while dirty`, () => {
-	expect(annuitCœptisII.isDirty()).toEqual(true);
-	expect(annuitCœptisII.clear(true)).toEqual(true);
+	const [ node ] = annuitCœptisII.getByModelType(MODEL_TYPES.TEXT_NODE);
+	node.set(testTextValue, 'text');
+	const events = node.getEventsByType(EVENT_TYPES.SET_DATA);
+	expect(events[0].type).toMatchSnapshot();
+	expect(events.length).toMatchSnapshot();
 });

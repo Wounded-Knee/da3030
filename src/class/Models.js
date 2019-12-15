@@ -28,6 +28,7 @@ const ATTRIBUTE_NAMES = {
 	ID: 'id',
 	PARENT_ID: 'parentId',
 	AUTHOR_ID: 'authorId',
+	NEW: 'new',
 };
 
 /**
@@ -74,11 +75,19 @@ class Generic {
 			} else {
 				const metaData = this.metaData || value[ATTRIBUTE_NAMES.META];
 				if (metaData) {
+					var eventType;
 					const modelName = metaData[ATTRIBUTE_NAMES.MODEL_TYPE] || this.getModelType();
-					const eventType = !this.metaData ? EVENT_TYPES.CREATED : EVENT_TYPES.SET_DATA_OBJ;
 					if (modelName !== this.getModelType()) {
 						throw new Error(`${this.getModelType()}.set() Wrong model type: ${modelName}`);
 					}
+
+					if (metaData[ATTRIBUTE_NAMES.NEW]) {
+						delete metaData[ATTRIBUTE_NAMES.NEW];
+						eventType = EVENT_TYPES.CREATED;
+					} else {
+						eventType = this.metaData ? EVENT_TYPES.SET_DATA_OBJ : EVENT_TYPES.DESERIALIZED;
+					}
+
 					this.metaData = {
 						...metaData,
 						[ATTRIBUTE_NAMES.AUTHOR_ID]: authorId,
@@ -88,7 +97,20 @@ class Generic {
 					};
 					delete value[ATTRIBUTE_NAMES.META];
 					this.data = value;
-					this.recordEvent(eventType, value);
+					/**
+					 * The thread must fork here, so that
+					 * annuitCœptisII can push this new model
+					 * into its array. The recordEvent() chain
+					 * culminates in annuitCœptisII.somethingChanged()
+					 * which immediately saves all data in that array.
+					 *
+					 * Hence setTimeout(). This should be a Promise
+					 * instead, but not yet.
+					 **/
+					setTimeout(
+						this.recordEvent.bind(this, eventType, value),
+						50
+					);
 					return true;
 				} else {
 					throw new Error(`${this.getModelType()}.set() No metadata`, value);
@@ -230,6 +252,11 @@ class Generic {
 		);
 	}
 
+	/**
+	 * Validator
+	 * Returns true if the given object meets
+	 * this model's requirements.
+	 **/
 	isValidDataObject(data) {
 		if (data instanceof Object &&
 			typeof(data) === 'object' &&
@@ -270,14 +297,35 @@ class Generic {
 		}
 	}
 
+	/**
+	 * Returns a string describing this model's
+	 * model type and data... for debugging.
+	 **/
 	represent() {
 		return `${this.getModelType()} ${this.getCardinalValue()}`;
 	}
 
+	/**
+	 * Returns one of this model's values
+	 * which best represents the entire model
+	 **/
 	getCardinalValue() {
 		return this.getId();
 	}
 
+	/**
+	 * Data object validator.
+	 * 
+	 * Returns an array of object keys
+	 * which constitute required
+	 * first-level attributes of a data object
+	 * which can be used to instance this
+	 * model.
+	 *
+	 * Data objects which are passed to the
+	 * constructor must contains all of these
+	 * keys in order to be accepted.
+	 **/
 	getValidDataObjectKeys() {
 		return [
 			ATTRIBUTE_NAMES.META

@@ -12,6 +12,7 @@ class AnnuitCœptisII {
 		this.iterator = 0;
 		this.dirty = false;
 		this.onChange = onChange || function() {};
+		this.loadFile = loadFile;
 		this.load(loadFile);
 		this.models = Models;
 
@@ -24,6 +25,7 @@ class AnnuitCœptisII {
 	}
 
 	somethingChanged(model = undefined) {
+		this.save(this.loadFile);
 		this.onChange();
 	}
 
@@ -33,16 +35,15 @@ class AnnuitCœptisII {
 			const newNode = new model({
 				...data,
 				[ATTRIBUTE_NAMES.META]: {
+					[ATTRIBUTE_NAMES.NEW]: true,
 					[ATTRIBUTE_NAMES.ID]: this.iterator++,
 					[ATTRIBUTE_NAMES.MODEL_TYPE]: modelType,
 				},
 			}, this);
 			AnnuitCœptisIIData.push(newNode);
 			this.dirty = true;
-			console.log(data, modelType, newNode);
 			return newNode;
 		} else {
-			console.log(Models);
 			throw new Error(`${modelType} does not exist.`);
 		}
 	}
@@ -56,12 +57,12 @@ class AnnuitCœptisII {
 	}
 
 	isDirty() {
-		return this.dirty || this.map(
+		const dirtyNodes = this.filter(
 			node => node.isDirty()
-		).reduce(
-			(accumulator, value) => accumulator || value,
-			this.dirty,
 		);
+		return (dirtyNodes.length)
+			? dirtyNodes // Truthy
+			: this.dirty // Bool
 	}
 
 	save(file = 'AnnuitCœptisII') {
@@ -91,6 +92,7 @@ class AnnuitCœptisII {
 			return false;
 		}
 		AnnuitCœptisIIData.length = 0;
+		
 		this.dirty = false;
 		return true;
 	}
@@ -143,7 +145,6 @@ class AnnuitCœptisII {
 			JSON.stringify(data),
 		);
 		const newValue = this.getLocalStorage(fileName);
-		console.log('setLocalStorage() ', newValue);
 		return newValue;
 	}
 

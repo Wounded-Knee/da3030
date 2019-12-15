@@ -262,8 +262,6 @@ class Node extends React.Component {
     if (!asAncestor && !asDescendant) this.track();
     if (setDocumentTitle) setDocumentTitle( node.data.text + ' - ' + author.data.name );
 
-    console.log('Rendering ', node.represent());
-
     return (
       <>
         { this.renderAncestralNodes() }
