@@ -7,7 +7,7 @@ const UserSelector = ({ annuitCœptisII }) => {
 	const onChange = e => {
 		const index = e.nativeEvent.target.selectedIndex;
 		const selectedUser = users[index];
-		console.log('Being ', selectedUser);
+		console.log('Being ', selectedUser.represent());
 		selectedUser.be();
 		annuitCœptisII.somethingChanged();
 	};

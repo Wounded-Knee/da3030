@@ -92,7 +92,7 @@ class AnnuitCœptisII {
 			return false;
 		}
 		AnnuitCœptisIIData.length = 0;
-		
+
 		this.dirty = false;
 		return true;
 	}
@@ -119,7 +119,7 @@ class AnnuitCœptisII {
 
 	getTrailheads() {
 		return this.getByModelType(MODEL_TYPES.TEXT_NODE).filter(
-			textNode => !textNode.getParent()
+			textNode => textNode.getParent() === undefined
 		);
 	}
 

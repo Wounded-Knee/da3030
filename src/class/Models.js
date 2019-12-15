@@ -65,8 +65,12 @@ class Generic {
 		return attribute ? this.data[attribute] : this.data;
 	}
 
+	onCreate() {
+		return false;
+	}
+
 	set(value, attributeName = undefined) {
-		const authorId = this.annuitCœptisII
+		const currentUserId = this.annuitCœptisII
 			? this.annuitCœptisII.getCurrentUser().getId()
 			: -1
 		if (!attributeName) {
@@ -74,6 +78,9 @@ class Generic {
 				throw new Error(`${this.getModelType()}.set(): Invalid data object provided.`);
 			} else {
 				const metaData = this.metaData || value[ATTRIBUTE_NAMES.META];
+				const authorId = metaData[ATTRIBUTE_NAMES.AUTHOR_ID] !== undefined
+					? metaData[ATTRIBUTE_NAMES.AUTHOR_ID]
+					: currentUserId;
 				if (metaData) {
 					var eventType;
 					const modelName = metaData[ATTRIBUTE_NAMES.MODEL_TYPE] || this.getModelType();
@@ -95,6 +102,7 @@ class Generic {
 							...metaData.events || [],
 						]
 					};
+					
 					delete value[ATTRIBUTE_NAMES.META];
 					this.data = value;
 					/**
@@ -111,6 +119,7 @@ class Generic {
 						this.recordEvent.bind(this, eventType, value),
 						50
 					);
+					if (eventType === EVENT_TYPES.CREATED) this.onCreate();
 					return true;
 				} else {
 					throw new Error(`${this.getModelType()}.set() No metadata`, value);
@@ -131,9 +140,9 @@ class Generic {
 		return this.recordEvent(EVENT_TYPES.TRACK);
 	}
 
-	setParent(parentNode) {
-		const parentNodeId = parentNode.getId();
-		if (parentNodeId !== undefined) {
+	setParent(parentNode = undefined) {
+		if (parentNode) {
+			const parentNodeId = parentNode.getId();
 			this.metaData[ATTRIBUTE_NAMES.PARENT_ID] = parentNodeId;
 			this.recordEvent(EVENT_TYPES.ADOPTEDBY, parentNodeId);
 			return true;
@@ -443,6 +452,10 @@ class User extends Generic {
 			...super.getValidDataObjectKeys(),
 			...Object.values(USER_ATTR_NAME),
 		];
+	}
+
+	represent() {
+		return `${this.getCardinalValue()} (${this.getModelType()} #${this.getId()})`;
 	}
 
 	getCardinalValue() {

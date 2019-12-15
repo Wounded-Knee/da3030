@@ -1,6 +1,6 @@
 import React from 'react';
 import Exposure from './Exposure';
-import { MODEL_TYPES, User } from '../class/Models';
+import { MODEL_TYPES, EVENT_TYPES, User } from '../class/Models';
 import Slider from "react-slick";
 import {
   Link,
@@ -62,6 +62,22 @@ class Node extends React.Component {
     if (window.confirm('Delete it?')) annuitCœptisII.Node.delete(this.getNode());
   }
 
+  showTracks() {
+    const { annuitCœptisII } = this.props;
+    alert(
+      this
+        .getNode()
+        .getEventsByType(EVENT_TYPES.TRACK)
+        .map(
+          event => {
+            const user = annuitCœptisII.getById(event.userId);
+            return `${user.represent()}\t${event.date}`;
+          }
+        )
+        .join('\n')
+    );
+  }
+
   getControls(node, authorMode, author) {
     const controls = [
       {
@@ -77,6 +93,13 @@ class Node extends React.Component {
         hint: 'Reply to this node',
         action: this.promptAddChildNode.bind(this),
         visible: !authorMode,
+      },
+      {
+        name: 'Tracks',
+        display: '👣',
+        hint: 'Displays this node\'s tracks',
+        action: this.showTracks.bind(this),
+        visible: true,
       }
     ];
 
@@ -203,7 +226,9 @@ class Node extends React.Component {
     var nodeText = node.getCardinalValue();
     const children = node.getChildren();
     const shadowChildren = [];
-    const authorId = node.getMetaData('authorId') || -1;
+    const authorId = node.getMetaData('authorId') !== undefined
+      ? node.getMetaData('authorId')
+      : -1;
     const author = authorId === -1
       ? User.getAnonymous()
       : annuitCœptisII.getById(authorId);

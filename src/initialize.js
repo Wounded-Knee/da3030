@@ -1,14 +1,21 @@
-const initialize = (annuitCœptis) => {
+import { MODEL_TYPES } from './class/Models';
+
+const initialize = (annuitCœptisII) => {
   const addUser = username => {
-    const newUser = annuitCœptis.User.create(username);
+    const newUser = annuitCœptisII.create({ name: username }, MODEL_TYPES.USER);
     return newUser;
   }
 
   const speak = (words, conversation, author, parentNode = null) => {
     var newWordsSpoken;
     const lastWordsSpoken = parentNode || conversation[conversation.length-1];
-    annuitCœptis.User.be(author.data.id);
-    newWordsSpoken = annuitCœptis.Node.create(words, lastWordsSpoken);
+    console.log('conversation', conversation);
+    author.be();
+    newWordsSpoken = annuitCœptisII.create(
+      { text: words },
+      MODEL_TYPES.TEXT_NODE
+    );
+    newWordsSpoken.setParent(lastWordsSpoken);
     conversation.push(
       newWordsSpoken
     );
@@ -16,7 +23,7 @@ const initialize = (annuitCœptis) => {
   }
 
   const addCloud = (name, description, intName, intDesc, accMessage, invMessage, qualificationNodes) => {
-    return annuitCœptis.Cloud.create({
+    return annuitCœptisII.Cloud.create({
       external: {
         name: name,
         description: description,
@@ -32,8 +39,7 @@ const initialize = (annuitCœptis) => {
     });
   }
 
-  annuitCœptis.setTree({ data: [] }); // Erase everything
-  annuitCœptis.setSettings({}); // Erase settings too
+  annuitCœptisII.clear(); annuitCœptisII.save(); // Erase everything
 
   // Setup users
   const userCharlie = addUser('💀 Charlie');
@@ -71,6 +77,7 @@ const initialize = (annuitCœptis) => {
   `Test
 `.split('\n').forEach(line => speak(line, newYorkTimes, userNewYorkTimes));
 
+  /*
   addCloud(
     'PB&J',
     'Peanut butter & jelly enthusiasts support group',
@@ -80,6 +87,7 @@ const initialize = (annuitCœptis) => {
     'Join for a peanut butter jelly time!',
     [ pbYes, jellyYes ]
   );
+  */
 
   return 'Okay, turkey.';
 }
