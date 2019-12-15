@@ -26,7 +26,7 @@ class Profile extends React.Component {
         <h2>{ ownerLanguage } Nodes</h2>
         <div className="nodeList clearfix">
           { userNodes.map( node => (
-            <Node match={{ params: { nodeId: node._id }}} annuitCœptis={ annuitCœptis } asAncestor noAncestors />
+            <Node match={{ params: { nodeId: node.getId() }}} annuitCœptis={ annuitCœptis } asAncestor noAncestors />
           ))}
         </div>
 

@@ -14,6 +14,13 @@ class AnnuitCœptisII {
 		this.onChange = onChange || function() {};
 		this.load(loadFile);
 		this.models = Models;
+
+		window.da = {
+			...window.da,
+			createUser: userName => this.create({
+				name: userName,
+			}, MODEL_TYPES.USER),
+		}
 	}
 
 	somethingChanged(model = undefined) {
@@ -32,6 +39,7 @@ class AnnuitCœptisII {
 			}, this);
 			AnnuitCœptisIIData.push(newNode);
 			this.dirty = true;
+			console.log(data, modelType, newNode);
 			return newNode;
 		} else {
 			console.log(Models);
@@ -89,7 +97,7 @@ class AnnuitCœptisII {
 
 	getById(id) {
 		return this.filter(
-			node => node.getId() === id
+			node => node.getId() === parseInt(id)
 		)[0];
 	}
 
@@ -148,7 +156,7 @@ class AnnuitCœptisII {
 			Math.max.apply(
 				Math,
 				nodes.map(
-					node => parseInt(node.id) || 0
+					node => parseInt(node.getId()) || 0
 				)
 			) + 1
 		, 0);

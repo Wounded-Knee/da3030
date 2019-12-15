@@ -20,12 +20,14 @@ const EVENT_TYPES = {
 	ADOPTED: 'Adopted',
 	ORPHANED: 'Orphaned',
 	SAVED: 'Saved',
+	TRACK: 'Track',
 };
 const ATTRIBUTE_NAMES = {
 	META: '_meta',
 	MODEL_TYPE: 'modelName',
 	ID: 'id',
 	PARENT_ID: 'parentId',
+	AUTHOR_ID: 'authorId',
 };
 
 /**
@@ -73,19 +75,20 @@ class Generic {
 				const metaData = this.metaData || value[ATTRIBUTE_NAMES.META];
 				if (metaData) {
 					const modelName = metaData[ATTRIBUTE_NAMES.MODEL_TYPE] || this.getModelType();
+					const eventType = !this.metaData ? EVENT_TYPES.CREATED : EVENT_TYPES.SET_DATA_OBJ;
 					if (modelName !== this.getModelType()) {
 						throw new Error(`${this.getModelType()}.set() Wrong model type: ${modelName}`);
 					}
 					this.metaData = {
 						...metaData,
-						authorId: authorId,
+						[ATTRIBUTE_NAMES.AUTHOR_ID]: authorId,
 						events: [
 							...metaData.events || [],
 						]
 					};
 					delete value[ATTRIBUTE_NAMES.META];
 					this.data = value;
-					this.recordEvent(EVENT_TYPES.SET_DATA_OBJ, value);
+					this.recordEvent(eventType, value);
 					return true;
 				} else {
 					throw new Error(`${this.getModelType()}.set() No metadata`, value);
@@ -100,6 +103,10 @@ class Generic {
 				return true;
 			}
 		}
+	}
+
+	track() {
+		return this.recordEvent(EVENT_TYPES.TRACK);
 	}
 
 	setParent(parentNode) {
@@ -143,7 +150,15 @@ class Generic {
 	}
 
 	getId() {
-		return this.metaData[ATTRIBUTE_NAMES.ID];
+		return this.getMetaData(ATTRIBUTE_NAMES.ID);
+	}
+
+	getAuthorId() {
+		return this.getMetaData(ATTRIBUTE_NAMES.AUTHOR_ID);
+	}
+
+	getMetaData(attr) {
+		return this.metaData[attr];
 	}
 
 	delete() {
@@ -170,12 +185,15 @@ class Generic {
 	}
 
 	recordEvent(eventType, eventData) {
+		const userId = this.annuitCœptisII
+			? this.annuitCœptisII.getCurrentUser().getId()
+			: -1;
 		if (Object.values(EVENT_TYPES).indexOf(eventType) === -1) {
 			throw new Error(`${this.getModelType()}.recordEvent() Can't record an invalid eventType: ${eventType}`);
 		}
 
 		const newEvent = {
-			userId: 0,
+			userId: userId,
 			date: new Date(),
 			type: eventType,
 			data: eventData,
@@ -202,8 +220,12 @@ class Generic {
 		].indexOf(eventType) !== -1;
 	}
 
+	getEvents() {
+		return this.metaData.events;
+	}
+
 	getEventsByType(eventType) {
-		return this.metaData.events.filter(
+		return this.getEvents().filter(
 			event => event.type === eventType
 		);
 	}
@@ -317,10 +339,14 @@ class TextNode extends Generic {
 		return MODEL_TYPES.TEXT_NODE;
 	}
 
+	represent() {
+		const author = this.annuitCœptisII.getById(this.getAuthorId()) || User.getAnonymous();
+		return `❝${this.getCardinalValue()}❞ - ${author.getCardinalValue()}`;
+	}
+
 	getCardinalValue() {
 		return this.get('text');
 	}
-
 
 	getValidDataObjectKeys() {
 		return [
@@ -350,7 +376,6 @@ class User extends Generic {
 	}
 
 	be() {
-		console.log('Being ', this);
 		return this.annuitCœptisII.setLocalStorage(
 			LOCAL_STORAGE_NAMES.SETTINGS,
 			{

@@ -1,6 +1,6 @@
 import React from 'react';
 import Exposure from './Exposure';
-import { User } from '../class/Models';
+import { MODEL_TYPES, User } from '../class/Models';
 import Slider from "react-slick";
 import {
   Link,
@@ -23,13 +23,13 @@ class Node extends React.Component {
   }
 
   getFreshState() {
-    if (this.typeahead) this.typeahead.clear();
-    return {
-      data: this.getNode().data,
-      id: this.getNode()._id,
+    const node = this.getNode();
+    return node ? {
+      data: node.get('text'),
+      id: node.getId(),
       inputString: '',
-      exposure: this.getNode().exposure,
-    };
+      exposure: node.exposure,
+    } : {};
   }
 
   getNode() {
@@ -40,14 +40,14 @@ class Node extends React.Component {
   promptAddChildNode() {
     const { annuitCœptisII } = this.props;
     const parentNode = this.getNode();
-    const fromUser = annuitCœptisII.User.getCurrent();
-    const toUser = annuitCœptisII.User.getById(parentNode.data.authorId);
-    const subj = parentNode.data.text.substring(parentNode.data.text.length - 20);
+    const fromUser = annuitCœptisII.getCurrentUser();
+    const toUser = annuitCœptisII.getById(parentNode.getMetaData('authorId'));
+    const subj = parentNode.getCardinalValue().substring(parentNode.getCardinalValue().length - 20);
     const text = prompt(
-      `From: ${ fromUser.data.name }\n`+
-      `To: ${ toUser.data.name }\n`+
+      `From: ${ fromUser.getCardinalValue() }\n`+
+      `To: ${ toUser.getCardinalValue() }\n`+
       `Subj: ... ${ subj }\n`, '');
-    if (text) annuitCœptisII.Node.create(text, parentNode);
+    if (text) annuitCœptisII.create({text}, MODEL_TYPES.TEXT_NODE).setParent(parentNode);
   }
 
   onChangeExposure(level) {
@@ -104,7 +104,11 @@ class Node extends React.Component {
     } = this.getMetaData();
 
     return parentNode && !noAncestors ? (
-      <Node match={{ params: { nodeId: parentNode._id }}} annuitCœptisII={ annuitCœptisII } asAncestor />
+      <Node
+        match={{ params: { nodeId: parentNode.getId() }}}
+        annuitCœptisII={ annuitCœptisII }
+        asAncestor
+      />
     ) : null;
   }
 
@@ -146,12 +150,13 @@ class Node extends React.Component {
 
     if (asAncestor || asDescendant) return null;
 
+    console.log('Children: ', finalChildren);
     return (
       <Slider {...settings} className="clearfix">
         {
           finalChildren.map(
             node => <Node
-              match={{ params: { nodeId: node._id }}}
+              match={{ params: { nodeId: node.getId() }}}
               annuitCœptisII={ annuitCœptisII }
               noAncestors
               asDescendant
@@ -197,17 +202,16 @@ class Node extends React.Component {
 
     var nodeText = node.getCardinalValue();
     const children = node.getChildren();
-    //const shadowChildren = ShadowNode.getChildrenOf(node);
     const shadowChildren = [];
-    console.log('User',User);
-    const author = node.data.authorId === User.getAnonymous().id
+    const authorId = node.getMetaData('authorId') || -1;
+    const author = authorId === -1
       ? User.getAnonymous()
-      : User.getById(node.data.authorId);
+      : annuitCœptisII.getById(authorId);
     const spectator = annuitCœptisII.getCurrentUser();
     const parentNode = node.getParent();
     const authorMode = spectator === author;
     const trailWardenMode = false; //annuitCœptisII.Node.getTrailhead(node).data.authorId === author.data.id;
-    const authorClass = author.data.name.substring(0,2);
+    const authorClass = author.getCardinalValue().substring(0,2);
     const classNames = [
       "node",
       "speech-bubble",
@@ -216,7 +220,7 @@ class Node extends React.Component {
       "author_"+authorClass,
     ].join(' ');
     const linkedText = asAncestor || asDescendant
-      ? <Link to={`/node/${node._id}`} exact>{ nodeText }</Link>
+      ? <Link to={`/node/${node.getId()}`} exact>{ nodeText }</Link>
       : nodeText;
 
     return {
@@ -239,15 +243,12 @@ class Node extends React.Component {
   }
 
   track() {
-    const { annuitCœptisII } = this.props;
-
-    annuitCœptisII.Track.userAddTrack(this.getNode(), annuitCœptisII.User.getCurrent());
+    this.getNode().track();
   }
 
   render() {
-    if (this.state.data === undefined) {
-      this.setState(this.getFreshState());
-      return null;
+    if (!this.getNode()) {
+      return <b>No Node</b>;
     }
 
     const {
@@ -261,6 +262,7 @@ class Node extends React.Component {
     if (!asAncestor && !asDescendant) this.track();
     if (setDocumentTitle) setDocumentTitle( node.data.text + ' - ' + author.data.name );
 
+    console.log('Rendering ', node.represent());
 
     return (
       <>

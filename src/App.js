@@ -3,6 +3,7 @@ import initialize from './initialize';
 import UserSelector from './view/UserSelector';
 import Profile from './view/Profile';
 import CheatMenu from './view/CheatMenu';
+import Node from './view/Node';
 import {
   User,
   MODEL_TYPES,
@@ -36,6 +37,7 @@ class App extends React.Component {
       ...window.da,
       app: this,
       ac2: this.annuitCœptisII,
+      refresh: this.triggerRender.bind(this),
       initialize: initialize.bind(this, this.annuitCœptisII),
     };
   }
@@ -208,13 +210,13 @@ class App extends React.Component {
                 render={
                   props => <ul className="nodeList">
                     <li>
-{/*                      <Node
+                      <Node
                         {...props}
                         setDocumentTitle={ this.setDocumentTitle.bind(this) }
                         redirect={ this.redirect.bind(this) }
                         annuitCœptisII={ this.annuitCœptisII }
                       />
-*/}                    </li>
+                    </li>
                   </ul>
                 }
               />
