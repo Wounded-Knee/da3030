@@ -1,16 +1,22 @@
 import { LOCAL_STORAGE_NAMES } from '../PROPHET60091';
+var moment = require('moment');
 
 const MODEL_TYPES = {
 	GENERIC: 'Generic',
 	CLOWN: 'Clown',
 	USER: 'User',
+	CLOUD: 'Cloud',
+	COLLECTION: 'Collection',
 	TEXT_NODE: 'TextNode',
+	CERTIFICATE: 'Certificate',
 	CLOUD_NOTIFICATION: 'CloudNotification',
 	HOME_NOTIFICATION: 'HomeNotification',
 	USER_NOTIFICATION: 'UserNotification',
 };
 const EVENT_TYPES = {
 	CREATED: 'Created',
+	CERTIFIED: 'Certified',
+	DECERTIFIED: 'Decertified',
 	SERIALIZED: 'Serialized',
 	DESERIALIZED: 'Deserialized',
 	SET_DATA_OBJ: 'Set Data by Object',
@@ -150,6 +156,11 @@ class Generic {
 		return false;
 	}
 
+	addChild(childNode) {
+		childNode.setParent(this);
+		this.recordEvent(EVENT_TYPES.ADOPTED, childNode.getId());
+	}
+
 	orphan() {
 		delete this.metaData[ATTRIBUTE_NAMES.PARENT_ID];
 		this.recordEvent(EVENT_TYPES.ORPHANED);
@@ -162,7 +173,9 @@ class Generic {
 			return parentNode ? parentNode.getId() : false;
 		};
 		return this.annuitCœptisII.filter(
-			node => getParentId(node) === this.getId()
+			node =>
+				getParentId(node) === this.getId() &&
+				!node.isDeleted()
 		);
 	}
 
@@ -197,6 +210,10 @@ class Generic {
 		return true;
 	}
 
+	isDeleted() {
+		return this.getEventsByType(EVENT_TYPES.DELETED).length > 0;
+	}
+
 	save() {
 		const nodeData = this.serialize();
 		this.recordEvent(EVENT_TYPES.SAVED);
@@ -218,7 +235,7 @@ class Generic {
 	recordEvent(eventType, eventData) {
 		const userId = this.annuitCœptisII
 			? this.annuitCœptisII.getCurrentUser().getId()
-			: -1;
+			: User.getAnonymous().getId();
 		if (Object.values(EVENT_TYPES).indexOf(eventType) === -1) {
 			throw new Error(`${this.getModelType()}.recordEvent() Can't record an invalid eventType: ${eventType}`);
 		}
@@ -230,6 +247,7 @@ class Generic {
 			data: eventData,
 		};
 		this.metaData.events.push(newEvent);
+		this.onRecordEvent(newEvent);
 		if (this.isEventDirty(eventType)) {
 			this.dirty = true;
 			this.onChange();
@@ -237,17 +255,29 @@ class Generic {
 		return newEvent;
 	}
 
+	onRecordEvent(newEvent) {
+		return false;
+	}
+
 	// Returns true if this type of event
 	// has the effect of dirtying the model state
 	isEventDirty(eventType) {
 		return [
 			EVENT_TYPES.CREATED,
+			EVENT_TYPES.CERTIFIED,
 			EVENT_TYPES.SET_DATA_OBJ,
 			EVENT_TYPES.SET_DATA,
 			EVENT_TYPES.DELETED,
 			EVENT_TYPES.ADOPTED,
 			EVENT_TYPES.ADOPTEDBY,
 			EVENT_TYPES.ORPHANED,
+			/*
+			 * Can't add this now, because it causes a
+			 * state update, which causes a re-render,
+			 * which causes another TRACK event, and
+			 * infinite recursion.
+			EVENT_TYPES.TRACK,
+			 */
 		].indexOf(eventType) !== -1;
 	}
 
@@ -261,12 +291,56 @@ class Generic {
 		);
 	}
 
+	getEventsBySelector(selector, reducer = undefined) {
+		const reducers = {
+			mostRecent: (accumulator, currentValue) => {
+				return !accumulator.data ? currentValue : (() => {
+					const date1 = moment(accumulator.date);
+					const date2 = moment(currentValue.date);
+					const isBefore = date1.isBefore(date2);
+					console.log(
+						date1.format('MMMM Do YYYY, h:mm:ss a'),
+						isBefore ? '<' : '>',
+						date1.format('MMMM Do YYYY, h:mm:ss a'),
+					);
+					return isBefore
+						? currentValue
+						: accumulator
+				})()
+			},
+			leastRecent: (accumulator, currentValue) => {
+				return !accumulator.data ? currentValue : (() => {
+					const date1 = moment(accumulator.date);
+					const date2 = moment(currentValue.date);
+					const isBefore = date1.isBefore(date2);
+					console.log(
+						date1.format('MMMM Do YYYY, h:mm:ss a'),
+						isBefore ? '<' : '>',
+						date1.format('MMMM Do YYYY, h:mm:ss a'),
+					);
+					return !isBefore
+						? currentValue
+						: accumulator
+				})()
+			}
+		};
+		var eventSelection = this.getEvents().filter(
+			event => selector(event)
+		);
+		if (reducer) {
+			console.log('Reducing '+eventSelection.length+' events', eventSelection);
+			eventSelection = eventSelection.reduce(reducers[reducer], []);
+		}
+		return eventSelection;
+	}
+
 	/**
 	 * Validator
 	 * Returns true if the given object meets
 	 * this model's requirements.
 	 **/
 	isValidDataObject(data) {
+		const methodSignature = `${this.getModelType()}.isValidDataObject()`;
 		if (data instanceof Object &&
 			typeof(data) === 'object' &&
 			!(data instanceof Array)
@@ -288,19 +362,18 @@ class Generic {
 				return true;
 			} else {
 				if (unknownKeys.length > 0) {
-					console.error(data);
 					console.warn(
-						`${this.getModelType()}.isValidDataObject() received invalid keys: `, unknownKeys
+						`${methodSignature} received invalid keys: `, unknownKeys, data
 					);
 				}
 				if (requiredKeysWhichWereProvided.length !== requiredKeys.length) {
-					console.warn(requiredKeysWhichWereProvided, requiredKeys);
+					console.warn(`${methodSignature} got: `, requiredKeysWhichWereProvided, 'Need: ', requiredKeys);
 				}
 				return false;
 			};
 		} else {
 			console.warn(
-				`${this.getModelType()}.isValidDataObject() was called with shit data, boss.`
+				`${methodSignature} was called with shit data, boss.`
 			);
 			return false;
 		}
@@ -340,7 +413,12 @@ class Generic {
 			ATTRIBUTE_NAMES.META
 		];
 	}
-}
+};
+Generic.__proto__.getAll = function(annuitCœptisII) {
+	return annuitCœptisII.getByModelType(
+		Generic.prototype.getModelType()
+	);
+};
 
 /**
  * New Clown() data payload requirements:
@@ -378,6 +456,83 @@ class Clown extends Generic {
 }
 
 /**
+ * New Cloud() data payload requirements:
+ *
+ *   {
+ *     [ATTRIBUTE_NAMES.META]: {
+ *       [ATTRIBUTE_NAMES.ID]: int
+ *       [CLOUD_ATTR_NAME.TEXT]: string
+ *     }
+ *   }
+ *
+ **/
+const CLOUD_ATTR_NAME = {
+	TRACKED_NODE_ID: 'trackedNodeId',
+	DEFAULT: 'default',
+	TO_OTHERS_ABOUT_MEMBER: 'to_others_about_member',
+	TO_MEMBER_ABOUT_MEMBER: 'to_member_about_member',
+	TO_MEMBER_ABOUT_OTHERS: 'to_member_about_others',
+};
+const CLOUD_EXAMPLE_ATTRS = {
+	default: {
+		name: 'Example Cloud',
+	},
+	to_others_about_member: {
+		description: '',
+	},
+	to_member_about_member: {
+
+	},
+	to_member_about_others: {
+		name: 'name',
+	},
+};
+class Cloud extends Generic {
+	getModelType() {
+		return MODEL_TYPES.CLOUD;
+	}
+
+	get(attribute) {
+		return attribute
+			? (
+				this.data[CLOUD_ATTR_NAME.TO_MEMBER_ABOUT_MEMBER][attribute] ||
+				this.data[CLOUD_ATTR_NAME.DEFAULT][attribute] ||
+				''
+			) : this.data;
+	}
+
+	isUserEligible(user, node) {
+		return (
+			node.getId() === this.get(CLOUD_ATTR_NAME.TRACKED_NODE_ID) &&
+			!!user.getTracksByNode(node).length > 0
+		);
+	}
+
+	isUserEnrolled(user) {
+		return false;
+	}
+
+	represent() {
+		return `${this.getModelType()} who says ${this.getCardinalValue()}`;
+	}
+
+	getValidDataObjectKeys() {
+		return [
+			...super.getValidDataObjectKeys(),
+			...Object.values(CLOUD_ATTR_NAME),
+		];
+	}
+}
+
+/**
+ **/
+class Collection extends Generic {
+	getModelType() {
+		return MODEL_TYPES.COLLECTION;
+	}
+}
+
+/**
  * New TextNode() data payload requirements:
  *
  *   {
@@ -405,12 +560,95 @@ class TextNode extends Generic {
 		return this.get('text');
 	}
 
+	// Returns all certificates
+	getCertificates() {
+		return this.getEventsByType(EVENT_TYPES.CERTIFIED).map(
+			event => {
+				return {
+					...event,
+					certificate: this.annuitCœptisII.getById(event.data.certificateId),
+				};
+			}
+		);
+	}
+
+	// Returns all active certificates
+	getActiveCertificates() {
+		
+	}
+
+	hasCertificate(certificate) {
+		return !!this.getCertificates().filter(
+			event => {
+				return event.data.certificateId === certificate.getId();
+			}
+		).length;
+	}
+
+	certifyWith(certificate) {
+		this.recordEvent(EVENT_TYPES.CERTIFIED, { certificateId: certificate.getId() });
+	}
+
+	decertifyWith(certificate) {
+		this.recordEvent(EVENT_TYPES.DECERTIFIED, { certificateId: certificate.getId() });		
+	}
+
 	getValidDataObjectKeys() {
 		return [
 			...super.getValidDataObjectKeys(),
 			...Object.values(TEXT_NODE_ATTR_NAME),
 		];
 	}
+}
+
+/**
+ * New Certificate() data payload requirements:
+ *
+ *   {
+ *     [ATTRIBUTE_NAMES.META]: {
+ *       [ATTRIBUTE_NAMES.ID]: int
+ *       [CERTIFICATE_ATTR_NAME.EMOJI]: string
+ *       [CERTIFICATE_ATTR_NAME.NAME]: string
+ *       [CERTIFICATE_ATTR_NAME.TITLE]: string
+ *       [CERTIFICATE_ATTR_NAME.SUBTITLE]: string
+ *       [CERTIFICATE_ATTR_NAME.REDUX]: string
+ *     }
+ *   }
+ *
+ **/
+const CERTIFICATE_ATTR_NAME = {
+	EMOJI: 'emoji',
+	NAME: 'name',
+	TITLE: 'title',
+	SUBTITLE: 'subtitle',
+	REDUX: 'redux',
+};
+class Certificate extends Generic {
+	getModelType() {
+		return MODEL_TYPES.CERTIFICATE;
+	}
+
+	getModels() {
+		return this.annuitCœptisII.getByModelType(MODEL_TYPES.TEXT_NODE).filter(
+			textNode =>
+				textNode
+					.getEventsByType(EVENT_TYPES.CERTIFIED)
+					.filter(
+						event => event.certificateId === this.getId()
+					)
+					.length > 0
+		);
+	}
+
+	getValidDataObjectKeys() {
+		return [
+			...super.getValidDataObjectKeys(),
+			...Object.values(CERTIFICATE_ATTR_NAME),
+		];
+	}
+}
+Certificate.__proto__.getModelsCertified = () => {
+	console.log(this.annuitCœptisII);
 }
 
 /**
@@ -432,6 +670,22 @@ class User extends Generic {
 		return MODEL_TYPES.USER;
 	}
 
+	// Returns tracks this user has on the given node
+	getTracksByNode(node) {
+		return node.getEventsByType(EVENT_TYPES.TRACK).filter(
+			event => event.get('userId') === this.getId()
+		);
+	}
+
+	// Returns all nodes which have the given certificates from this user.
+	getNodesByCertificate(certificates) {
+		this.annuitCœptisII
+			.getByModelType(MODEL_TYPES.TEXT_NODE)
+			.filter(model => {
+				
+			})
+	}
+
 	be() {
 		return this.annuitCœptisII.setLocalStorage(
 			LOCAL_STORAGE_NAMES.SETTINGS,
@@ -440,6 +694,12 @@ class User extends Generic {
 				userId: this.getId()
 			}
 		)
+	}
+
+	getModels(filter = node => true) {
+		return this.annuitCœptisII.filter(
+			node => filter(node) && node.getMetaData('authorId') === this.getId()
+		);
 	}
 
 	isCurrent() {
@@ -477,6 +737,8 @@ export {
 	ATTRIBUTE_NAMES,
 	Generic,
 	Clown,
+	Cloud,
+	Certificate,
 	TextNode,
 	User,
 }

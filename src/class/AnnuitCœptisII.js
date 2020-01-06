@@ -1,5 +1,7 @@
 import * as Models from './Models';
 import { LOCAL_STORAGE_NAMES } from '../PROPHET60091';
+var moment = require('moment');
+
 const {
 	MODEL_TYPES,
 	ATTRIBUTE_NAMES,
@@ -18,6 +20,7 @@ class AnnuitCœptisII {
 
 		window.da = {
 			...window.da,
+			moment,
 			createUser: userName => this.create({
 				name: userName,
 			}, MODEL_TYPES.USER),
@@ -25,7 +28,9 @@ class AnnuitCœptisII {
 	}
 
 	somethingChanged(model = undefined) {
+		const { bossMode } = this.getLocalStorage(LOCAL_STORAGE_NAMES.SETTINGS);
 		this.save(this.loadFile);
+		document.getElementsByTagName('html')[0].className = bossMode ? 'bossMode' : '';
 		this.onChange();
 	}
 
@@ -119,7 +124,9 @@ class AnnuitCœptisII {
 
 	getTrailheads() {
 		return this.getByModelType(MODEL_TYPES.TEXT_NODE).filter(
-			textNode => textNode.getParent() === undefined
+			textNode =>
+				textNode.getParent() === undefined &&
+				!textNode.isDeleted()
 		);
 	}
 
@@ -148,8 +155,25 @@ class AnnuitCœptisII {
 		return newValue;
 	}
 
+	mutateLocalStorage(fileName, callback) {
+		const data = callback(this.getLocalStorage(fileName));
+		return this.setLocalStorage(
+			fileName,
+			data,
+		)
+	}
+
 	represent() {
 		return this.map(model => model.represent());
+	}
+
+	toggleBossMode() {
+		this.mutateLocalStorage(
+			LOCAL_STORAGE_NAMES.SETTINGS,
+			data => ({ ...data, bossMode: !data.bossMode }),
+		)
+		this.somethingChanged();
+		//document.getElementsByTagName('html')[0].className = settings.bossMode ? 'bossMode' : '';
 	}
 
 	_getFreshId(nodes = AnnuitCœptisIIData) {

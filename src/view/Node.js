@@ -1,7 +1,12 @@
 import React from 'react';
 import Exposure from './Exposure';
-import { MODEL_TYPES, EVENT_TYPES, User } from '../class/Models';
+import {
+  MODEL_TYPES,
+  EVENT_TYPES,
+  User
+} from '../class/Models';
 import Slider from "react-slick";
+import Certificates from './Certificates';
 import {
   Link,
 } from 'react-router-dom';
@@ -59,8 +64,10 @@ class Node extends React.Component {
 
   deleteNode() {
     const { annuitCœptisII } = this.props;
-    if (window.confirm('Delete it?')) annuitCœptisII.Node.delete(this.getNode());
+    if (window.confirm('Delete it?')) this.getNode().delete();
   }
+
+  manageCertificates() {}
 
   showTracks() {
     const { annuitCœptisII } = this.props;
@@ -78,8 +85,17 @@ class Node extends React.Component {
     );
   }
 
-  getControls(node, authorMode, author) {
-    const controls = [
+  getControls() {
+    const {
+      asDescendant,
+      asAncestor,
+      annuitCœptisII,
+      node,
+      authorMode,
+      author,
+    } = this.getMetaData();
+
+    return [
       {
         name: 'Delete',
         display: '❌',
@@ -100,23 +116,22 @@ class Node extends React.Component {
         hint: 'Displays this node\'s tracks',
         action: this.showTracks.bind(this),
         visible: true,
-      }
+      },
+      {
+        name: 'Certificates',
+        display: '🛡',
+        hint: 'Manage certificate requirements',
+        action: () => <Certificates parentNode={ node } annuitCœptisII={ annuitCœptisII }/>,
+        toggle: true,
+        visible: authorMode && !asAncestor && !asDescendant,
+      },
     ];
+  }
 
-    return (
-      <div class="controls">
-        <span class="buttons">
-          {
-            controls.map(
-              control => (
-                control.visible ? <button title={ control.hint } onClick={ control.action }>{ control.display }</button> : null
-              )
-            )
-          }
-        </span>
-        <Exposure level={ node.data.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
-      </div>
-    );
+  activateControl(name) {
+    this.setState({
+      activeControl: name === this.state.activeControl ? undefined : name
+    });
   }
 
   renderAncestralNodes() {
@@ -139,15 +154,50 @@ class Node extends React.Component {
     const {
       node,
       authorMode,
+      asAncestor,
+      asDescendant,
       author,
       linkedText,
+      annuitCœptisII,
       classNames,
     } = this.getMetaData();
+    const instrument = this.state.activeControl
+      ? this.getControls().filter(
+          control => control.name === this.state.activeControl
+        )[0]
+      : undefined;
+    if (instrument && !instrument.toggle) {
+      this.setState({
+        activeControl: undefined
+      });
+    }
 
     return (
       <article className={ classNames }>
-        { linkedText }
-        { this.getControls( node, authorMode, author ) }
+        <div className="content">{ linkedText }</div>
+        <div className="controls">
+          <span className="buttons">
+            {
+              this.getControls().map(
+                control => (
+                  control.visible
+                    ? <button
+                        title={ control.hint }
+                        onClick={ this.activateControl.bind(this, control.name) }>
+                          { control.display }
+                      </button>
+                    : null
+                )
+              )
+            }
+          </span>
+          <Exposure level={ node.data.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
+        </div>
+        { instrument ? (
+          <div className="instrumentPanel">
+            { instrument.action() }
+          </div>
+        ) : null}
       </article>
     );
   }
@@ -160,7 +210,6 @@ class Node extends React.Component {
       node,
       children,
       authorMode,
-      shadowChildren,
     } = this.getMetaData();
     const settings = {
       dots: true,
@@ -169,15 +218,13 @@ class Node extends React.Component {
       slidesToShow: 1,
       slidesToScroll: 1
     };
-    const finalChildren = authorMode ? [ ...shadowChildren, ...children ] : children;
 
     if (asAncestor || asDescendant) return null;
 
-    console.log('Children: ', finalChildren);
     return (
       <Slider {...settings} className="clearfix">
         {
-          finalChildren.map(
+          children.map(
             node => <Node
               match={{ params: { nodeId: node.getId() }}}
               annuitCœptisII={ annuitCœptisII }
@@ -191,45 +238,21 @@ class Node extends React.Component {
   }
 
   getMetaData() {
-    const { annuitCœptisII, asAncestor, asDescendant, setDocumentTitle, noAncestors } = this.props;
-    const { Node, ShadowNode } = annuitCœptisII;
-    const trueNode = this.getNode();
+    const {
+      annuitCœptisII,
+      asAncestor,
+      asDescendant,
+      setDocumentTitle,
+      noAncestors
+    } = this.props;
 
-    const shadowNodeFills = {
-      'catchall': {
-        text: '...'
-      },
-      'skip': {
-        text: '[skip]'
-      }
-    };
-
-    switch (trueNode.data.type) {
-      case 'shadowNode':
-        const shadowNodeType = trueNode.data.shadowNodeType;
-        const nodeText = shadowNodeFills[shadowNodeType];
-        console.log('Backfilling ShadowNode.'+shadowNodeType+' with text: ', nodeText);
-        var node = {
-          ...trueNode,
-          data: {
-            ...trueNode.data,
-            authorId: User.getAnonymous().id,
-            ...nodeText,
-          }
-        };
-      break;
-      default:
-        var node = trueNode;
-      break;
-    }
-
+    const node = this.getNode();
     var nodeText = node.getCardinalValue();
     const children = node.getChildren();
-    const shadowChildren = [];
     const authorId = node.getMetaData('authorId') !== undefined
       ? node.getMetaData('authorId')
-      : -1;
-    const author = authorId === -1
+      : User.getAnonymous().getId();
+    const author = authorId === User.getAnonymous().getId()
       ? User.getAnonymous()
       : annuitCœptisII.getById(authorId);
     const spectator = annuitCœptisII.getCurrentUser();
@@ -263,7 +286,6 @@ class Node extends React.Component {
       asAncestor,
       asDescendant,
       children,
-      shadowChildren,
     }
   }
 
@@ -271,8 +293,17 @@ class Node extends React.Component {
     this.getNode().track();
   }
 
+  getCertificates() {
+    /*
+    return (
+      this.getNode().getCertificates().map(
+        certificate => certificate.)
+    );
+    */
+  }
+
   render() {
-    if (!this.getNode()) {
+    if (!this.getNode() || this.getNode().isDeleted()) {
       return <b>No Node</b>;
     }
 

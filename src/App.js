@@ -2,7 +2,11 @@ import React from 'react';
 import initialize from './initialize';
 import UserSelector from './view/UserSelector';
 import Profile from './view/Profile';
+import CloudView from './view/CloudView';
+import CloudDetail from './view/CloudDetail';
+import Clouds from './view/Clouds';
 import CheatMenu from './view/CheatMenu';
+import Certificates from './view/Certificates';
 import Node from './view/Node';
 import {
   User,
@@ -47,6 +51,7 @@ class App extends React.Component {
       ...this.state,
       redirectId: id
     });
+    this.annuitCœptisII.somethingChanged();
   }
 
   triggerRender() {
@@ -118,15 +123,16 @@ class App extends React.Component {
               </li>
               <li title="Clouds" className="clouds">
                 {/*
-                  Cloud is where you see a CLOUD of entities. These are your friends and your
-                  followed entities, themselves. Here you can see the list of them, organized
-                  geometrically. Your mom, your pastor, your buddy, your friend's dog.
-
-                  Upon selecting an entity, you see only the stuff contributed by that entity,
-                  but unlike with Home, you see ALL of it, and it's concentrated.
+                  
                 */}
                 { this.renderNotifications(MODEL_TYPES.CLOUD_NOTIFICATION) }
                 <NavLink to="/clouds" exact activeClassName={ activeClassName }>☁️</NavLink>
+              </li>
+              <li title="Certificates" className="certificates">
+                {/*
+                  Certificates
+                */}
+                <NavLink to="/certificates" exact activeClassName={ activeClassName }>🛡</NavLink>
               </li>
               <li title={ currentUserName } className="profile">
                 {/*
@@ -163,7 +169,7 @@ class App extends React.Component {
                 }
               />
 
-{/*              <Route
+              <Route
                 path="/clouds"
                 exact
                 render={
@@ -176,13 +182,23 @@ class App extends React.Component {
               <Route
                 path="/cloud/:cloudId"
                 render={
-                  props => <Cloud
+                  props => <CloudDetail
                     {...props}
                     annuitCœptisII={ this.annuitCœptisII }
                   />
                 }
               />
-*/}
+
+              <Route
+                path="/certificates"
+                exact
+                render={
+                  props => <Certificates
+                    {...props}
+                    annuitCœptisII={ this.annuitCœptisII }
+                  />
+                }
+              />
 
               <Route
                 path="/profile"

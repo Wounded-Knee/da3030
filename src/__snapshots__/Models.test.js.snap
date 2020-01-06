@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Accumulates events 1`] = `Array []`;
+
+exports[`Accumulates events 2`] = `
+Array [
+  Object {
+    "data": Object {
+      "certificateId": 0,
+    },
+    "date": "2019-18-16T07:29:26.032Z",
+    "type": "Certified",
+    "userId": -1,
+  },
+]
+`;
+
+exports[`Returns most recent event 1`] = `Array []`;
+
+exports[`Returns most recent event 2`] = `Array []`;
+
+exports[`Returns most recent event 3`] = `Array []`;
+
+exports[`Returns most recent event 4`] = `Array []`;

@@ -208,7 +208,7 @@ main button {
 /* Node
 ************/
 article.node .controls button {
-  font-size: 26px;
+  font-size: 15px;
 }
 
 /* Node -> Controls -> Carousel
@@ -223,11 +223,12 @@ article.node .slick-list {
 article.node .controls .author,
 article.node .controls .exposure,
 article.node .controls button {
-  opacity: 0;
+  display: none;
 }
 article.node:hover .controls .author,
 article.node:hover .controls .exposure,
 article.node:hover .controls button {
+  display: inline-block;
   opacity: 0.5;
 }
 article.node .controls .author:hover,
@@ -322,6 +323,31 @@ article.node.author .controls {
 
 article.node .react-tabs {
   clear: both;
+}
+
+.certificates > ul > li {
+  opacity: 0.5;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 2em;
+}
+.node .certificates > ul > li:not(.selected) {
+  color: transparent;
+  background: #ccc;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  background-clip: text;
+}
+.certificates > ul > li.selected,
+.certificates > ul > li:hover {
+  opacity: 1;
+}
+.certificates > ul > li.certified {
+  color: #e0dfdc;
+  background: #556677;
+  letter-spacing: .1em;
+  color: #e0dfdc;
+  background: #556677;
 }
 
 /* Cloud

@@ -1,21 +1,20 @@
 import React from 'react';
-import Cloud from './Cloud';
+import { MODEL_TYPES } from '../class/Models';
+import CloudView from './CloudView';
 
 class Home extends React.Component {
   render() {
-    const { annuitCœptis } = this.props;
-    const { Cloud: CloudManager, User } = annuitCœptis;
-    const { getByUserEligibility } = CloudManager;
-    const currentUser = User.getCurrent();
+    const { annuitCœptisII } = this.props;
+    const { User } = annuitCœptisII;
 
     return (
       <ul className="cloudList clearfix">
         {
-          CloudManager.getByUserEligibility(currentUser).map(
+          annuitCœptisII.getByModelType(MODEL_TYPES.CLOUD).map(
             cloud =>
-              <Cloud
-                match={{ params: { cloudId: cloud.data.id }}}
-                annuitCœptis={ annuitCœptis }
+              <CloudView
+                cloud={ cloud }
+                annuitCœptisII={ annuitCœptisII }
                 asChip
               />
           )
