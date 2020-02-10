@@ -1,4 +1,52 @@
-import {
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: class/Models.js | 💵 D³</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-jsdoc.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/tui-doc.css">
+
+    
+</head>
+<body>
+<nav class="lnb" id="lnb">
+    <div class="logo" style="">
+        
+            <img src="img/toast-ui.png" width="100%" height="100%">
+        
+    </div>
+    <div class="title">
+        <h1><a href="index.html" class="link">💵 D³</a></h1>
+        
+    </div>
+    <div class="search-container" id="search-container">
+        <input type="text" placeholder="Search">
+        <ul></ul>
+    </div>
+    
+    <div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="Cloud.html">Cloud</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Cloud_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Cloud.html#isUserEligible">isUserEligible</a></li></ul></div></li><li><a href="Clown%2520.html">Clown </a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Clown (name)_sub"></div></li><li><a href="Collection.html">Collection</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Collection_sub"></div></li><li><a href="Exposure.html">Exposure</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Exposure_sub"></div></li><li><a href="Generic.html">Generic</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Generic_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Generic.html#get">get</a></li><li><a href="Generic.html#getCardinalValue">getCardinalValue</a></li><li><a href="Generic.html#getEventsByType">getEventsByType</a></li><li><a href="Generic.html#getModelType">getModelType</a></li><li><a href="Generic.html#getValidDataObjectKeys">getValidDataObjectKeys</a></li><li><a href="Generic.html#isValidDataObject">isValidDataObject</a></li><li><a href="Generic.html#onChange">onChange</a></li><li><a href="Generic.html#onCreate">onCreate</a></li><li><a href="Generic.html#represent">represent</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3>Global</h3><ul><li><a href="global.html#CERTIFICATE_ATTR_NAME">CERTIFICATE_ATTR_NAME</a></li><li><a href="global.html#CLOUD_ATTR_NAME">CLOUD_ATTR_NAME</a></li><li><a href="global.html#CLOWN_ATTR_NAME">CLOWN_ATTR_NAME</a></li><li><a href="global.html#TEXT_NODE_ATTR_NAME">TEXT_NODE_ATTR_NAME</a></li><li><a href="global.html#USER_ATTR_NAME">USER_ATTR_NAME</a></li></ul></div>
+</nav>
+<div id="resizer"></div>
+
+<div class="main" id="main">
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {
 	LOCAL_STORAGE_NAMES,
 	MODEL_TYPES,
 	EVENT_TYPES,
@@ -181,7 +229,7 @@ class Generic {
 		};
 		return this.annuitCœptisII.filter(
 			node =>
-				getParentId(node) === this.getId() &&
+				getParentId(node) === this.getId() &amp;&amp;
 				!node.isDeleted()
 		);
 	}
@@ -314,7 +362,7 @@ class Generic {
 					const isBefore = date1.isBefore(date2);
 					console.log(
 						date1.format('MMMM Do YYYY, h:mm:ss a'),
-						isBefore ? '<' : '>',
+						isBefore ? '&lt;' : '>',
 						date1.format('MMMM Do YYYY, h:mm:ss a'),
 					);
 					return isBefore
@@ -329,7 +377,7 @@ class Generic {
 					const isBefore = date1.isBefore(date2);
 					console.log(
 						date1.format('MMMM Do YYYY, h:mm:ss a'),
-						isBefore ? '<' : '>',
+						isBefore ? '&lt;' : '>',
 						date1.format('MMMM Do YYYY, h:mm:ss a'),
 					);
 					return !isBefore
@@ -355,8 +403,8 @@ class Generic {
 	 **/
 	isValidDataObject(data) {
 		const methodSignature = `${this.getModelType()}.isValidDataObject()`;
-		if (data instanceof Object &&
-			typeof(data) === 'object' &&
+		if (data instanceof Object &amp;&amp;
+			typeof(data) === 'object' &amp;&amp;
 			!(data instanceof Array)
 		) {
 			const dataKeys = Object.keys(data);
@@ -370,7 +418,7 @@ class Generic {
 					!requiredKeys.includes(providedKey)
 			);
 			if (
-				requiredKeysWhichWereProvided.length === requiredKeys.length &&
+				requiredKeysWhichWereProvided.length === requiredKeys.length &amp;&amp;
 				unknownKeys.length === 0
 			) {
 				return true;
@@ -539,7 +587,7 @@ class Cloud extends Generic {
 	 */
 	isUserEligible(user, node) {
 		return (
-			node.getId() === this.get(CLOUD_ATTR_NAME.TRACKED_NODE_ID) &&
+			node.getId() === this.get(CLOUD_ATTR_NAME.TRACKED_NODE_ID) &amp;&amp;
 			!!user.getTracksByNode(node).length > 0
 		);
 	}
@@ -626,7 +674,7 @@ class TextNode extends Generic {
 			}, {}
 		);
 		for (let key in scores) {
-			if(scores.hasOwnProperty(key) && scores[key] > scoreMinimum) {
+			if(scores.hasOwnProperty(key) &amp;&amp; scores[key] > scoreMinimum) {
 				const certId = key
 				const score = scores[certId];
 				activeCertificates.push(
@@ -775,7 +823,7 @@ class User extends Generic {
 
 	getModels(filter = node => true) {
 		return this.annuitCœptisII.filter(
-			node => filter(node) && node.getMetaData('authorId') === this.getId()
+			node => filter(node) &amp;&amp; node.getMetaData('authorId') === this.getId()
 		);
 	}
 
@@ -818,4 +866,33 @@ export {
 	Certificate,
 	TextNode,
 	User,
-}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<footer>
+    <img class="logo" src="img/toast-ui.png" style="">
+    <div class="footer-text">NHN Entertainment. Frontend Development Lab</div>
+</footer>
+<script>prettyPrint();</script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/tui-doc.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+    <script>
+        var id = '_sub'.replace(/"/g, '_');
+        var selectedApi = document.getElementById(id); // do not use jquery selector
+        var $selectedApi = $(selectedApi);
+
+        $selectedApi.removeClass('hidden');
+        $selectedApi.parent().find('.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        showLnbApi();
+    </script>
+
+</body>
+</html>

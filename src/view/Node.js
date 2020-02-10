@@ -6,7 +6,7 @@ import {
   User
 } from '../class/Models';
 import Slider from "react-slick";
-import Certificates from './Certificates';
+import Certifications from './Certifications';
 import {
   Link,
 } from 'react-router-dom';
@@ -85,6 +85,12 @@ class Node extends React.Component {
     );
   }
 
+  showCertificates() {
+    const { annuitCœptisII } = this.props;
+    const node = this.getNode();
+    node.getActiveCertificates();
+  }
+
   getControls() {
     const {
       asDescendant,
@@ -115,15 +121,23 @@ class Node extends React.Component {
         display: '👣',
         hint: 'Displays this node\'s tracks',
         action: this.showTracks.bind(this),
-        visible: true,
+        visible: false,
+      },
+      {
+        name: 'View Certificates',
+        display: '🛡',
+        hint: 'Displays this node\'s certificates',
+        action: this.showCertificates.bind(this),
+        visible: false,
       },
       {
         name: 'Certificates',
         display: '🛡',
         hint: 'Manage certificate requirements',
-        action: () => <Certificates parentNode={ node } annuitCœptisII={ annuitCœptisII }/>,
+        action: () => <CertificatesII
+          parentNode={ node } annuitCœptisII={ annuitCœptisII }/>,
         toggle: true,
-        visible: authorMode && !asAncestor && !asDescendant,
+        visible: false && authorMode && !asAncestor && !asDescendant,
       },
     ];
   }
@@ -171,6 +185,16 @@ class Node extends React.Component {
         activeControl: undefined
       });
     }
+    const certifications = annuitCœptisII.getByModelType(MODEL_TYPES.CERTIFICATE).map(
+      certificate => {
+        return {
+          certificate,
+          node: this.getNode(),
+          for: [],
+          against: [],
+        };
+      }
+    );
 
     return (
       <article className={ classNames }>
@@ -191,7 +215,13 @@ class Node extends React.Component {
               )
             }
           </span>
+          <Certifications
+            annuitCœptisII={ annuitCœptisII }
+            node={ node }
+          />
+          { /*
           <Exposure level={ node.data.exposureLevel || 0 } onChange={ this.onChangeExposure.bind(this) } />
+          */ }
         </div>
         { instrument ? (
           <div className="instrumentPanel">
@@ -291,15 +321,6 @@ class Node extends React.Component {
 
   track() {
     this.getNode().track();
-  }
-
-  getCertificates() {
-    /*
-    return (
-      this.getNode().getCertificates().map(
-        certificate => certificate.)
-    );
-    */
   }
 
   render() {

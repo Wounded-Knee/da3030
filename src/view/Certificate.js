@@ -7,7 +7,7 @@ class Certificate extends React.Component {
 
     return (
       <article class="certificate">
-        { certificate.get('emoji') }
+        { certificate.represent() }
       </article>
     );
   }

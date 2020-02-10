@@ -1,0 +1,14 @@
+{
+    "plugins": ["plugins/markdown"],
+	"opts": {
+	    "template": "node_modules/tui-jsdoc-template",
+        "destination": "public/docs",
+        "recurse": true
+    },
+	"templates": {
+	    "name": "💵 D³"
+	},
+    "source": {
+    	"include": ["src", "src/README.md"]
+    }
+}

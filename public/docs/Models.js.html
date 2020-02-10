@@ -1,4 +1,32 @@
-import {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Models.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Models.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {
 	LOCAL_STORAGE_NAMES,
 	MODEL_TYPES,
 	EVENT_TYPES,
@@ -7,8 +35,6 @@ import {
 var moment = require('moment');
 
 /**
- * Generic Model
- * 
  * Creation of a new Generic() model requires
  * a payload of initial data, and a link to
  * the desired annuitCœptisII instance.
@@ -22,58 +48,26 @@ var moment = require('moment');
  *
  * Descendant clases may impose further
  * requirements at their discretion.
- *
- * @class      Generic (name)
- */
+ **/
 class Generic {
-	/**
-	 * Constructs a new instance.
-	 *
-	 * @param      {object}  data            The data
-	 * @param      {object}  annuitCœptisII  annuitCœptisII
-	 */
 	constructor(data, annuitCœptisII) {
 		this.annuitCœptisII = annuitCœptisII;
 		this.set(data);
 		this.dirty = false;
 	}
 
-	/**
-	 * Handles changes. Override in subclasses. Executes when any piece of data in this model is changed.
-	 * Signals annuitCœptisII.
-	 * @virtual
-	 */
 	onChange() {
 		if (this.annuitCœptisII) this.annuitCœptisII.somethingChanged(this);
 	}
 
-	/**
-	 * Gets the model type.
-	 *
-	 * @return     {string}  The model type.
-	 */
 	getModelType() {
 		return MODEL_TYPES.GENERIC;
 	}
 
-	/**
-	 * Gets anything or everything
-	 *
-	 * @type       {boolean}
-	 * @param      {string} attribute 			Name of the data attribute to return
-	 * @return     {*}							Data from this model
-	 */
 	get(attribute) {
 		return attribute ? this.data[attribute] : this.data;
 	}
 
-	/**
-	 * Called on creation of an instance of this model with new data.
-	 * Not called when old data is rehydrated within a new instance of this model.
-	 *
-	 * @virtual
-	 * @return     {boolean}  Success
-	 */
 	onCreate() {
 		return false;
 	}
@@ -181,7 +175,7 @@ class Generic {
 		};
 		return this.annuitCœptisII.filter(
 			node =>
-				getParentId(node) === this.getId() &&
+				getParentId(node) === this.getId() &amp;&amp;
 				!node.isDeleted()
 		);
 	}
@@ -314,7 +308,7 @@ class Generic {
 					const isBefore = date1.isBefore(date2);
 					console.log(
 						date1.format('MMMM Do YYYY, h:mm:ss a'),
-						isBefore ? '<' : '>',
+						isBefore ? '&lt;' : '>',
 						date1.format('MMMM Do YYYY, h:mm:ss a'),
 					);
 					return isBefore
@@ -329,7 +323,7 @@ class Generic {
 					const isBefore = date1.isBefore(date2);
 					console.log(
 						date1.format('MMMM Do YYYY, h:mm:ss a'),
-						isBefore ? '<' : '>',
+						isBefore ? '&lt;' : '>',
 						date1.format('MMMM Do YYYY, h:mm:ss a'),
 					);
 					return !isBefore
@@ -355,8 +349,8 @@ class Generic {
 	 **/
 	isValidDataObject(data) {
 		const methodSignature = `${this.getModelType()}.isValidDataObject()`;
-		if (data instanceof Object &&
-			typeof(data) === 'object' &&
+		if (data instanceof Object &amp;&amp;
+			typeof(data) === 'object' &amp;&amp;
 			!(data instanceof Array)
 		) {
 			const dataKeys = Object.keys(data);
@@ -370,7 +364,7 @@ class Generic {
 					!requiredKeys.includes(providedKey)
 			);
 			if (
-				requiredKeysWhichWereProvided.length === requiredKeys.length &&
+				requiredKeysWhichWereProvided.length === requiredKeys.length &amp;&amp;
 				unknownKeys.length === 0
 			) {
 				return true;
@@ -448,16 +442,6 @@ Generic.__proto__.getAll = function(annuitCœptisII) {
 const CLOWN_ATTR_NAME = {
 	TEXT: 'text',
 };
-
-/**
- * @classdesc A nonsense class which is never used.
- * It's useless and accomplishes nothing.
- * It has been used for occasional testing.
- * Your continued reading of this comment
- * is a waste of your time.
- *
- * @class      Clown (name)
- */
 class Clown extends Generic {
 	getModelType() {
 		return MODEL_TYPES.CLOWN;
@@ -511,11 +495,6 @@ const CLOUD_EXAMPLE_ATTRS = {
 		name: 'name',
 	},
 };
-/**
- * This class describes a cloud.
- *
- * @class      Cloud (name)
- */
 class Cloud extends Generic {
 	getModelType() {
 		return MODEL_TYPES.CLOUD;
@@ -530,16 +509,9 @@ class Cloud extends Generic {
 			) : this.data;
 	}
 
-	/**
-	 * Determines if the given user is eligible to join this Cloud.
-	 *
-	 * @param      {@link User}   		user    The user
-	 * @param      {@link Generic}   	node    The node
-	 * @return     {boolean}  True if user eligible, False otherwise.
-	 */
 	isUserEligible(user, node) {
 		return (
-			node.getId() === this.get(CLOUD_ATTR_NAME.TRACKED_NODE_ID) &&
+			node.getId() === this.get(CLOUD_ATTR_NAME.TRACKED_NODE_ID) &amp;&amp;
 			!!user.getTracksByNode(node).length > 0
 		);
 	}
@@ -597,11 +569,7 @@ class TextNode extends Generic {
 	}
 
 	// Returns all certificates
-	// Each certificate has flags regarding its relationship with this node.
-	// 		bool	isRatified	Does the crowd consensus bless this certificate?
-	//		int 	score 		How ratified is it?
-	//		array 	users 		Who ratified it?
-	getCertifications() {
+	getCertificates() {
 		return this.getEventsByType([EVENT_TYPES.CERTIFIED, EVENT_TYPES.DECERTIFIED]).map(
 			event => {
 				return {
@@ -614,7 +582,6 @@ class TextNode extends Generic {
 
 	// Returns all active certificates
 	getActiveCertificates() {
-		const scoreMinimum = 1;
 		const certificates = this.getCertificates();
 		const scores = certificates.reduce(
 			(scores, event) => {
@@ -625,23 +592,6 @@ class TextNode extends Generic {
 				}
 			}, {}
 		);
-		for (let key in scores) {
-			if(scores.hasOwnProperty(key) && scores[key] > scoreMinimum) {
-				const certId = key
-				const score = scores[certId];
-				activeCertificates.push(
-					scores
-				)
-			}
-   		}
-		const activeCertificates = [];
-		/*
-		scores.reduce(
-			(activeCertificates, score) => {
-				if (score)
-			}, []
-		)
-		*/
 		console.log(`getActiveCertificates() ${this.represent()} `, scores);
 		return scores;
 	}
@@ -672,7 +622,7 @@ class TextNode extends Generic {
 
 /**
  * New Certificate() data payload requirements:
- * ```json
+ *
  *   {
  *     [ATTRIBUTE_NAMES.META]: {
  *       [ATTRIBUTE_NAMES.ID]: int
@@ -683,7 +633,6 @@ class TextNode extends Generic {
  *       [CERTIFICATE_ATTR_NAME.REDUX]: string
  *     }
  *   }
- * ```
  *
  **/
 const CERTIFICATE_ATTR_NAME = {
@@ -775,7 +724,7 @@ class User extends Generic {
 
 	getModels(filter = node => true) {
 		return this.annuitCœptisII.filter(
-			node => filter(node) && node.getMetaData('authorId') === this.getId()
+			node => filter(node) &amp;&amp; node.getMetaData('authorId') === this.getId()
 		);
 	}
 
@@ -818,4 +767,26 @@ export {
 	Certificate,
 	TextNode,
 	User,
-}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a></li><li><a href="Generic.html">Generic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CERTIFICATE_ATTR_NAME">CERTIFICATE_ATTR_NAME</a></li><li><a href="global.html#CLOUD_ATTR_NAME">CLOUD_ATTR_NAME</a></li><li><a href="global.html#CLOWN_ATTR_NAME">CLOWN_ATTR_NAME</a></li><li><a href="global.html#TEXT_NODE_ATTR_NAME">TEXT_NODE_ATTR_NAME</a></li><li><a href="global.html#USER_ATTR_NAME">USER_ATTR_NAME</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Feb 08 2020 00:42:16 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

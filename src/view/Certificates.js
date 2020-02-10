@@ -1,3 +1,25 @@
+/**
+ * Refactor Notes
+ This component lists every certificate in the system.
+ They go in a carousel.
+ Selection options:
+    Selected Positive
+    Selected Negative
+    Unselected
+ Events
+    onChange
+      Provides list of all selected
+ UI
+    Each certificate gets a single page in the carousel.
+    Each page allows selection
+ Applications
+    Node View
+      Displays which certs are enforced on this node
+        For each cert, also displays +/- enforcement mode
+    Node Certificate Chooser (node admin only)
+      Displays all certs which can be enforced on this node
+        Allows certs to be chosen to be added to enforced certs list
+ **/
 import React from 'react';
 import { MODEL_TYPES } from '../class/Models';
 import Certificate from './Certificate';
