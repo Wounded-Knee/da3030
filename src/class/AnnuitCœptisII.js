@@ -62,7 +62,7 @@ class AnnuitCœptisII {
 			nodeData => {
 				const modelType = nodeData[ATTRIBUTE_NAMES.META][ATTRIBUTE_NAMES.MODEL_TYPE];
 				const model = Models[modelType];
-				return new model(nodeData, this);
+				return model ? new model(nodeData, this) : undefined;
 			}
 		);
 		this.dirty = false;
@@ -89,7 +89,7 @@ class AnnuitCœptisII {
 			Math.max.apply(
 				Math,
 				nodes.map(
-					node => parseInt(node.id) || 0
+					node => node ? parseInt(node.id) : 0
 				)
 			) + 1
 		, 0);
